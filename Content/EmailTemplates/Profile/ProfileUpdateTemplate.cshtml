@@ -1,0 +1,200 @@
+﻿﻿@model Syncfusion.Server.Base.DataClasses.EmailTemplateModel
+<html>
+<head>
+    <meta http-equiv='Content-Type' content='text/html; charset=utf-8'>
+    <meta name='viewport' content='width=device-width'>
+</head>
+<body style='min-width: 100%; color: #222222; line-height: 19px; font-size: 14px; width: 100% !important; background: rgb(244,244,244); padding: 10px 0 0;'>
+    <center style='width: 100%; min-width: 580px;'>
+        <table>
+            <tbody>
+                <tr>
+                    <td style='word-break: break-word;hyphens: auto; color: #222222;'>
+                        <table style='text-align: left;'>
+                            <tbody>
+                                <tr>
+                                    <td style='word-break: break-word; hyphens: auto; padding-bottom: 10px; width: 584px; background: #2196F3;'>
+                                        <table>
+                                            <tbody>
+                                                <tr>
+                                                    <td>
+                                                        <p style='color: #ffffff; margin-top: 15px; margin-left: 535px; font-size: 10px;'>
+                                                            <a href='@Model.BaseUrl/@Model.Language/accounts/login'
+                                                               style='color: #ffffff; font-size: 10px; text-decoration: none;font-family: Segoe UI,Helvetica,sans-serif;'>LOGIN</a>
+                                                        </p>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <p style='font-size: 16px;font-weight: 600;margin-left: 38px; margin-top: 14px; color: #ffffff;font-family: Segoe UI,Helvetica,sans-serif;'>
+                                                            @Model.OrganizationName
+                                                        </p>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td style='padding-top: 11px;'>
+                                                        <table style='width: 50px; color: #ffffff; border-top-color: #ffffff; height: 1px; margin-top: -1px; border-top-style: solid; border-top-width: 1px; margin-left: 38px;'>
+                                                            <tr>
+                                                                <td></td>
+                                                            </tr>
+                                                        </table>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td style='padding-top: 30px;'>
+                                                        <p style='font-size: 30px; color: #ffffff;font-weight: lighter;margin-top: 11px; margin-left: 38px;font-family: Segoe UI,Helvetica,sans-serif; margin-bottom: 25px;'>
+                                                            Your profile has been updated
+                                                        </p>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <table>
+                            <tbody>
+                                <tr>
+                                    <td style='word-break: break-word; hyphens: auto; width: 584px; background: white;'>
+                                        <table style='text-align: left;'>
+                                            <tr>
+                                                <td>
+                                                    <p style='font-weight: 600;margin-top: 28px;color: #353535; font-family: Segoe UI,Helvetica,sans-serif; margin-left: 38px; font-size: 12px;'>
+                                                        Hello
+                                                        @Model.FullName
+                                                        ,
+                                                    </p>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <p style='vertical-align: bottom; margin-top: 12px; font-family: Segoe UI,Helvetica,sans-serif; color: #353535; margin-left: 38px; margin-bottom: 12px; font-size: 12px;'>
+                                                        Your profile has been updated
+                                                        @if (@Model.Admin != null)
+                                                        {
+                                                            @:by
+                                                            @Model.Admin
+                                                        }
+                                                        .
+                                                    </p>
+                                                </td>
+                                            </tr>
+                                        </table><table style='border-spacing: 0px; border-collapse: collapse; font-size: 12px; width: 500px; margin-left: 38px; border-collapse: collapse; padding: 0; border: 1px solid #d8d8d8;'>
+                                            <tr>
+                                                <th td='td' style='width: 90px; height: 25px; word-break: break-word; border: 1px solid #d8d8d8;'>
+                                                    <p style='color: #353535; width: 85px; margin-left: 5px; font-style: normal; margin-top: 0px; margin-bottom: 0px; text-align: left; font-weight:normal;'>Field</p>
+                                                </th>
+                                                <th style='width: 195px; height: 25px; word-break: break-word; border: 1px solid #d8d8d8;'>
+                                                    <p style='color: #353535; width: 195px; word-break: break-word; margin-left: 5px; margin-top: 0px; margin-bottom: 0px; border: 1px; text-align: left; font-weight: normal;'>Previous value</p>
+                                                </th>
+                                                <th style='width: 195px; height: 25px; word-break: break-word; border: 1px solid #d8d8d8;'>
+                                                    <p style='color: #353535; width: 195px; word-break: break-word; margin-left: 5px; margin-top: 0px; margin-bottom: 0px; border: 1px; text-align: left; font-weight: normal;'>New value</p>
+                                                </th>
+                                            </tr>
+
+                                            @if (!String.IsNullOrWhiteSpace(@Model.FirstName))
+                                            {
+                                                @:<tr>
+                                                    @:<td style='width: 90px; height: 25px; word-break: break-word; border: 1px solid #d8d8d8;'><p style='color: #353535; font-size: 12px; width: 85px; margin-left: 5px;  margin-top: 0px;text-align: left; margin-bottom: 0px;'>First name</p></td>
+                                                    @:<td style='width: 195px; height: 25px; word-break: break-word; border: 1px solid #d8d8d8;'>
+                                                        @:<p style='color: #353535; width: 195px; word-break: break-word;text-align:left; margin-left: 5px; font-family: Segoe UI,Helvetica,sans-serif; margin-top: 0px; margin-bottom: 0px; border: 1px;'>
+                                                            @Model.PreviousFirstName
+                                                            @:</p>
+                                                        @:</td>
+                                                    @:<td style='width: 195px; height: 25px; word-break: break-word; border: 1px solid #d8d8d8;font-weight: bold;'>
+                                                        @:<p style='color: #353535; width: 195px; word-break: break-word;text-align:left; font-family: Segoe UI,Helvetica,sans-serif;margin-left: 5px;  margin-top: 0px; margin-bottom: 0px; border: 1px;'>
+                                                            @Model.FirstName
+                                                            @:</p>
+                                                        @:</td>
+                                                    @:</tr>
+                                            }
+
+                                            @if (@Model.LastName != null)
+                                            {
+                                                @:<tr>
+                                                    @:<td style='width: 90px;height: 25px; word-break: break-word; border: 1px solid #d8d8d8;'><p style='color: #353535; font-size: 12px;width: 85px;margin-left: 5px; margin-top: 0px;text-align: left; margin-bottom: 0px;'>Last name</p></td>
+                                                    @:<td style='width: 195px;height: 25px; word-break: break-word; border: 1px solid #d8d8d8;'>
+                                                        @:<p style='color: #353535; width: 195px; word-break: break-word;text-align:left;font-family: Segoe UI,Helvetica,sans-serif; margin-left: 5px; margin-top: 0px; margin-bottom: 0px; border: 1px;'>
+                                                            @Model.PreviousLastName
+                                                            @:</p>
+                                                        @:</td>
+                                                    @:<td style='width: 195px; height: 25px; word-break:break-word; border: 1px solid #d8d8d8;font-weight: bold;'>
+                                                        @:<p style='color: #353535; width: 195px; word-break: break-word;text-align:left;font-family: Segoe UI,Helvetica,sans-serif; margin-left: 5px; margin-top: 0px; margin-bottom: 0px; border: 1px;'>
+                                                            @Model.LastName
+                                                            @:</p>
+                                                        @:</td>
+                                                    @:</tr>
+                                            }
+
+                                            @if (@Model.Mobile != null)
+                                            {
+                                                @:<tr>
+                                                    @:<td style='width: 90px; height: 25px; word-break: break-word; border: 1px solid #d8d8d8;'><p style='color: #353535; font-size: 12px; width: 85px; margin-left: 5px; margin-top: 0px;text-align: left; margin-bottom: 0px;'>Phone number</p></td>
+                                                    @:<td style='width: 195px; height: 25px; word-break: break-word; border: 1px solid #d8d8d8;'>
+                                                        @:<p style='color: #353535; width: 195px; word-break: break-word;text-align:left;font-family: Segoe UI,Helvetica,sans-serif; margin-left: 5px; margin-top: 0px; margin-bottom: 0px; border: 1px;'>
+                                                            @Model.PreviousMobile
+                                                            @:</p>
+                                                        @:</td>
+                                                    @:<td style='width: 195px; height: 25px; word-break: break-word; border: 1px solid #d8d8d8;font-weight: bold;'>
+                                                        @:<p style='color: #353535; width: 195px; word-break: break-word;text-align:left;font-family: Segoe UI,Helvetica,sans-serif; margin-left: 5px;  margin-top: 0px; margin-bottom: 0px; border: 1px;'>
+                                                            @Model.Mobile
+                                                            @:</p>
+                                                        @:</td>
+                                                    @:</tr>
+                                            }
+
+                                            @if (!String.IsNullOrWhiteSpace(@Model.Email))
+                                            {
+                                                @:<tr>
+                                                    @:<td style='width: 90px; height: 25px; word-break: break-word; border: 1px solid #d8d8d8;'><p style='color: #353535; font-size: 12px; width:85px; margin-left: 5px; margin-top: 0px;text-align: left; margin-bottom: 0px;'>Email address</p></td>
+                                                    @:<td style='width:195px; height: 25px; word-break: break-word; border: 1px solid #d8d8d8;'>
+                                                        @:<p style='color: #353535; font-family: Segoe UI,Helvetica,sans-serif;text-align:left; width: 195px; word-break: break-word; margin-left: 5px; margin-top: 0px; margin-bottom: 0px; border: 1px;'>
+                                                            @Model.PreviousMail
+                                                            @:</p>
+                                                        @:</td>
+                                                    @:<td style='width: 195px; height: 25px; word-break:break-word; border: 1px solid #d8d8d8; font-weight: bold;'>
+                                                        @:<p style='color: #353535; width: 195px;font-family: Segoe UI,Helvetica,sans-serif; text-align:left;word-break: break-word; margin-left: 5px; margin-top: 0px; margin-bottom: 0px; border: 1px;'>
+                                                            @Model.Email
+                                                            @:</p>
+                                                        @:</td>
+                                                    @:</tr>
+                                            }
+                                        </table>
+                                        @if (@Model.Admin != null)
+                                        {
+                                            @:<table>
+                                                @:<tr>
+                                                    @:<td>
+                                                        @:<p style='margin-top: 7px; margin-left:38px;font-family: Segoe UI,Helvetica,sans-serif;text-align:left; color: #353535; font-size: 12px;'>
+                                                        @:If you are unable to access your account, please contact your System Administrator
+                                                        @: </p>
+                                                    @:</td>
+                                                @:</tr>
+                                            @:</table>
+                                        }
+                                        <table style='text-align: left;'>
+                                            <tr>
+                                                <td>
+                                                    <p style='margin-top: 17px;margin-bottom:0px;font-size: 12px;margin-bottom: 0px; margin-left: 38px;font-family: Segoe UI,Helvetica,sans-serif;text-align: left; color: #353535;'>Regards,</p>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <p style='font-size: 12px; margin-bottom: 64px;font-family: Segoe UI,Helvetica,sans-serif;margin-left: 38px; color: #353535;'>
+                                                        @Model.OrganizationName
+                                                    </p>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </center>
+</body>
+</html>

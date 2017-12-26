@@ -1,0 +1,122 @@
+﻿@import (reference) "Themes/Default.less";
+
+#server-mobile-navbar {
+    background-color: @item-name-color;
+    border: none;
+    box-shadow: 0px 0px 6px 0 rgba(0,0,0,.1);
+    bottom: 0;
+    margin: 0;
+    position: fixed;
+    width: 100%;
+    z-index: 10000;
+		
+    .container-fluid{
+	    padding: 0px;
+        .navbar-nav{
+            li{
+			    padding: 0 2px;
+			    border-left: 1px solid @navbar-border-color;	
+				
+                a{
+				    background: transparent;
+                    border: 1px solid transparent;
+				    color: @header-bg;
+				    font-size: 20px;
+				    left: auto;
+				    line-height: 26px;
+                    margin: 3px 0;
+			        padding: 8px 0 8px 0;
+				    text-align: center;
+                    top:auto;
+				    width: 100%;
+                }
+            }
+			
+		    li:first-child{
+			    border: none;
+            }
+				
+		    .active{
+                background-color: @header-bg-color;
+			    border: 1px solid @navbar-active-border-color;
+			    border-radius: 5px;
+			    color: @navbar-active-icon-color;
+            }
+        }
+    }
+				
+    .no-padding{
+	    padding:0;
+    }
+		
+    .no-margin{
+	    margin:0;
+    }
+}
+	
+#sync_report_viewer{
+    margin-bottom: 50px;
+    width: 100% !important;
+	#sync_report_viewer_toolbarContainer {
+            #sync_report_viewer_toolicon_com {
+            display: none;
+        }        
+	}                                      
+}
+
+#sync_report_viewer{
+    margin-right: 0 !important;
+}
+	
+body{
+    .report-view-toogle{
+	    display: block !important;
+	    #expand-collapse{
+		    display:none;
+	    }
+		
+	    #report-views, #view-heading{
+            display:block !important;
+        }
+
+        #report-views{
+            #unsaved-filter{
+                #unsaved-filter-parameter{
+                    .unsaved-opt{
+                        display: block !important;
+                    }
+                }
+            }
+            #saved-filter{
+                #saved-list{
+                    .saved-view{
+                        .saved-opt{
+                            display: block;
+
+                            .share{
+                                display: none;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+	
+.server-report-view{
+    display: none !important;
+}
+
+#commentImage_popup {
+    #PopupContainer{
+    a{        
+        top:-30px !important;
+        left:26px !important;
+    }
+  }
+}
+
+#sync_report_viewer_loadingIndicator_WaitingPopup{
+    z-index: 999 !important;
+  }

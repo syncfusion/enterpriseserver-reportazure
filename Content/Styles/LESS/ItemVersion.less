@@ -1,0 +1,83 @@
+﻿@import (reference) "Mixins.less";
+
+.versions-popup {
+    .modal();
+
+    .modal {
+        display: inline-block !important;
+
+        .modal-dialog {
+            height: 615px;
+            margin: 0 !important;
+            padding: 0;
+            width: 100%;
+
+            .modal-content {
+                height: 615px;
+
+                .modal-body {
+                    height: 515px;
+                    max-height: 515px;
+                    padding: 10px;
+
+                    .nav-tabs {
+                        .versions-tab {
+                            margin-left: 20px;
+                        }
+
+                        li {
+                            a {
+                                color: @primary-text-color;
+                            }
+                        }
+
+                        .active {
+                            a {
+                                color: @primary-btn-bg;
+                            }
+                        }
+                    }
+
+                    .version-container-padding {
+                        padding: 20px 0;
+
+                        #item-version-container {
+                            #grid, #loggrid {
+                                .dropdown {
+                                    position: absolute;
+
+                                    .dropdown-menu {
+                                        left: -136px;
+                                    }
+                                }
+
+                                .e-headercell:last-child {
+                                        cursor: default;
+                                    }
+                                
+                            }
+                        }
+
+                        #item-log-container {
+                            #grid, #loggrid {
+                                .dropdown {
+                                    position: absolute;
+
+                                    .dropdown-menu {
+                                        left: -136px;
+                                        margin: 0;
+                                        padding: 0;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+.versions{
+ .modal(@app-large-text-size,@textbox-lg-height);
+}

@@ -1,0 +1,91 @@
+﻿<script>
+    var setSystemSettingsApp = angular.module("setSystemSettingsApp", []);
+    setSystemSettingsApp.controller("SetSystemSettingsController", function ($scope, $http) {
+        $scope.preventFormPost = false;
+
+        $scope.SaveUserAccountData = function ($event) {
+            if (($event.keyCode == 13 || $event.type == "click") && $scope.preventFormPost === false) {
+                $event.preventDefault();
+                getFormData();
+                if ($(".admin-account-fields-container").valid()) {
+                    $scope.preventFormPost = true;
+                    var elem = $(".startup-page-conatiner");
+                    elem.ejWaitingPopup({ text: " " });
+                    $(".e-text").find(".configuration-status").remove();
+                    $(".e-text").append('<span class="configuration-status"></span>');
+                    elem.ejWaitingPopup("show");
+                    var globalAdminDetails = $("#global-admin-details").val();
+                    var systemSettingsData = $("#system-settings-data").val();
+                    var azureData = $("#azure-data").val();
+                    setSystemSettingsData = { globalAdminDetails: globalAdminDetails, systemSettingsData: systemSettingsData, azureData: azureData };
+                    $http.post(setSystemSettingsUrl, setSystemSettingsData)
+                        .success(function (setSystemSettingsResponse) {
+                            window.location = setSystemSettingsResponse.redirectUrl;
+                        })
+                        .error(function (setSystemSettingsResponse) {
+                            $scope.preventFormPost = false;
+                        });
+                }
+                return false;
+            }
+        }
+    });
+
+</script>
+<div class="col-md-12 system-settings-page-container" id="system-settings-user-account-container" ng-app="setSystemSettingsApp" ng-controller="SetSystemSettingsController">
+    <div class="content">
+        [[[Enter your details to create a system administrator account.]]]
+    </div>
+    <form id="admin-account-fields-container" class="admin-account-fields-container" autocomplete="off" ng-keypress="SaveUserAccountData($event)">
+        <div class="admin-avatar">
+            <img src="@Url.Content("~/Content/images/ProfilePictures/default.png")" width="120" height="120" />
+        </div>
+        <div class="form-div form-group input-alignment">
+            <input type="text" tabindex="1" id="txt-username" name="username" class="form-control" placeholder="[[[Username]]]" maxlength="95" />
+            <span class="startup-validation txt-username"></span>
+            <div class="dropdown-menu username-description" role="menu">
+                <div class="username-contain">
+                    <div class="check-div">*</div><div id="username-detail">[[[Username contains invalid characters.]]]</div>
+                </div>
+            </div>
+        </div>
+        <div class="form-div form-group input-alignment">
+            <input type="text" tabindex="2" id="txt-firstname" name="firstname" class="form-control" placeholder="[[[First name]]]" maxlength="254" />
+            <span class="startup-validation txt-firstname"></span>
+        </div>
+        <div class="form-div form-group input-alignment">
+            <input type="text" tabindex="2" id="txt-lastname" class="form-control" placeholder="[[[Last name]]]" name="lastname" maxlength="254" />
+            <span class="startup-validation"></span>
+        </div>
+        <div class="form-div form-group input-alignment">
+            <input type="text" tabindex="3" id="txt-emailid" class="form-control" placeholder="[[[Email address]]]" name="email" autocomplete="off" maxlength="254" />
+            <span class="startup-validation txt-emailid"></span>
+            <div class="dropdown-menu mail-description" role="menu">
+                <div class="mail-contain">
+                    <div class="check-div">*</div><div id="mail-detail">[[[Please enter a valid email address.]]]</div>
+                </div>
+            </div>
+        </div>
+        <div class="form-div form-group input-alignment">
+            <input type="text" class="display-none">
+            <input type="password" class="fake-password" name="fake_passwordfield_to_turnoff_autocomplete">
+            <input type="password" tabindex="4" id="txt-password" class="form-control" placeholder="[[[Password]]]" name="password" autocomplete="off" maxlength="85" />
+            <span class="su su-eye display-none show-hide-password"></span>
+            <div class="startup-validation" id="new-password"></div>
+        </div>
+
+        <div id="confirm-password-section" class="form-div form-group input-alignment">
+            <input type="text" class="display-none">
+            <input type="password" tabindex="5" id="txt-confirm-password" class="form-control" placeholder="[[[Confirm password]]]" name="confirm" autocomplete="off" maxlength="85" />
+            <span class="su su-eye display-none show-hide-password"></span>
+            <div class="startup-validation" id="confirm-password"></div>
+        </div>
+        <div class="btn-holder" id="admin-account-submit-container">
+            <input type="text" name="globalAdminDetails" id="global-admin-details" class="display-none">
+            <input type="text" name="systemSettingsData" id="system-settings-data" class="display-none">
+            <input type="text" name="AzureData" id="azure-data" class="display-none">
+            <input type="submit" tabindex="5" id="btn-proceed-page3" class="proceed-button" ng-click="SaveUserAccountData($event)" ng-disabled="preventFormPost" value="[[[Proceed]]]" />
+        </div>
+    </form>
+</div>
+

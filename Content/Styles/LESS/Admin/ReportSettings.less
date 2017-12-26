@@ -1,0 +1,42 @@
+﻿@import (reference) "../Mixins.less";
+
+#dashboard-settings-container {
+    .dashboard-header {
+        .header-text {
+            font-size: @app-text-size;
+            
+        }
+    }
+    #dashboard-settings-body{
+           padding-bottom:5px;
+       }
+    
+    .dropdown-toggle {
+        cursor: pointer;
+        margin-left:11px;
+    }
+
+    .dropdown-menu {
+        font-size: @app-large-text-size;
+        margin-left:@app-large-text-size;
+        width: 200px;
+        padding: 5px;
+    }
+
+    .tool-tip{
+        float: none;
+        padding: 0px;
+        display: inline;
+    }
+    .app-textbox-label
+    {
+        margin-left:20px;
+    }
+}
+
+@media screen and (min-width: 1041px) and (max-width: 1399px)
+{
+     .dropdown-menu {
+             font-size: @app-text-size !important;
+         }
+}

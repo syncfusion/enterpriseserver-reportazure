@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<DataSourceDefinition xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <ConnectString>Data Source=45.76.2.157,1433;Initial Catalog=OnlineFoodOrdering</ConnectString>
+  <CredentialRetrieval>Store</CredentialRetrieval>
+  <Enabled>true</Enabled>
+  <Extension>SQL</Extension>
+  <ImpersonateUser>false</ImpersonateUser>
+  <OriginalConnectStringExpressionBased>false</OriginalConnectStringExpressionBased>
+  <UseOriginalConnectString>false</UseOriginalConnectString>
+  <UserName>ReportGuest</UserName>
+  <Password>9e6FqSqgA</Password>
+  <WindowsCredentials>false</WindowsCredentials>
+</DataSourceDefinition>

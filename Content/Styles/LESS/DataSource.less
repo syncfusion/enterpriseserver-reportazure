@@ -1,0 +1,254 @@
+﻿@import (reference) "Mixins.less";
+body {
+    #server-app-container {
+        overflow:auto !important;
+    }   
+    #item-grid-container {
+        .e-grid .e-gridcontent tr td.e-templatecell a{
+            display: block !important;
+        }
+    h2 {
+        margin: 0;
+    }
+
+    .grid-container {
+        margin-top: 55px;
+
+        #items {
+            .dropdown {
+                position: absolute;
+
+                .dropdown-menu {
+                    left: -244px;
+                    margin: 0;
+                    padding: 5px 0px;
+                    width: 260px;
+
+                     }
+            }
+
+            .e-columnheader {
+                .e-headercell {
+                    &:last-child {
+                        cursor: default;
+                    }
+                }
+            }
+        }
+    }
+}
+}
+
+#item-action {
+    iframe {
+        border: 0;
+        float: left;
+        height: 275px;
+        width: 100%;
+    }
+}
+
+.item-update,.item-add {
+    .modal();
+
+    .modal {
+        display: block !important;
+
+        .modal-dialog {
+            height: 490px;
+            margin: 0 !important;
+            width: 100%;
+
+            .modal-content {
+                height: 490px;
+
+                .modal-body {
+                    max-height:390px;
+                    padding: 10px;
+                    overflow:hidden;
+
+                    #general-file-container {
+                        height: 370px;
+
+                        #label-div {
+                            margin-top: -5px;
+                        }
+
+                        #file-name-content {
+                            height: @textbox-height;
+                        }
+
+                        .upload-file {
+                            border-bottom-right-radius: 0;
+                            border-top-right-radius: 0;
+                            border-right: 0 none;
+                            float: left;
+                            height: @textbox-height;
+                        }
+
+                        .input-group {
+                            width: 90.5%;
+                        }
+
+                        .file-upload {
+                            border-radius: 0;
+                            margin-left: -3px;
+                            padding: 2px 18px;
+                            position: absolute;
+
+                            span {
+                                margin-top: -2px;
+                            }
+                        }
+
+                        input.upload-btn {
+                            position: absolute;
+                            top: 0;
+                            right: 0;
+                            margin: 0;
+                            padding: 0;
+                            font-size: 20px;
+                            cursor: pointer;
+                            opacity: 0;
+                            filter: alpha(opacity=0);
+                        }
+
+                        tr {
+                            .content-padding {
+                                padding: 20px 0 0 0;
+                            }
+
+                            #datasource-label {
+                                margin-top: 8px;
+                            }
+                        }
+
+                        td {
+                            border-top: 0;
+                            padding-left: 0;
+
+                            .app-textbox-label {
+                                margin-bottom: 25px;
+                                margin-right: 15px;
+
+                                .mandatory {
+                                    padding: 3px;
+                                }
+                            }
+                        }
+
+                        #version-comment {
+                            line-height: 12px;
+                            margin-left: 15px;
+                        }
+
+                        .content {
+                            padding-right: 0;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+.item-add {
+       .modal {
+               .modal-dialog {
+                  height:355px;
+            .modal-content {
+                height:355px;
+                .modal-body {
+                    max-height:255px;
+                    
+                    #general-file-container {
+                        height: 235px;
+                        }
+}                     
+        }
+    }
+}
+       }
+.updation{
+         .modal(@app-large-text-size,@textbox-lg-height);
+.modal{
+    .modal-dialog{
+    .modal-content{
+        .modal-body{
+            #general-file-container{
+                #file-name-content{
+                            height:@textbox-lg-height;
+
+                        }
+
+                        .upload-file {
+                            height: @textbox-lg-height;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+
+
+@media screen and (max-width: 1040px) {
+    #server-app-container{
+        #content-area{
+            background-color: inherit;
+            padding: 42px 0px 0px;
+        }
+    }
+}
+
+/*Hiding no suggestion and waiting popup in Filtering*/
+#items_acString {
+    background-image: none !important;
+}
+
+#items_acString_suggestion {
+    display: none !important;
+}
+
+#messageBox_wrapper{
+    height: 180px !important;
+    .e-dialog-scroller e-scroller e-js e-widget{
+        height: 180px !important;
+        #messageBox{
+            height: 180px !important;
+            .message-header{
+                margin-top: 10px;
+            }
+            .message-content{      
+                height: 100px;                               
+            }
+        }
+    }
+}
+#datasource-edit-popup-iframe {
+    width:100% !important;
+    .header-menu {
+        font-size: 20px;
+        padding-bottom: 15px;
+        padding-top: 15px;
+        position: relative;
+    }
+
+    .popup-close {
+        position: absolute;
+        right: 6px;
+        top: 4px;
+    }
+
+    .validation-message {
+        color: #a94442;
+        float: left;
+        margin-top: 0px;
+        display: none;
+    }
+
+    .su-close {
+        font-size: 12px;
+    }
+}
