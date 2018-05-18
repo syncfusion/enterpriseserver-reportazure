@@ -23,7 +23,7 @@ Get the ARM template to Deploy Latest Version of Syncfusion Report Server as Azu
 ## Reference Link
 
 * [Documentation](https://help.syncfusion.com/Report-platform/overview)
-* [Feature tour](https://www.syncfusion.com/products/Report)
+* [Feature tour](https://www.syncfusion.com/products/report)
 * [Video tutorials](https://www.youtube.com/watch?v=-1K9rZo8auo&list=PLDzXQPWT8wEDAbSVxbaSSlJQrE1u3QMs4)
 * [Support](https://www.syncfusion.com/support/directtrac/incidents)
 * [Forum](https://www.syncfusion.com/forums/Report)
