@@ -12,7 +12,7 @@ This repository holds the Azure App Service package of the Report Server which y
 
 >**Note**: This repository holds Report Server Azure App Service package from version v2.3.0.77
 
-New Syncfusion Report Server Azure App Service Deployment can be done [here](https://help.syncfusion.com/report-platform/report-server/azure-deployment/app-service/arm-template).
+New Syncfusion Report Server Azure App Service Deployment can be done by following the instructions from [here](https://help.syncfusion.com/report-platform/report-server/azure-deployment/app-service/arm-template).
 
 To Upgrade the Syncfusion Report Server to the latest version [here](https://help.syncfusion.com/report-platform/report-server/azure-deployment/app-service/upgrade-from-v2-1-0-8-or-below).
 
