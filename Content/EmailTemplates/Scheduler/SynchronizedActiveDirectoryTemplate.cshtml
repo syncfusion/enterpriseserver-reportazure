@@ -1,0 +1,181 @@
+﻿﻿
+<html>
+<head>
+    <meta http-equiv='Content-Type' content='text/html; charset=UTF-8'>
+    <meta name='viewport' content='width=device-width'>
+</head>
+<body style='min-width: 100%; color: #222222; font-weight: normal;line-height: 19px; font-size: 14px; width: 100% !important; background: rgb(244,244,244); padding: 10px 0 0;'>
+    <center style='width: 100%; min-width: 580px;'>
+        <table>
+            <tbody>
+                <tr>
+                    <td style='word-break:break-word;color:#222222;'>
+                        <table style='background:#2196F3;'>
+                            <tbody>
+                                <tr>
+                                    <td style='width: 584px; color: rgb(34, 34, 34);line-height: 19px; font-size: 14px; background: rgb(33, 150, 243) none repeat scroll 0% 0%; margin: 0px; padding: 0px 0px 30px;'>
+                                        <table style='vertical-align: middle;width: 100%;text-align: left;'>
+                                            <tbody>
+                                                <tr style='padding: 0px 10px;'>
+                                                    <td style='padding: 0px 30px;'>
+                                                        <p style='color: rgb(255, 255, 255); margin-bottom: 0px; margin-top: 15px;  font-weight:normal;font-size: 10px; text-align: right;'>
+                                                            @{
+                                                                var formatedHyperlink = "<a href='" + @Model.BaseUrl + "//" + @Model.Language + "/accounts/login' style='color: #ffffff; font-size: 10px; font-family: Segoe UI, Helvetica, sans-serif; text-decoration: none;'>LOGIN</a>";
+                                                            }
+                                                            @formatedHyperlink
+                                                        </p>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td style='padding: 0px 42px;'>
+                                                        <p style='font-size: 16px;text-align: left; margin-bottom: 5px; margin-top: 14px; color: rgb(255, 255, 255); font-family: Segoe UI, Helvetica, sans-serif; font-weight: 600;'>
+                                                            @Model.OrganizationName
+                                                        </p>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td style='padding: 0px 42px 0 42px;'>
+                                                        <table style='width: 50px; color: rgb(255, 255, 255); border-top: 1px solid rgb(255, 255, 255); height: 1px; margin-bottom: 0px; margin-top: 11px;'><tbody><tr style='vertical-align:top;padding:0'><td></td></tr></tbody></table>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td style='padding: 0 10px 0 42px;color: rgb(255, 255, 255);'>
+                                                        <p style='margin-top: 45px;font-weight: lighter;font-family: Segoe UI, Helvetica, sans-serif;text-align: left; margin-bottom: 5px; font-size: 28px;'>
+                                                            @{
+                                                                var sync = ((@Model.UserType).ToString().ToLower() == "azureaduser") ? "Azure" : " ";
+                                                            }
+                                                            @sync
+
+                                                            Active Directory Synchronization
+                                                            @{
+                                                                var limits = @Model.IsUserLimitExceed ? "incomplete" : "successful";
+                                                            }
+                                                            @limits
+                                                        </p>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table><table>
+                            <tbody>
+                                <tr>
+                                    <td style='word-break:break-word; color:#222222; width:584px; background:white;'>
+                                        <table style="text-align: left;">
+                                            <tbody>
+                                                <tr>
+                                                    <td>
+                                                        <p style='margin-bottom:0px;text-align: left;font-family: Segoe UI, Helvetica, sans-serif; margin-top:28px; color:#353535; margin-left:38px; font-weight:700; font-size:12px'>
+                                                            Hello
+                                                            @Model.DisplayName
+                                                            ,
+                                                        </p>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <p style='vertical-align: bottom; margin-top: 12px; font-family: Segoe UI, Helvetica, sans-serif;color: rgb(53, 53, 53); margin-left: 38px; margin-bottom: 12px; font-size: 12px;'>
+                                                            Users and groups in Report Server have been successfully synchronized with your
+
+                                                            @{
+                                                                var desc = ((@Model.UserType).ToString().ToLower() == "activedirectoryuser") ? "active directory." : "azure active directory. ";
+                                                            }
+                                                            @desc
+                                                        </p>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table><table style='border-spacing:0px; border-collapse:collapse;width:500px; height:104px; margin-left:38px;border:1px solid #d8d8d8'>
+                                            <tbody>
+                                                <tr><th style='width:200px; height:25px; word-break:break-word; border:1px solid #d8d8d8'><p style='color:#353535; font-size:12px; width:195px; margin-left:5px; font-style:normal; margin-top:0px; margin-bottom:0px'>Users</p></th>
+                                                <th style='width:200px; height:25px; word-break:break-word; border:1px solid #d8d8d8'><p style='color:#353535; font-size:12px; width:195px; word-break:break-word; margin-left:5px; font-weight:bold; margin-top:0px; margin-bottom:0px; border:1px'>Groups</p></th></tr>
+                                                <tr>
+                                                    <td style='width: 200px; height: 25px; border: 1px solid rgb(216, 216, 216);'>
+                                                        <table style='color: rgb(53, 53, 53); font-size: 12px; margin: 10px 0px; padding: 0px 0px 0px 20px;text-align:left;'>
+                                                            <tr style='padding: 2px 0px 2px 10px;'>
+                                                                <td style='padding: 0px 5px; margin: 0px; line-height: 12px; font-family: Segoe UI, Helvetica, sans-serif;'>&bull;</td>
+                                                                <td style='padding: 0px; margin: 0px; line-height: 12px; font-family: Segoe UI, Helvetica, sans-serif;'>
+                                                                    @Model.ModifiedUser  user details were modified
+                                                                </td>
+                                                            </tr>
+                                                            <tr style='padding: 2px 0px 2px 10px;text-align: left;'>
+                                                                <td style='padding: 0px 5px; margin: 0px; line-height: 12px; font-family: Segoe UI, Helvetica, sans-serif;'>&bull;</td>
+                                                                <td style='padding: 0px; margin: 0px; line-height: 12px; font-family: Segoe UI, Helvetica, sans-serif;'>
+                                                                    @Model.DeletedUser user(s) were deleted
+                                                                </td>
+                                                            </tr>
+                                                            <tr style='padding: 2px 0px 2px 10px;text-align: left;'>
+                                                                <td style='padding: 0px 5px; margin: 0px; line-height: 12px; font-family: Segoe UI, Helvetica, sans-serif;'>&bull;</td>
+                                                                <td style='padding: 0px; margin: 0px; line-height: 12px; font-family: Segoe UI, Helvetica, sans-serif;'>
+                                                                    @Model.DuplicatedUser
+                                                                    duplicate user(s) exists <br />(Username already exists)
+                                                                </td>
+                                                            </tr>
+
+                                                            @{
+                                                                var validUser = ((@Model.UserType).ToString().ToLower() == "activedirectoryuser") ? "<tr style='padding: 2px 0px 2px 10px;'><td style='padding: 0px 5px; margin: 0px; line-height: 12px; font-family: Segoe UI, Helvetica, sans-serif;'> &bull; </td><td style='padding: 0px; margin: 0px; line-height: 12px; font-family: Segoe UI, Helvetica, sans-serif;'>" + @Model.InValidUser + " invalid user(s)exists<br />(Username is Invalid)</td></tr>" : " ";
+                                                            }
+                                                            @validUser
+                                                            <tr style='padding: 2px 0px 2px 10px;text-align: left;'>
+                                                                <td style='padding: 0px 5px; margin: 0px; line-height: 12px; font-family: Segoe UI, Helvetica, sans-serif;'>&bull;</td>
+                                                                <td style='padding: 0px; margin: 0px; line-height: 12px; font-family: Segoe UI, Helvetica, sans-serif;'>
+                                                                    @Model.FailedUsers  user(s) were not added.
+                                                                </td>
+                                                            </tr>
+                                                        </table>
+                                                    </td>
+                                                    <td style='width:200px; height:25px;border:1px solid #d8d8d8;vertical-align:top;'>
+                                                        <table style='color:#353535; font-size:12px; margin:10px 0; padding:0 0 0 20px;text-align:left;'>
+                                                            <tr style='padding: 2px 0px 2px 10px;'>
+                                                                <td style='padding: 0px 5px; margin: 0px; line-height: 12px; font-family: Segoe UI, Helvetica, sans-serif;'>&bull;</td>
+                                                                <td style='padding: 0px; margin: 0px; line-height: 12px; font-family: Segoe UI, Helvetica, sans-serif;'>
+                                                                    @Model.ModifiedGroup  Group Details were modified
+                                                                </td>
+                                                            </tr>
+                                                            <tr style='padding: 2px 0px 2px 10px;'>
+                                                                <td style='padding: 0px 5px; margin: 0px; line-height: 12px; font-family: Segoe UI, Helvetica, sans-serif;'>&bull;</td>
+                                                                <td style='padding: 0px; margin: 0px; line-height: 12px; font-family: Segoe UI, Helvetica, sans-serif;'>
+                                                                    @Model.DeletedGroup  Group(s) were deleted
+                                                                </td>
+                                                            </tr>
+                                                            <tr style='padding: 2px 0px 2px 10px;'>
+                                                                <td style='padding: 0px 5px; margin: 0px; line-height: 12px; font-family: Segoe UI, Helvetica, sans-serif;'>&bull;</td>
+                                                                <td style='padding: 0px; margin: 0px; line-height: 12px; font-family: Segoe UI, Helvetica, sans-serif;'>
+                                                                    @Model.DuplicatedGroup  duplicate group(s) exists <br />(Group name already exists)
+                                                                </td>
+                                                            </tr>
+                                                        </table>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table><table style="text-align: left;">
+                                            <tbody>
+                                                @{
+                                                    var note = (@Model.IsUserLimitExceed == true) ? "<tr><td style='font-family: Segoe UI, Helvetica, sans-serif;'><p style='margin-top:17px; margin-bottom:0px; margin-left:38px; color:#353535; font-size:12px'>Note:</p></td></tr><tr><td style='font-family: Segoe UI, Helvetica, sans-serif;'><p style='margin-top:2px; margin-bottom:5px; margin-left:38px; color:#353535; font-size:12px'>New users could not be added since there are no remaining licenses(s) available.</p></td></tr>" : " ";
+                                                }
+                                                @note
+                                                <tr>
+                                                    <td><p style='margin-top:17px; margin-bottom:0px; margin-left:38px; color:#353535;font-family: Segoe UI, Helvetica, sans-serif;text-align: left; font-size:12px'>Regards,</p></td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <p style='margin-bottom: 64px;font-family: Segoe UI, Helvetica, sans-serif; margin-left: 38px; color: rgb(53, 53, 53); font-size: 12px;'>
+                                                            @Model.OrganizationName
+                                                        </p>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </center>
+</body>
+</html>

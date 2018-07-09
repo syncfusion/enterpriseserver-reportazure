@@ -1,0 +1,79 @@
+﻿@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html class="report-server">
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+</head>
+<body>
+    <input type="hidden" value="@ViewBag.Username" id="userName" />
+    <div class="col-sm-12 col-xs-12 no-padding subscribe-popup-body" id="subscribers-panel">
+        <div class="col-sm-12 col-xs-12 bottom-margin no-padding">
+            <div id="user-search-container" class="col-sm-4 col-xs-4 no-padding no-margin i-search-fields">
+                <select id="user-search" class="selectpicker" data-size="5" data-live-search="true" data-none-results-text="[[[No results match]]]" data-live-search-placeholder="Search" title="[[[Select Users]]]" data-hide-disabled="true" multiple="" data-actions-box="true"></select>
+            </div>
+            <div id="group-search-container" class="col-sm-4 col-xs-4 no-padding no-margin i-search-fields">
+                <select id="group-search" class="selectpicker" data-size="5" data-live-search="true" data-none-results-text="[[[No results match]]]" data-live-search-placeholder="Search" title="[[[Select Groups]]]" data-hide-disabled="true" multiple="" data-actions-box="true"></select>
+            </div>
+            <form id="email-form" class="col-sm-4 col-xs-4 no-margin">
+                <div class="inner-addon right-addon has-feedback">
+                    <input id="external-email" type="text" class="form-control" placeholder="[[[External Recipients]]] ([[[Email address]]])">
+                    <span id="external-submit" class="su-add form-control-feedback" title="[[[Add external recipients]]]"></span>
+                </div>
+                <span id="external-email-validation" class="alertMessages"></span>
+            </form>
+        </div>
+        <div class="col-sm-12 col-xs-12 no-padding" id="selected-users-container">
+            <div class="col-sm-3 col-xs-3 selected-recipients" id="selected-users"></div>
+            <div class="col-sm-2 col-xs-3 export-format" id="export-format-container">
+                <div class="col-sm-12 col-xs-12 export-format" id="export-header"><label class="clslab">[[[Format]]]</label></div>
+                <div class="col-sm-12 col-xs-12 export-format" id="pdfFormat">
+                    <div>
+                        <input type="radio" id="pdf-export" class="css-radio" value="PDF" name="exportFormats" checked="checked" />
+                        <label for="pdf-export" class="pointer normal-font notransition">[[[PDF]]]</label>
+                    </div>
+                </div>
+                <div class="col-sm-12 col-xs-12 export-format" id="excelFormat">
+                    <div>
+                        <input type="radio" id="excel-export" class="css-radio" value="Excel" name="exportFormats" />
+                        <label for="excel-export" class="pointer normal-font notransition">[[[Excel]]]</label>
+                    </div>
+                </div>
+                <div class="col-sm-12 col-xs-12 export-format" id="wordFormat">
+                    <div>
+                        <input type="radio" id="word-export" class="css-radio" value="Word" name="exportFormats" />
+                        <label for="word-export" class="pointer normal-font notransition">[[[Word]]]</label>
+                    </div>
+                </div>
+                <div class="col-sm-12 col-xs-12 export-format" id="htmlFormat">
+                    <div>
+                        <input type="radio" id="html-export" class="css-radio" value="HTML" name="exportFormats" />
+                        <label for="html-export" class="pointer normal-font notransition">[[[HTML]]]</label>
+                    </div>
+                </div>
+                <div class="col-sm-12 col-xs-12 export-format" id="pptFormat">
+                    <div>
+                        <input type="radio" id="ppt-export" class="css-radio" value="PPT" name="exportFormats" />
+                        <label for="ppt-export" class="pointer normal-font notransition">[[[PPT]]]</label>
+                    </div>
+                </div>
+                <div class="col-sm-12 col-xs-12 export-format" id="csvFormat">
+                    <div>
+                        <input type="radio" id="csv-export" class="css-radio" value="CSV" name="exportFormats" />
+                        <label for="csv-export" class="pointer normal-font notransition">[[[CSV]]]</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="selected-users-validation">[[[Select a user, group, or type an email address in the external recipient to schedule]]]</div>
+        <div id="selected-users-info" class="col-sm-5 col-xs-5 no-margin i-search-fields"></div>
+    </div>
+</body>
+</html>
+@Scripts.Render("~/Scripts/SchedulerRecipients")
+<script>
+    var getActiveandInactiveUserUrl = "@Url.Action("getallactivegroupsandusers", "home")";
+    var updateScheduleUrl = "@Url.Action("UpdateSchedule", "scheduler")";
+    var addScheduleUrl = "@Url.Action("AddSchedule", "scheduler")";
+</script>

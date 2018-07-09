@@ -1,0 +1,92 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html class="report-server">
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0">
+    @Styles.Render("~/styles/Comment-action")
+
+    @Scripts.Render("~/scripts/Comment-action")
+</head>
+<body>
+    <div id="messageBox">
+        <div class="message-header"></div>
+        <div class="message-box-close"></div>
+        <div class="message-content text-center"></div>
+        <div class="message-box-btn-holder"></div>
+    </div>
+</body>
+</html>
+
+<style>
+    body {
+        background-color: transparent;
+    }
+
+    #messageBox {
+        width: 100% !important;
+    }
+
+    .message-header {
+        width: 100% !important;
+    }
+
+    .btn-link:focus {
+        text-decoration: none;
+    }
+
+    .btn-link:hover {
+        text-decoration: underline;
+    }
+
+    #messageBox_wrapper {
+        height: 150px !important;
+    }
+
+    .message-content {
+        margin-top: 27px !important;
+    }
+
+    .delete-msg {
+        text-align: left;
+        padding-left: 20px;
+    }
+</style>
+<script>
+    $(document).ready(function () {
+        $("#messageBox").ejDialog({
+            width: (parent.window.innerWidth > 460) ? "450px" : (parent.window.innerWidth - 10),
+			height: "150px",
+            showOnInit: false,
+            allowDraggable: true,
+            enableResize: false,
+            showHeader: false,
+            enableModal: true,
+            close: "onMessageDialogClose"
+        });
+
+        $(document).on('click', '.secondary-button, .message-box-close', function() {
+            parent.$("#delete_popup_iframe").addClass("displayNone");
+        });
+
+        $(document).keypress(function (e) {
+            if (e.keyCode === 13) {
+                $(".btn-danger").click();
+            }
+        });
+
+        window.onkeydown = function (e) {
+            e = e || window.event;
+            if (e.keyCode === 27) {
+                parent.$("#delete_popup_iframe").addClass("displayNone");
+            }
+            if (e.keyCode === 13) {
+                e.preventDefault();
+                $(".btn-danger").click();
+            }
+        }
+    });
+</script>

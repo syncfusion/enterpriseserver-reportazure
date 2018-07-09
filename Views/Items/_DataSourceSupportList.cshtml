@@ -1,0 +1,12 @@
+﻿@{ var model = Model as List<string>; }
+
+<div id="datasource-dropdown" class="bottom-margin30">
+
+    <select id="datasource-type" class="selectpicker no-padding form-control" data-live-search='true' data-size="5" title="[[[Select Data Source]]]" style="width:100%" tabindex="3">
+        @foreach (var dataSource in model)
+        {
+            <option value="@dataSource">@dataSource</option>
+        }
+    </select>
+
+</div>

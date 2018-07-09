@@ -1,0 +1,69 @@
+﻿@{
+    ViewBag.Title = GlobalAppSettings.SystemSettings.OrganizationName + " - [[[ReportView Denied]]]";
+    ViewBag.PublicView = false;
+    if (HttpContext.Current.Request.IsAuthenticated && HttpContext.Current.User != null && HttpContext.Current.User.Identity != null && HttpContext.Current.User.Identity.IsAuthenticated)
+    {
+        Layout = "~/Views/Shared/_Layout.cshtml";
+        var currentUserId = (HttpContext.Current.User as ServerPrincipal).UserId;
+        ViewBag.isAdmin = new GlobalAppSettings().IsAdmin(currentUserId);
+        ViewBag.PublicView = true;
+    }
+    else
+    {
+        Layout = null;
+        ViewBag.PublicViewOnNoAuth = true;
+    }
+}
+
+
+@if (ViewBag.PublicView)
+{
+    @section scripts{
+        @Scripts.Render("~/scripts/bootstrapjs")
+        <script type="text/javascript">
+    function IframeLoad() {
+        var parentRefUrl = (window.location != window.parent.location) ? document.referrer : document.location.origin;
+        if (parentRefUrl == "") {
+            var parentUrl = "";
+        }
+        else {
+            var parentUrl = parentRefUrl.match(/:\/\/(.[^/]+)/)[1];
+        }
+        var iframeRefUrl = window.location.href;
+        var iframeUrl = iframeRefUrl.match(/:\/\/(.[^/]+)/)[1];
+        if (iframeUrl == parentUrl) {
+            if (window.parent.$("#item-viewer").data("ejWaitingPopup") != undefined) {
+                window.parent.$("#item-viewer").ejWaitingPopup("hide");
+            }
+        }
+        if (self != top) {
+            $("#header-area,#menu-area,.message-box-btn-holder").css("display", "none");
+        } else {
+            $(".message-box-btn-holder").css("display", "none");
+        }
+    }
+
+    $(document).ready(function () {
+        IframeLoad();
+     });
+        </script>
+    }
+
+    @section MainSection{
+
+        <div class="report-server">
+            <div class="col-md-12">
+                @if (ViewBag.IsAdmin == true)
+                {
+                    <div class="col-xs-12 text-center" style="color: #ff0000; margin-top: 60px; font-size: 30px">
+                        [[[ Public Reports disabled in the]]] <a href="~/administration/report-settings">[[[report settings.</a>]]]
+                    </div>
+                }
+                else
+                {
+                    <div class="col-xs-12 text-center" style="color: #ff0000; margin-top: 60px; font-size: 30px">[[[Public Reports disabled by the system administrator. Please contact your system administrator to enable this.]]]</div>
+                }
+            </div>
+        </div>
+    }
+}

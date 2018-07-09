@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Syncfusion.EJ.ReportDesigner</name>
+    </assembly>
+    <members>
+        <member name="M:Syncfusion.EJ.ReportDesigner.IReportDesignerController.PostDesignerAction(System.Collections.Generic.Dictionary{System.String,System.Object})">
+            <summary>
+            PostDesignerAction Actions
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:Syncfusion.EJ.ReportDesigner.FileModel">
+            <summary>
+            Class for FileModel
+            </summary>
+        </member>
+        <member name="T:Syncfusion.EJ.ReportDesigner.Internal.JsonModel.DataSource">
+            <summary>
+            Class for DataSource
+            </summary>
+        </member>
+        <member name="P:Syncfusion.EJ.ReportDesigner.Internal.JsonModel.DataSource.IsIntegrated">
+            <summary>
+            Gets or sets the Integrated mode of the data source.
+            </summary>
+        </member>
+        <member name="P:Syncfusion.EJ.ReportDesigner.Internal.JsonModel.DataSource.Username">
+            <summary>
+            Gets or sets the UserName of the data source.
+            </summary>
+        </member>
+        <member name="P:Syncfusion.EJ.ReportDesigner.Internal.JsonModel.DataSource.Password">
+            <summary>
+            Gets or sets the Password for the data source.
+            </summary>
+        </member>
+        <member name="P:Syncfusion.EJ.ReportDesigner.Internal.JsonModel.DataSource.SecurityType">
+            <summary>
+            Gets or sets the Security Type of the data source.
+            </summary>
+        </member>
+    </members>
+</doc>
