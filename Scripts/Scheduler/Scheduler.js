@@ -59,6 +59,9 @@ function editSchedule(id, itemId, itemName, categoryName) {
     itemName != "" ? $(".schedule-popup-title").html(" " + itemName + " - Schedule") : $(".schedule-popup-title").html(" " + itemName + " Schedule");
     $(".schedule-popup-title").attr("title", itemName);
     createdItemId = itemId;
+    reportItemName = itemName;
+    reportItemId = itemId;
+    reportCategoryName = categoryName;
     $.ajax({
         type: "POST",
         url: getScheduleInfoUrl,
@@ -66,7 +69,7 @@ function editSchedule(id, itemId, itemName, categoryName) {
         success: function (data) {
             item = data.ScheduleItem;
             $("#schedule-name").val(item.Name);
-            parent.$("#popup-container_wrapper").ejWaitingPopup("hide");
+            parent.$("#editpopup-container_wrapper").ejWaitingPopup("hide");
             $("#enable-schedule").prop("checked", item.IsEnabled);
             recurrence = item.RecurrenceType;
             endType = item.EndType;
@@ -351,6 +354,8 @@ $(document).keyup(function (e) {
 function closePopupContainer() {
     parent.$("#popup-container").ejDialog("close");
     parent.$("#popup-container_wrapper").ejWaitingPopup("hide");
+    parent.$("#editpopup-container").ejDialog("close");
+    parent.$("#editpopup-container_wrapper").ejWaitingPopup("hide");
 }
 
 //To  stop animation in radio-button on page rendering
@@ -370,6 +375,7 @@ $(document).on("ready", function () {
 function partialPost(url, className) {
     if (!$(".schedule-dialog").hasClass(className)) {
         parent.$("#popup-container_wrapper").ejWaitingPopup("show");
+        parent.$("#editpopup-container_wrapper").ejWaitingPopup("show");
         $.ajax({
             type: "POST",
             url: url,
@@ -562,6 +568,7 @@ function partialPost(url, className) {
                     addTitleForRecurrenceType();
                 }
                 parent.$("#popup-container_wrapper").ejWaitingPopup("hide");
+                parent.$("#editpopup-container_wrapper").ejWaitingPopup("hide");
             }
         });
     }

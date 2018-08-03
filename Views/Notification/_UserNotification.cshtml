@@ -71,8 +71,9 @@
             }
             $scope.bindDisplayText = function(notificationContent) {
                 var appendComment = notificationContent.Url.indexOf("?")>0 ? "&comment=" : "?comment=";
-                var embedUrl = notificationContent.Url.indexOf("/embed/")> 0 ? notificationContent.Url.replace("/embed/","/") : notificationContent.Url;
-                var displayText = "<span class='notification-picture-menu'><img class = 'img-circle' src='@Url.Content("~/Content/Images/ProfilePictures/default-32.png")' width='32' height='32' data-actual-image='/@GlobalAppSettings.SystemSettings.Language/@Url.Action("Avatar", "User")?Username=" + notificationContent.DoneById + "&ImageSize=32' /></span><span class='notification-text-content'>";
+                var viewUrl = "@Url.Action("Index", "FileRender")";
+                var embedUrl = notificationContent.Url.indexOf("/embed/")> 0 ? notificationContent.Url.replace("/embed/","/") : notificationContent.Url.replace("/reports",viewUrl);
+                var displayText = "<span class='notification-picture-menu'><img class = 'img-circle' src='@Url.Content("~/Content/Images/ProfilePictures/default-32.png")' width='32' height='32' data-actual-image='@Url.Action("Avatar", "User")?Username=" + notificationContent.DoneById + "&ImageSize=32' /></span><span class='notification-text-content'>";
                 switch (notificationContent.LogCategory) {
                     case @((int) LogCategory.Comment):
                         switch (notificationContent.LogTypeId)
@@ -124,7 +125,7 @@
                         switch (notificationContent.ItemTypeId)
                         {
                             case @((int) ItemType.Report):
-                                displayText += "<a target='_blank' href='" + embedUrl;                                
+                                displayText += "<a target='_blank' href='" + embedUrl;
                                 displayText +=  appendComment + notificationContent.TargetFieldId;
                                 displayText += "'>" + notificationContent.ItemName +"</a>";
                                 break;

@@ -26,7 +26,7 @@ CREATE TABLE SyncRS_Group(
 	Id SERIAL PRIMARY KEY NOT NULL,
 	Name varchar(255) NOT NULL,
 	Description varchar(1026) NULL,
-	Color varchar(255) NOT NULL DEFAULT 'White',
+	Color varchar(255) NULL,
 	ModifiedDate timestamp NOT NULL,
 	IsActive smallint NOT NULL)
 ;

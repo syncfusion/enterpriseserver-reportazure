@@ -44,7 +44,7 @@
         var sso = "@hasSSO";
         var isAuthenticated = "@isAuthenticated.ToLower()";
         var isPublic = "@isPublic.ToLower()";
-		var publicReportAuthentication = "@HttpContext.Current.Request.IsAuthenticated";
+        var publicReportAuthentication = "@HttpContext.Current.Request.IsAuthenticated";
     </script>
     <style>
         .e-reportviewer * {
@@ -376,12 +376,12 @@
                     }
                     else{
                         reportToken = viewToken;
-                    }                
+                    }
                 }
             }
             if("@isMarkItemsPublic"=="False" &&"@publicreport"=="false")
             {
-                   
+
                 $("#sync_report_viewer").css("display","none");
                 $("#report-view-toogle").css("display","none");
                 $("#serverauthentication").css("display","block");
@@ -390,7 +390,7 @@
             else if("@isMarkItemsPublic"=="True" &&"@publicreport"=="false")
             {
                 $("#sync_report_viewer").css("display","none");
-                $("#report-view-toogle").css("display","none");                    
+                $("#report-view-toogle").css("display","none");
                 $("#serverauthentication").css("display","block");
 
             }

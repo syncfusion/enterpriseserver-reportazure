@@ -412,7 +412,7 @@ $(document).ready(function () {
             $("#avatar-upload-box").ejDialog("close");
         });
 
-        $('.e-uploadinput').attr({ title: "No file selected.", accept: ".png, .jpg ,.jpeg" });
+        $('.e-uploadinput').val("").attr({ title: "No file selected.", accept: ".png, .jpg ,.jpeg" });
 
         if (browser.name.toLowerCase() == "msie" || browser.name.toLowerCase() == "webkit") {
             $(".e-selectpart").addClass("upload-box");

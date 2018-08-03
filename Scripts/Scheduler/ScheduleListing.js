@@ -24,14 +24,14 @@ $(document).ready(function () {
         enableModal: true
     });
 
-    $("#popup-container").ejDialog({
+    $("#editpopup-container").ejDialog({
         allowDraggable: false,
         enableResize: false,
         enableModal: true,
         showHeader: false,
         showOnInit: false,
-        close: "onSchedulerDialogClose",
-        open: "onSchedulerDialogOpen",
+        close: "onSchedulerEditDialogClose",
+        open: "onSchedulerEditDialogOpen",
         width: "875px"
     });
 
@@ -47,7 +47,7 @@ $(document).ready(function () {
         closeOnEscape: true
     });
 
-    $("#popup-container_wrapper").ejWaitingPopup();
+    $("#editpopup-container_wrapper").ejWaitingPopup();
     $("#schedule-delete-confirmation_wrapper").ejWaitingPopup();
     $("#permissionPopup_wrapper").ejWaitingPopup();
 });
@@ -118,7 +118,7 @@ $(window).on("resize", function () {
         $("#search-schedules").css("display", "block");
     }
     gridObj.setWidthToColumns();
-    var scheduleDialogObj = $("#popup-container").data("ejDialog");
+    var scheduleDialogObj = $("#editpopup-container").data("ejDialog");
     if (scheduleDialogObj.isOpened()) {
         scheduleDialogObj._dialogPosition();
     }
@@ -149,7 +149,7 @@ function manageSchedule(scheduleName, dataScheduleId, dataItemName, itemCategory
             ItemId = itemId;
             CategoryName = itemCategoryName;
             ItemName = itemName;
-            $("#popup-container").ejDialog("open");
+            $("#editpopup-container").ejDialog("open");
             break;
         case "remove-schedule":
         case "su su-delete":
@@ -290,12 +290,12 @@ function deleteSuccess() {
     refreshScheduleGrid();
 }
 
-function onSchedulerDialogClose() {
-    $("#popup-container").find("iframe").contents().find("html").html("");
+function onSchedulerEditDialogClose() {
+    $("#editpopup-container").find("iframe").contents().find("html").html("");
 }
-function onSchedulerDialogOpen() {
-    $("#scheduler-popup-iframe").attr("src", window.schedulerIframeUrl + "?itemName=" + ItemName + "&&itemId=" + ItemId + "&&categoryName=" + CategoryName + "&&scheduleId=" + ScheduleId + "&&actionType=Edit");
-    $("#popup-container_wrapper").ejWaitingPopup("show");
+function onSchedulerEditDialogOpen() {
+    $("#editscheduler-popup-iframe").attr("src", window.schedulerIframeUrl + "?itemName=" + ItemName + "&&itemId=" + ItemId + "&&categoryName=" + CategoryName + "&&scheduleId=" + ScheduleId + "&&actionType=Edit");
+    $("#editpopup-container_wrapper").ejWaitingPopup("show");
 }
 function refreshScheduleGrid() {
     var scheduleGridObj = $("#scheduleGrid").data("ejGrid");

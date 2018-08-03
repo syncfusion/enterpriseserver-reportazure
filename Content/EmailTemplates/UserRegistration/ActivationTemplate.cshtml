@@ -17,9 +17,11 @@
                                             <tbody>
                                                 <tr>
                                                     <td>
-                                                        <p style='color: #ffffff; margin-bottom: 0px; margin-top: 15px; margin-left: 535px; font-size: 10px;'>
-                                                            <a href='@Model.BaseUrl/@Model.Language/accounts/login'
-                                                               style='color: #ffffff; font-size: 10px; text-decoration: none;font-family: Segoe UI, Helvetica, sans-serif;'>LOGIN</a>
+                                                        <p style='color: #ffffff; margin-top: 15px; margin-left: 535px; font-size: 10px;'>
+                                                            @{
+                                                                var formatedHyperlink = "<a href='" + @Model.BaseUrl + "//" + @Model.Language + "/accounts/login' style='color: #ffffff; font-size: 10px;font-family: Segoe UI, Helvetica, sans-serif; text-decoration: none;'>LOGIN</a>";
+                                                            }
+                                                            @formatedHyperlink
                                                         </p>
                                                     </td>
                                                 </tr>
@@ -71,8 +73,10 @@
                                                             <tbody>
                                                                 <tr>
                                                                     <td style="background:#2196F3; border:none; color:#fefefe; font-family:Helvetica,Arial,sans-serif;font-size:14px;font-weight:400;hyphens:auto;line-height:12px;word-wrap:break-word">
-                                                                        <a href='@Model.ActivationUrl'
-                                                                           style='border:0 solid #2196F3;background-color:#2196F3; color:#ffffff;display:inline-block; font-family:Segoe UI,Helvetica,sans-serif; font-size:14px;font-weight:600; line-height:12px; margin:0; padding:4px 16px 4px 16px; text-decoration:none'>ACTIVATE</a>
+                                                                        @{
+                                                                            var formatedActivationHyperlink = "<a href='" + @Model.ActivationUrl + "' style='border:0 solid #2196F3;background-color:#2196F3; color:#ffffff;display:inline-block; font-family:Segoe UI,Helvetica,sans-serif; font-size:14px;font-weight:600; line-height:12px; margin:0; padding:4px 16px 4px 16px; text-decoration:none'>ACTIVATE</a>";
+                                                                        }
+                                                                        @formatedActivationHyperlink
                                                                     </td>
                                                                 </tr>
                                                             </tbody>

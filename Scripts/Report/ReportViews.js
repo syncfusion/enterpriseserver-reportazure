@@ -390,7 +390,8 @@ function GetSavedFilter() {
                         }
                         if (pageurl.indexOf("/embed/") > -1) {
                             pageurl = pageurl.replace("/embed/", "/");
-                        }                        
+                        }
+
                         savedFilter += '<li class="saved-view" viewid="' +
                             ViewId +
                             '">' + savedFilterOptions +
@@ -398,7 +399,11 @@ function GetSavedFilter() {
                             ViewId +
                             '" itemId="' +
                             item_Id +
-                            '"><a class="view-link txt-overflow saved-filter-anchor" href="/' +
+                            '"><a class="view-link txt-overflow saved-filter-anchor" href="' +
+                            pageurl +
+                            '?viewid=' +
+                            ViewId +
+                            '" data-url="' +
                             pageurl +
                             '?viewid=' +
                             ViewId +
@@ -407,6 +412,18 @@ function GetSavedFilter() {
                             '</a></label></li>';
                     }
                     $('#saved-filter').append(savedFilter + '</div></div>');
+                    if ($('#saved-filter').length == 0) {
+                        var links = parent.$('.view-link').attr('data-url');
+                        for (var i = 0; i < links.length; i++) {
+                            parent.$('.view-link').eq(i).attr('href', parent.$('.view-link').eq(i).attr('data-url'));
+                        }
+                    }
+                    else {
+                        var links = $('.view-link').attr('data-url');
+                        for (var i = 0; i < links.length; i++) {
+                            $('.view-link').eq(i).attr('href', $('.view-link').eq(i).attr('data-url'));
+                        }
+                    }
                     if (/Safari/.test(navigator.userAgent) && /Apple Computer/.test(navigator.vendor)) {
                         $(".View-link-copy").removeClass("su su-copy");
                         $(".View-link-copy").attr("data-original-title", "");
@@ -601,7 +618,7 @@ $(document).on("click", ".View-link-copy", function (e) {
         if (parentElement.find('.view-link').length) {
             var tempText = document.createElement("textarea");
             tempText.id = "copyTextArea";
-            tempText.innerText = baseUrl + parentElement.find('.view-link').attr('href');
+            tempText.innerText = window.location.origin + parentElement.find('.view-link').attr('href');
             document.querySelector("body").appendChild(tempText);
             var existsTextarea = document.getElementById("copyTextArea");
             existsTextarea.select();

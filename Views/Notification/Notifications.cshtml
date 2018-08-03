@@ -57,7 +57,8 @@
             }
             $scope.bindDisplayText = function(notificationContent, image) {
                 var appendComment = notificationContent.Url.indexOf("?")>0 ? "&comment=" : "?comment=";
-                var embedUrl = notificationContent.Url.indexOf("/embed/")> 0 ? notificationContent.Url.replace("/embed/","/") : notificationContent.Url;
+                var viewUrl = "@Url.Action("Index", "FileRender")";
+                var embedUrl = notificationContent.Url.indexOf("/embed/")> 0 ? notificationContent.Url.replace("/embed/","/") : notificationContent.Url.replace("/reports",viewUrl);
                 var displayImage = "<span class='notification-picture-menu'><img class = 'img-circle' src='@Url.Action("Avatar", "User")?Username=" +
                     notificationContent.DoneById + "&ImageSize=64' width='40' height='40' /></span>";
                 var displayText = "<span class='notification-text-content'>";
@@ -113,11 +114,11 @@
                         {
                             case @((int) ItemType.Report):
 
-                                displayText += "<a target='_blank' href='" + embedUrl;                               
+                                displayText += "<a target='_blank' href='" + embedUrl;
                                 displayText +=  appendComment + notificationContent.TargetFieldId;
                                 displayText += "'>" + notificationContent.ItemName +"</a>";
                                 break;
-                            
+
                             default:
                                 displayText += notificationContent.ItemName;
                                 break;

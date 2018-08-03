@@ -510,7 +510,7 @@
                     <div id="scroll-content">
                         <ul id="listing">
                             <li ng-repeat="category in categories | filter:search | filter:customSearchFilter | orderBy:sortBy" class="category-section">
-                                <a class="category-link" ng-click="getItemsInCategory($event)" data-value="@Html.Encode("/" + ViewBag.Culture + reportUrl + "?category={{category.Name}}")" data-display-category="@((int)DisplayCategory.SpecificCategory)" data-id="{{category.Id}}" data-category="{{category.Name}}" href="@Html.Encode(reportUrl + "?category={{category.Name}}")"><span class="category-name" title="{{category.Name}}" data-toggle="tooltip" data-placement="top" data-name="{{category.Name}}" ng-bind="category.Name"></span></a>
+                                <a class="category-link" ng-click="getItemsInCategory($event)" data-value="@Html.Encode(reportUrl + "?category={{category.Name}}")" data-display-category="@((int)DisplayCategory.SpecificCategory)" data-id="{{category.Id}}" data-category="{{category.Name}}" href="@Html.Encode(reportUrl + "?category={{category.Name}}")"><span class="category-name" title="{{category.Name}}" data-toggle="tooltip" data-placement="top" data-name="{{category.Name}}" ng-bind="category.Name"></span></a>
                                 <span class="pull-right badge item-count" ng-bind="category.ReportsCount"></span>
                                 <ul class="CategorySettings pull-right">
                                     <li class="dropdown" ng-if="category.CreatedById==@(userId) || @(Convert.ToBoolean(HttpContext.Current.Session["IsAdmin"]).ToString().ToLower()) == true || category.CanWrite || category.CanDelete">

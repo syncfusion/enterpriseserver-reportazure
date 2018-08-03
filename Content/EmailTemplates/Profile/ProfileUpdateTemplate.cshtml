@@ -1,5 +1,4 @@
-﻿﻿@model Syncfusion.Server.Base.DataClasses.EmailTemplateModel
-<html>
+﻿<html>
 <head>
     <meta http-equiv='Content-Type' content='text/html; charset=utf-8'>
     <meta name='viewport' content='width=device-width'>
@@ -19,8 +18,10 @@
                                                 <tr>
                                                     <td>
                                                         <p style='color: #ffffff; margin-top: 15px; margin-left: 535px; font-size: 10px;'>
-                                                            <a href='@Model.BaseUrl/@Model.Language/accounts/login'
-                                                               style='color: #ffffff; font-size: 10px; text-decoration: none;font-family: Segoe UI,Helvetica,sans-serif;'>LOGIN</a>
+                                                            @{
+                                                                var formatedHyperlink = "<a href='" + @Model.BaseUrl + "//" + @Model.Language + "/accounts/login' style='color: #ffffff; font-size: 10px;font-family: Segoe UI, Helvetica, sans-serif; text-decoration: none;'>LOGIN</a>";
+                                                            }
+                                                            @formatedHyperlink
                                                         </p>
                                                     </td>
                                                 </tr>

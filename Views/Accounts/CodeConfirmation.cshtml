@@ -71,7 +71,7 @@
                             <div><h5 class="alert-danger text-center"><br /><br />[[[The reset password link expires in two hours!]]]</h5></div>
                             <div class="resend-btn-holder bottom-margin text-center">
                                 <div>
-                                    [[[If it does not arrive]]], <a id="mail-resend" href="/accounts/resend-forgot-password-mail?userId=@Request["userId"]" class="link-hover">[[[click here ]]]</a>[[[to resend the email]]].
+                                    [[[If it does not arrive]]], <a id="mail-resend" href="@(Url.Action("resendforgotpasswordmail","accounts"))?userId=@Request["userId"]" class="link-hover">[[[click here ]]]</a>[[[to resend the email]]].
                                 </div>
                             </div>
                     }
