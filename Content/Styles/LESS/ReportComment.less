@@ -1,0 +1,203 @@
+﻿@import (reference) "Mixins.less";
+#commentModuleContainer {
+        position: fixed;
+        width: 410px;
+        right: 1px;
+        border: 1px solid rgba(0, 0, 0, 0.15);
+        box-shadow: 0px 1px 3px 0px rgba(0, 0, 0, 0.15);
+        border-radius: 4px;
+        border: none;
+        z-index: 1000;
+        top:0px;
+    }
+#viewShare_popup_wrapper.e-dialog.e-dialog-wrap
+    {
+        background:none;
+    }
+#viewShare_popup_wrapper.e-shadow
+{
+    box-shadow:none;
+    .e-dialog-scroller
+    {
+        border-radius:0 !important;
+        border: 0 none;
+    }
+}
+    #viewShare_popup_wrapper_WaitingPopup.e-waitpopup-pane {
+        -moz-user-select: none;
+        background-color: #f5f5f5 !important;
+        color: #333;
+        opacity:0.85;
+    }
+    #viewShare_popup_wrapper_WaitingPopup.e-waitpopup-pane .e-image {
+        background-position: center center;
+        background-repeat: no-repeat;
+        border-radius: 15px 15px 15px 15px;
+        display: block;
+        height: 70px;
+        margin: 0 auto;
+        position: relative;
+        width: 70px;
+    }
+    #viewShare_popup_wrapper_WaitingPopup.e-waitpopup-pane .e-image {
+        background-color: #fff;
+        background-image: url(../../images/waitingpopup.gif);
+    }
+    #viewShare_popup_iframe
+    {
+        border: 0 none;
+        height: 600px;
+        padding: 0;
+        width: 100%;
+    }
+    #viewShare_popup
+    {
+        background: none;
+        left: 381px;
+        padding: 0;
+        display:none;
+        position: absolute;
+        width: 650px;
+        z-index: 9999;
+    }
+    .ViewShare_popup_shadow
+    {
+        background: rgba(0, 0, 0, 0.37) none repeat scroll 0 0;
+        display: block;
+        height: 100%;
+        position: fixed;
+        left: 0;
+        display:none;
+        top: 0;
+        width: 100%;
+        z-index: 999;
+    }
+    
+    #commentModuleContainer_iframe {
+        border: none;
+        border-left: 1px solid rgba(0, 0, 0, 0.15);
+        border-top: 1px solid rgb(200, 200, 200);
+    }
+
+    #widgetCommentModuleContainer {
+        width: 350px;
+        box-shadow: 0px 1px 3px 0px rgba(0, 0, 0, 0.15);
+        border-radius: 4px;
+        z-index: 1000;
+    }
+
+    #widgetCommentModuleContainer_iframe
+    {
+        border: 0.5px solid #D6D6D6;
+        border-radius: 4px;
+    }
+
+    #delete_popup_iframe {
+        position: absolute;
+        z-index: 1000;
+        height: 100%;
+        width: 100%;
+        top: 0px;
+        right: 0px;
+        border: none;
+        z-index: 10000001;
+    }
+
+    .displayNone {
+        display: none;
+    }
+    .e-waitpopup-sharepopup
+    {
+        display: block;
+        height: 600px;
+        left: 0;
+        position: absolute;
+        top: 0;
+        width: 650px;
+        z-index: 10004;
+        background-color: #f5f5f5;
+        opacity:0.85;
+        .e-image
+        {
+              background-color: white;
+            background-image: url("../essentialJs/images/waitingpopup.gif");
+            background-position: center center;
+            background-repeat: no-repeat;
+            border-radius: 15px;
+            display: block;
+            height: 70px;
+            margin: 0 auto;
+            position: relative;
+            text-align: center;
+            width: 70px;
+        }
+    }
+
+.active-icon{
+    color: #3782e3;
+}
+#commentImage_popup_wrapper
+{       
+        position:relative;
+        border: none !important;
+        vertical-align:central !important;
+        display:block;
+        margin:auto;    
+        padding:15px;
+        overflow:visible !important;
+        min-height:1px !important;
+        min-width:1px !important;
+
+}
+#commentImage_popup
+{    
+    border: none !important;
+    overflow:hidden;
+    padding:0px !important;
+}
+#commentImage_popup_image
+{
+     position:absolute;
+}
+.e-scroller,.e-dialog,.e-dialog-scroller
+{
+    border:none !important;
+    border-radius:0px !important;
+}
+#PopupContainer{
+    position:relative;
+    overflow:visible !important;
+    a:hover
+    {
+        text-decoration: none;
+    }
+    a{
+        position:relative;
+        top:-27px;
+        left:17px;
+        float:right;
+        z-index:10000015;
+        text-decoration: none !important;
+        outline:none !important;
+    }
+    .PopupClose {
+            color: @dialog-close-icon-color;
+            float: right;
+
+            &:hover {
+                color: @primary-btn-bg;
+                text-decoration: none;
+            }
+        }
+}
+.header-popup
+{
+    position:absolute !important;
+    z-index:-1 !important;
+}
+
+@media screen and (max-width: 409px) {
+    #commentModuleContainer {
+        width: 100% !important;
+    }
+}

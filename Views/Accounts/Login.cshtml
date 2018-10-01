@@ -1,0 +1,238 @@
+﻿@using Microsoft.Owin.Security
+@using System.Web.Configuration;
+@{
+    Layout = null;
+    var nativeNameTitleCase = Context.GetPrincipalAppLanguageForRequest().GetNativeNameTitleCase();
+    var loginProviders = Context.GetOwinContext().Authentication.GetExternalAuthenticationTypes().ToList();
+    var organizationName = GlobalAppSettings.SystemSettings.OrganizationName;
+    var userSelectedCookieLanguage = TempData["CookieLanguage"] != null;
+
+    var isInvalidUser = !string.IsNullOrWhiteSpace((string)TempData["errorUserName"]) ? "has-error" : !string.IsNullOrWhiteSpace((string)@TempData["User"]) ? "has-error" : "";
+    var isInvalidPassword = !string.IsNullOrWhiteSpace((string)TempData["errorPassword"]) ? "has-error" : "";
+    var authenticationType = Request["windowsauth"];
+    var winauth = string.Empty;
+    var serverauth = string.Empty;
+    if (authenticationType == "1")
+    {
+        serverauth = "Selected";
+    }
+    else if (authenticationType == "2")
+    {
+        winauth = "Selected";
+    }
+    var uname = TempData["currentValue"] as string;
+    var isMobile = DeviceDetection.IsMobile ? "none" : "block";
+
+    var isAzureApplication = GlobalAppSettings.IsAzureApplication();
+}
+
+<script type="text/javascript">
+    if(top != self) top.location.replace(window.top.location);
+</script>
+
+<script>
+    var i_am_ie9 = false;
+</script>
+
+<html class="report-server">
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0">
+    @Styles.Render("~/styles/accounts")
+
+    @if (GlobalAppSettings.SystemSettings.StorageType == (int)StorageType.AzureBlob)
+    {
+        <link rel="icon" href="@GlobalAppSettings.AzureBlob.AzureBlobStorageUri/@GlobalAppSettings.AzureBlob.AzureBlobStorageContainerName/@GlobalAppSettings.GetStorageMode()/Content/Images/Application/@GlobalAppSettings.SystemSettings.FavIcon" onerror="if (this.href != '~/Content/Images/Application/Favicon.png') this.href = '~/Content/Images/Application/Favicon.png';" />
+    }
+    else
+    {
+        <link rel="icon" href="~/Content/Images/Application/@GlobalAppSettings.SystemSettings.FavIcon" onerror="if (this.href != '~/Content/Images/Application/Favicon.png') this.href = '~/Content/Images/Application/Favicon.png';" />
+    }
+    <title>
+        @organizationName - [[[Login]]]
+    </title>
+</head>
+
+<!--[if LT IE  10]>
+    <script>
+        i_am_ie9 = true;
+    </script>
+<![endif]-->
+
+
+<body ng-app="loginApp" ng-controller="loginController">
+    <div id="alert-notification"></div>
+    <div class="login-master">
+        <div class="login-main no-padding">
+            <div id="login-container" class="login-container no-padding">
+                <div class="login-inner-container">
+                    <div class="login-logo">
+                        <div>
+                            @if (GlobalAppSettings.SystemSettings.StorageType == (int)StorageType.AzureBlob)
+                            {
+                                <img src="@GlobalAppSettings.AzureBlob.AzureBlobStorageUri/@GlobalAppSettings.AzureBlob.AzureBlobStorageContainerName/@GlobalAppSettings.GetStorageMode()/Content/Images/Application/@GlobalAppSettings.SystemSettings.LoginLogo" onerror="if (this.src != '/Content/Images/Application/Login_Logo.png') this.src = '/Content/Images/Application/Login_Logo.png';" />
+                            }
+                            else
+                            {
+                                <img src="@Url.Content("~/Content/Images/Application/" + GlobalAppSettings.SystemSettings.LoginLogo)" onerror="if (this.src != '@Url.Content("~/Content/Images/Application/Login_Logo.png")') this.src = '@Url.Content("~/Content/Images/Application/Login_Logo.png")';" />
+                            }
+                        </div>
+                    </div>
+                    <img src="@Url.Content("~/Content/Images/divider_light.png")" class="upper-divider" />
+
+                    <form method="post" id="login-form" name="loginForm" class="login-form" action="@Url.Action("login","Accounts")" onsubmit="return FormValidate();">
+                        <div class="org-name">@GlobalAppSettings.SystemSettings.WelcomeNoteText</div>
+                        <span id="message" class="text-center validation-holder" style="display: @TempData["errorUserStatus"]">
+                            @if (TempData["Message"] as string != "User name is empty")
+                            {
+                                <span>@TempData["Message"]</span>
+                            }
+                        </span>
+                        <span id="message" class="text-center">
+                            <span class="pwd-success">@TempData["User"]</span>
+                        </span>
+                        <div class="login-fields">
+                            <div class="input-field-form">
+                                <input id="hidden-username" type="hidden" value="@uname" />
+                                <input type="text" required md-no-asterisk ng-model="uname" value="@uname" name="username" id="login-username" placeholder="[[[Username]]]" class="form-control" maxlength="100" />
+                                <span id="error-username" style="display: @TempData["errorUserStatus"]">
+                                    @TempData["errorUserName"]
+                                </span>
+                                <span class="validation-holder"></span>
+                                <span class="special-char-msg-login"></span>
+                            </div>
+                            <div class="input-field-form" id="password-field">
+                                <input required md-no-asterisk ng-model="pwd" name="password" type="password" id="login-password" placeholder="[[[Password]]]" class="form-control">
+                                <span class="su su-eye login-password-show show-hide-password special-char"></span>
+                                <span id="error-password" style="display: @TempData["errorPasswordStatus"]">
+                                    @TempData["errorPassword"]
+                                </span>
+                                <span class="validation-holder"></span>
+                            </div>
+                            <div class="login-options">
+                                <div id="remember-me" class="check-box">
+                                    @Html.CheckBox("remember", new { @class = "material-checkbox pull-left", @id = "remember" })
+                                    @Html.Label("remember", "[[[Remember me]]]", new { @class = "disable-text-select", @id = "remember-label" })
+                                </div>
+                                <a href="@Url.Action("ForgotPassword","Accounts")" class="forgot-pwd-link" tabindex="6">[[[Forgot password?]]]</a>
+                            </div>
+                            <button class="login-button login-icon" ng-click="dsAuth()" type="submit" name="Submit" id="login-button">
+                                [[[LOGIN]]]
+                            </button>
+                            <button class="login-button-windows login-style hide" id="login-button-windows">
+                                [[[LOGIN]]]
+                            </button>
+                        </div>
+
+                        <input type="hidden" value="@ViewBag.ReturnURL" id="ReturnURL" name="ReturnURL" />
+                        @if (userSelectedCookieLanguage)
+                        {
+                            <input type="hidden" value="@TempData["CookieLanguage"]" id="cookieLanguage" name="cookieLanguage" />
+                        }
+                    </form>
+                </div>
+                @if ((!isAzureApplication) || (isAzureApplication && loginProviders.Any()))
+                {
+                    if (!DeviceDetection.IsMobile)
+                    {
+                        <img src="~/Content/Images/OR-line.png" class="or-line-desktop" />
+                    }
+                    else
+                    {
+                        <img src="~/Content/Images/OR-Line-Mobile.png" class="or-line-mobile" />
+                    }
+                }
+                @if ((!isAzureApplication) || (isAzureApplication && loginProviders.Any()))
+                {
+                    <div id="alternative-login">
+                        <div class="login-width">[[[Log in using]]]</div>
+
+                        @if (!isAzureApplication)
+                        {
+                            <div class="active-directory-login">
+                                <button id="login-button-windows" class="link-button login-auth button-style" ng-click="winAuth()" type="button">
+                                    <div class="inner">
+                                        <div class="active-directory-icon">
+                                            <i class="su su-ms-adfs pull-left" style="margin: 0 auto"></i>
+                                        </div>
+                                        <div class="active-directory-content">
+                                            <span> [[[Windows Authentication]]]</span>
+                                        </div>
+                                    </div>
+                                </button>
+                                <div id="access-denied" class="error-message validation-holder">
+                                    <span class="su su-login-error"></span>[[[Access is denied]]]
+                                </div>
+                            </div>
+                        }
+
+                        @if (loginProviders.Any())
+                        {
+                            var ssoProvider = loginProviders.First();
+                            using (Html.BeginForm("ExternalLogin", "Accounts", new { returnUrl = ViewBag.ReturnURL }, FormMethod.Post, new { @class = "external-login" }))
+                            {                                    
+                                @Html.Hidden("provider", ssoProvider.AuthenticationType)
+                                <div class="active-directory-login">
+                                    <button type="submit" class="link-button button-style" id="windows-login">
+                                        <div class="inner">
+                                            <div class="active-directory-icon">
+                                                <img src="~/Content/Images/MS-Logo.png" class="pull-left" />
+                                            </div>
+                                            <div class="active-directory-content">
+                                                <span>[[[Microsoft ADFS]]]</span>
+                                            </div>
+                                        </div>
+                                    </button>
+                                </div>
+                            }
+                        }
+                    </div>
+                }
+                <div class="spacer" style="clear: both;"></div>
+            </div>
+            @Html.Partial("../Shared/_Footer")
+        </div>
+    </div>
+
+
+    @Scripts.Render("~/bundles/scripts/accounts")
+
+    <script>
+        var rootUrl = "@Url.Content("~/")";
+        if (rootUrl.toLowerCase() === "/")
+            rootUrl = "";
+        var reportUrl = "@Url.Action("reports","reports")";
+        $(document).ready(function () {
+            if ((("@loginProviders.Any()" == "True") || @DeviceDetection.IsMobile.ToString().ToLower())) {
+                refreshLoginFooter();
+            }
+            if((@Json.Encode(isAzureApplication)) && !(@Json.Encode(loginProviders.Any()))){
+                $(".login-container").addClass("no-external-login");
+            }
+            $(window).resize(function () {
+                refreshLoginFooter();
+            });
+
+            $(window).load(function () {
+                refreshLoginFooter();
+            });
+        });
+        function refreshLoginFooter() {
+            var windowHeight = $(window).innerHeight();
+            var loginContainerTop = $(".login-container").offset().top;
+            var contentHeight = $(".login-container").innerHeight();
+            var adfs = $(".active-directory-login").innerHeight() + 100;
+
+            var footerOuterHeight = $('#base-footer-div').outerHeight();
+            var total = loginContainerTop + contentHeight + adfs + footerOuterHeight;
+            if (total > windowHeight) {
+                $("#base-footer-div").css("bottom", "auto");
+                $('#base-footer-div').css("margin-top", adfs + "px");
+            }
+            else {
+                $("#base-footer-div").css("bottom", "0px");
+            }
+        }
+    </script>
+</body>
+</html>

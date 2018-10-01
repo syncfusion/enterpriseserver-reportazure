@@ -1,0 +1,88 @@
+﻿@{
+    var displayName = HttpContext.Current.Session["displayname"] != null ? HttpContext.Current.Session["displayname"].ToString() : string.Empty;
+
+    var currentUrlLocalPath = HttpContext.Current.Request.Url.LocalPath.ToLower();
+
+    var currentUrl = HttpContext.Current.Request.Url.ToString().TrimEnd('/');
+
+    var isImageRequest = currentUrl.IndexOf(".png", StringComparison.CurrentCultureIgnoreCase) > 0 ||
+                         currentUrl.IndexOf(".jpg", StringComparison.CurrentCultureIgnoreCase) > 0 ||
+                         currentUrl.IndexOf(".gif", StringComparison.CurrentCultureIgnoreCase) > 0;
+
+    var reportsPageUrl = Url.Action("Reports", "Reports");
+    var datasetsPageUrl = Url.Action("Datasets", "Datasets");
+    var datasourcesPageUrl = Url.Action("DataSources", "DataSources");
+    var filesPageUrl = Url.Action("Files", "Files");
+    var schedulePageUrl = Url.Action("Schedules", "Scheduler");
+    var profilePageUrl = Url.Action("ProfilePage", "User");
+
+}
+
+    <aside class="menu-bar" id="app-navigation">
+        <nav id="main-nav">
+            <a id="mobile-profile-picture" href="@profilePageUrl" class="mobile-visible">
+                <div class="mobile-display-name">@displayName</div>
+                <img alt="Profile Picture" width="175" src="@Url.Content("~/User/Avatar?Username=" + ((HttpContext.Current.User as ServerPrincipal).UserId) + "&ImageSize=110")" />
+
+            </a>
+            <ul id="items-menu">
+                @*<li>
+                    <nav-item href="@Url.Action("Reports", "Reports")" url="@currentUrlLocalPath" icon="su-report"></nav-item>
+                </li>*@
+                <li>
+                    <a class="@(currentUrlLocalPath == "/" || currentUrlLocalPath.IndexOf(reportsPageUrl, StringComparison.OrdinalIgnoreCase) > -1 ? "active" : string.Empty )" href="@reportsPageUrl" data-toggle="@(DeviceDetection.IsMobile ? "" : "tooltip")" data-placement="right" data-container="body" title="[[[Reports]]]"> 
+                            <i class="su su-report"></i>
+                            <span class="menu-label mobile-visible">[[[Reports]]]</span>
+                        </a>
+                </li>
+                <li>
+                    <a class="@(currentUrlLocalPath.IndexOf(datasourcesPageUrl, StringComparison.OrdinalIgnoreCase) > -1 ? "active" : string.Empty )" href="@datasourcesPageUrl" data-toggle="@(DeviceDetection.IsMobile ? "" : "tooltip")" data-placement="right" data-container="body" title="[[[Data Sources]]]">
+                        <i class="su su-nav-datasource"></i>
+                        <span class="menu-label mobile-visible">[[[Data Sources]]]</span>
+                    </a>
+                </li>
+                <li>
+                    <a class="@(currentUrlLocalPath.IndexOf(datasetsPageUrl, StringComparison.OrdinalIgnoreCase) > -1 ? "active" : string.Empty )" href="@datasetsPageUrl" data-toggle="@(DeviceDetection.IsMobile ? "" : "tooltip")" data-placement="right" data-container="body" title="[[[Datasets]]]">
+                        <i class="su su-dataset"></i>
+                        <span class="menu-label mobile-visible">[[[Datasets]]]</span>
+                    </a>
+                </li>
+                <li>
+                    <a class="@(currentUrlLocalPath.IndexOf(filesPageUrl, StringComparison.OrdinalIgnoreCase) > -1 ? "active" : string.Empty )" href="@filesPageUrl" data-toggle="@(DeviceDetection.IsMobile ? "" : "tooltip")" data-placement="right" data-container="body" title="[[[Files]]]">
+                        <i class="su su-document"></i>
+                        <span class="menu-label mobile-visible">[[[Files]]]</span>
+                    </a>
+                </li>
+                <li>
+                    <a class="@(currentUrlLocalPath.IndexOf(schedulePageUrl, StringComparison.OrdinalIgnoreCase) > -1 ? "active" : string.Empty )" href="@schedulePageUrl" data-toggle="@(DeviceDetection.IsMobile ? "" : "tooltip")" data-placement="right" data-container="body" title="[[[Schedules]]]">
+                        <i class="su su-nav-schedule"></i>
+                        <span class="menu-label mobile-visible">[[[Schedules]]]</span>
+                    </a>
+                </li>
+
+                <li class="li-logout">
+                    <img src="@Url.Content("~/Content/Images/divider_dark.png")" class="upper-divider" />
+                    <a class="" href="@Url.Action("logout", "accounts")" data-toggle="@(!DeviceDetection.IsMobile ? "" : "tooltip")" data-placement="right" data-container="body" title="[[[Log Out]]]">
+                        <i class="su su-logout"></i>
+                        <span class="menu-label mobile-visible">[[[Log Out]]]</span>
+                    </a>
+                </li>
+            </ul>
+            @if (isImageRequest == false && HttpContext.Current.Session["IsAdmin"] != null && Convert.ToBoolean(HttpContext.Current.Session["IsAdmin"]) && !DeviceDetection.IsMobile)
+            {
+                <ul id="administration-menu" class="mobile-hidden">
+                    <li>
+                        <a class="@(currentUrl.IndexOf(Url.Action("Administration", "Administration"), StringComparison.CurrentCultureIgnoreCase) > 0 && currentUrl.IndexOf(Url.Action("Index", "UserManagement"), StringComparison.CurrentCultureIgnoreCase) < 0 ? "active" : string.Empty)" href="@Url.Action("Administration", "Administration")" data-toggle="tooltip" data-placement="right" data-container="body" title="[[[Settings]]]">
+                            <i class="su su-nav-settings"></i>
+                        </a>
+                    </li>
+                    <li>
+                        <a class="@(currentUrl.IndexOf(Url.Action("Index", "UserManagement"), StringComparison.CurrentCultureIgnoreCase) > 0 ? "active" : string.Empty)" href="@Url.Action("Index", "UserManagement")" data-toggle="tooltip" data-placement="right" data-container="body" title="[[[User Management]]]">
+                            <i class="su su-nav-user-management"></i>
+                        </a>
+                    </li>
+                </ul>
+            }
+        </nav>
+    </aside>
+

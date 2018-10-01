@@ -1,0 +1,191 @@
+﻿﻿@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html class="report-server">
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0">
+    @Styles.Render("~/styles/ScheduleIframe", "~/Styles/SchedulerDialog")
+    <style>
+        body {
+            background-color: white !important;
+            padding: 0.5em 1em !important;
+        }
+    </style>
+</head>
+<body class="schedule-dialog">
+    <input type="hidden" value="@GlobalAppSettings.SystemSettings.DateFormat" id="dateFormat" />
+    <input type="hidden" value="@GlobalAppSettings.SystemSettings.TimeFormat.ToString()" id="timeFormat" />
+   <div class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog col-lg-12 popup-header no-margin no-padding" role="document">
+        <div class="modal-content col-lg-12" id="popup-container" data-spy="scroll">
+            <div class="modal-header no-margin col-sm-12">
+                <div class="col-sm-10 col-xs-10 no-padding pull-left nav-top"><span title="[[[Schedule]]]" class="su su-nav-schedule col-lg-1 col-xs-1 col-sm-1 col-md-1 header-icon"></span><span class="popup-title schedule-popup-title ellipsis col-lg-9 col-xs-9 col-sm-9 col-md-9 no-padding"></span></div>
+                <div class="col-sm-2 col-xs-2 title no-padding"><a href="javascript:void(0);" class="popup-close"><span id="schedule-popup" class="su su-close pull-right" title="[[[Close]]]" data-toggle="tooltip" data-placement="bottom"></span></a>
+                </div>
+                <div id="windowCaption" class="report-name no-padding col-xs-12 link-item-name ellipsis">[[[Choose a report to schedule]]]</div>
+            </div>
+            <div class="modal-body share-popup col-xs-12" id="schedule-dialog" style="margin-top: 5px;">
+                <div class="col-sm-12 col-xs-12 no-margin no-padding schedule-popup-body">
+                    <div class="col-sm-12 col-xs-12 no-padding">
+                        <div class="col-sm-2 col-xs-2 no-padding align-center"><label>[[[Category ]]]<span class="mandatory">*</span></label>
+                        </div>
+                        <div class="category-dropdown col-sm-4 col-xs-4">
+                            <select id="selected_category" data-live-search="true" title='[[[Select category]]]' name="categoryId" class="selectpicker col-sm-4 col-xs-4" data-size="5">
+                                @if (HttpContext.Current.Request.QueryString["itemId"] != null)
+                                {
+                                    <option value="@HttpContext.Current.Request.QueryString["categoryId"]" selected="selected">@HttpContext.Current.Request.QueryString["categoryName"]</option>
+                                }
+                                else
+                                {
+                                    <option value="" selected="selected" class="hide-option" disabled="disabled">[[[Select category]]]</option>
+                                }
+                            </select>
+                            <span id="category-message" class="ErrorMessage validate-error">[[[Please select category]]]</span>
+                            <input type="hidden" id="category_change_validation" name="isCategoryChanged" value="false"/>
+                        </div>
+                    </div>
+                    <div class="col-sm-12 col-xs-12 no-padding">
+                        <div class="col-sm-2 col-xs-2 no-padding align-center"><label>[[[Report ]]]<span class="mandatory">*</span></label>
+                        </div>
+                        <div class="report-dropdown col-sm-4 col-xs-4">
+                            <select id="selected_report" data-live-search="true" title='[[[Select report]]]' name="reportId" class="selectpicker col-sm-4 col-xs-4" data-size="5">
+                                @if (HttpContext.Current.Request.QueryString["itemId"] != "")
+                                {
+                                    <option value="@HttpContext.Current.Request.QueryString["itemId"]" selected="selected">@HttpContext.Current.Request.QueryString["itemName"]</option>
+                                }
+                                else
+                                {
+                                    <option value="" selected="selected" class="hide-option" disabled="disabled">[[[Select Report]]]</option>
+                                }
+                            </select>
+                            <span id="report-message" class="ErrorMessage validate-error">[[[Please select report]]]</span>
+                            <input type="hidden" id="report_change_validation" name="isReportChanged" value="false"/>
+                        </div>
+                    </div>
+                    <div class="col-sm-12 col-xs-12 no-padding">
+                        <div class="col-sm-2 col-xs-2 no-padding align-center"><label>[[[Name ]]]<span class="mandatory">*</span></label>
+                        </div>
+                        <div class="col-sm-4 col-xs-4"><input type="text" class="form-control cls-schname" name="" id="schedule-name" maxlength="100">
+                        </div>
+                        <div class="col-sm-4 col-xs-4 no-padding validate-error" id="schedule-name-error-container">
+                            <div id="schedule-name-validator"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-sm-12 col-xs-12 no-padding parameter-option" style="height: 44px;">
+                        <div class="col-sm-2 col-xs-2 no-padding  align-center">
+                            @Html.Label("enable-parameter", "[[[Set parameters]]]", new { @class = "" })
+                        </div>
+                        <div class="col-sm-5 col-xs-5 pull-left">
+                                <span class="material-switch text-left">
+                                    <input type="checkbox" name="Enabled" id="enable-parameter" />
+                                    <label class="label-primary" for="enable-parameter"></label>
+                                </span>
+                            <div class="reportparameter-tag label-align-center" style="display: none;">
+                                <span class="dropdown-toggle cursor-type" id="report-parameter-info" data-toggle="dropdown"><span class="su su-info" title=""></span></span>
+                                <div class="col-xs-2 dropdown-menu" id="reportparameter-help-message" role="menu">
+                                    [[[The selected report does not have any parameters.]]]
+                                </div>
+                            </div>
+                            <span class="validation-message"></span>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-12 col-xs-12 no-padding">
+                        <div class="col-sm-2 col-xs-2 no-padding  align-center">
+                            @Html.Label("enable-schedule", "[[[Enabled]]]", new {@class = ""})
+                        </div>
+                        <div class="col-sm-10 col-xs-10 pull-left">
+                            <span class="material-switch text-left">
+                                    <input type="checkbox" name="Enabled" id="enable-schedule" />
+                                    <label class="label-primary" for="enable-schedule"></label>
+                                </span>
+                            <span class="validation-message"></span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="modal-footer col-xs-12">
+                <div class="col-sm-12 col-xs-12 no-margin" id="next-container">
+                    <input id="schedule-back" type="button" title="[[[Back]]]" value="[[[Back]]]" tabindex="6" class="secondary-button pull-left button-left">
+                    <input id="schedule-next-cancel" title="[[[Cancel]]]" type="button" value="[[[Cancel]]]" class="secondary-button leftmargin pull-right">
+                    <input id="schedule-next" title="[[[Next]]]" type="button" value="[[[Next]]]" class="primary-button pull-right">
+                </div>
+                <div id="submit-container" class="col-sm-12 col-xs-4 no-margin">
+                    <input id="schedule-back" type="button" title="[[[Back]]]" value="[[[Back]]]" class="secondary-button pull-left button-left">
+                    <input id="schedule-submit-cancel" title="[[[Cancel]]]" type="button" value="[[[Cancel]]]" class="secondary-button leftmargin pull-right button-right">
+                    <input id="schedule-submit" title="[[[Schedule]]]" type="button" value="[[[Schedule]]]" class="primary-button pull-right button-right">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
+@Scripts.Render("~/Scripts/SchedulerDialog")
+<script>
+
+        var updateScheduleUrl = "@Url.Action("UpdateSchedule", "scheduler")";
+        var addScheduleUrl = "@Url.Action("AddSchedule", "scheduler")";
+        var getScheduleInfoUrl = "@Url.Action("GetScheduleInfo", "scheduler")";
+        var checkScheduleNameExistUrl = "@Url.Action("CheckScheduleNameExist", "scheduler")";
+        var rootBaseUrl = '@Url.Content("~/")';
+        var getReportUrl = "@Url.Action("GetItems", "reports")";
+        var getRecurrenceTypeUrl = "@Url.Action("GetRecurrenceType", "scheduler")";
+        var recurrenceType = "@Url.Action("ScheduleRecurrenceType", "scheduler")";
+        var scheduleRecipients = "@Url.Action("RecipientsList", "scheduler")";
+        var passwordOptions = "@Url.Action("ZipFilePassword", "scheduler")";
+        var getCategoryUrl = "@Url.Action("GetCategories", "scheduler")";
+        var categoryName = "@HttpContext.Current.Request.QueryString["categoryName"].ToString()";
+        var itemId = "@HttpContext.Current.Request.QueryString["itemId"].ToString()";
+        var itemName = "@HttpContext.Current.Request.QueryString["itemName"].ToString()";
+        var scheduleId = "@HttpContext.Current.Request.QueryString["scheduleId"].ToString()";
+        var actionType = "@HttpContext.Current.Request.QueryString["actionType"].ToString()";
+		var getExportFileSettingInfoUrl = "@Url.Action("GetExportFileSettingInfo", "Administration")";
+        var getScheduleFileSettingTypeUrl = "@Url.Action("GetScheduleFileSettingType", "Administration")";
+        var getSchedulerParameter = "@Url.Action("SchedulerParameter", "scheduler")";
+        var editSchedulerParameter = "@Url.Action("EditSchedulerParameter", "scheduler")";
+        var reportHasParameterUrl = "@Url.Action("CheckReportHasParameter", "scheduler")";
+        var parameterObj;
+        $(document).ready(function () {
+            $('[data-toggle="tooltip"]').tooltip();
+            if (($(parent.window).width()) > 1400) {
+                $(".schedule-dialog").addClass("lg-schedule-flexible");
+            }
+
+            if (($(parent.window).width()) < 1400) {
+                $(".schedule-dialog").removeClass("lg-schedule-flexible");
+            }
+            addPlacehoder("#schedule-dialog");
+            checkReportHasParameter();
+
+            if (actionType == "Edit") {
+                editSchedule(scheduleId, itemId, itemName, categoryName);
+            } else {
+                createSchedule(itemId, itemName, categoryName);
+            }
+        });
+
+        function checkReportHasParameter() {
+            if (itemId !== 'undefined' && itemId !== "") {
+                $.ajax({
+                    type: "POST",
+                    url: reportHasParameterUrl,
+                    async: false,
+                    data: { itemId: itemId },
+                    success: function (data) {
+                        if (data.Result) {
+                            $(".reportparameter-tag").css("display", "none");
+                        } else {
+                            $("#enable-parameter").prop("disabled", true);
+                            $("#enable-parameter").prop("checked", false);
+                            $(".reportparameter-tag").css("display", "block");
+                        }
+                    }
+                });
+            }
+        }
+</script>
