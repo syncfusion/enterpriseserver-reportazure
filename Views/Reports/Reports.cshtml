@@ -1,0 +1,590 @@
+﻿@using Newtonsoft.Json
+@{
+    var permission = ViewBag.ItemAddOptions as Dictionary<ItemType, bool>;
+    ViewBag.Title = GlobalAppSettings.SystemSettings.OrganizationName + " - [[[Reports]]]";
+    var categories = String.Empty;
+    var isMarkItemsPublic = GlobalAppSettings.SystemSettings.IsMarkItemsPublic;
+    var currentUserId = (HttpContext.Current.User as ServerPrincipal).UserId;
+    ViewBag.isAdmin = new GlobalAppSettings().IsAdmin(currentUserId);
+    var itemName = ViewBag.itemName;
+    var userId = (HttpContext.Current.User as ServerPrincipal).UserId;
+    var reportUrl = Url.Action("Reports", "Reports");
+    var index = reportUrl.LastIndexOf("/reports");
+    var reportCultureUrl = reportUrl;
+    if (index != -1)
+    {
+        reportCultureUrl = reportUrl.Substring(0, index).TrimStart('/') + (reportUrl.Substring(0, index) == "" ? "" : "/") + ViewBag.Culture + "/reports";
+    }
+
+    var isViewRequest = ViewBag.IsViewRequest;
+
+    if (Model != null)
+    {
+        categories = JsonConvert.SerializeObject(Model);
+    }
+
+    var requestType = ViewBag.HasFavoriteItem == true ? DisplayCategory.FavouriteItems : DisplayCategory.AllReports;
+
+    var activeClass = "active";
+    var backButton = "none";
+
+    var sectionName = HttpContext.Current.Request.RequestContext.RouteData.Values["categoryName"];
+
+    var currentUrl = new Uri(ViewBag.Url ?? HttpContext.Current.Request.Url.ToString());
+
+    var url = currentUrl.ToString();
+
+    if (sectionName == null)
+    {
+        sectionName = ViewBag.HasFavoriteItem == true ? "[[[Favorites]]]" : "[[[All Reports]]]";
+    }
+
+    if (ViewBag.CategoryName != null)
+    {
+        requestType = DisplayCategory.SpecificCategory;
+        sectionName = ViewBag.CategoryName;
+        activeClass = String.Empty;
+        backButton = "block";
+    }
+    else if (url.IndexOf("view=public") > -1)
+    {
+        requestType = DisplayCategory.PublicItems;
+        sectionName = "[[[Public Reports]]]";
+        activeClass = String.Empty;
+    }
+    else if (url.IndexOf("view=recent") > -1)
+    {
+        requestType = DisplayCategory.RecentItems;
+        sectionName = "[[[Recent Reports]]]";
+        activeClass = String.Empty;
+    }
+    else if (url.IndexOf("view=favorites") > -1)
+    {
+        requestType = DisplayCategory.FavouriteItems;
+        sectionName = "[[[Favorite Reports]]]";
+        activeClass = String.Empty;
+    }
+    else if (url.IndexOf("view=categories") > -1)
+    {
+        requestType = DisplayCategory.AllCategory;
+        sectionName = "[[[All Categories]]]";
+        activeClass = String.Empty;
+    }
+    else if (url.IndexOf("view=all") > -1)
+    {
+        requestType = DisplayCategory.AllReports;
+        sectionName = "[[[All Reports]]]";
+        activeClass = String.Empty;
+    }
+}
+
+
+
+
+@section styles{
+    @Styles.Render("~/styles/reports-page")
+
+    <style>
+        #items_WaitingPopup {
+            display: none !important;
+        }
+    </style>
+
+}
+
+@section scripts{
+    @Scripts.Render("~/scripts/reports-page")
+<script>
+    var i_am_ie9 = false;
+    var deleteConfirmUrl = "@Url.Action("deleteconfirmation", "items")";
+    var editreportviewUrl = "@Url.Action("editreportview", "reports")";
+    var processOptionUrl = "@Url.Action("ProcessOptions", "reports")";
+    var addReportIframeUrl = "@Url.Action("addreport", "reports")";
+    var getDataSourceDetailsUrl = "@Url.Action("getdatasources", "reports")";
+    var getCategoryItem = "@Url.Action("RefreshCategoryList", "Reports")";
+    var categories = @Html.Raw(categories);
+
+        $(document).ready(function (e) {
+            $("#item-grid-container").ejWaitingPopup();
+            $("[data-toggle='tooltip']").tooltip();
+            refreshScrollerForCategory();
+        });
+
+        $(window).resize(function (e) {
+            $("[data-toggle='tooltip']").tooltip();
+            refreshScrollerForCategory();
+        });
+
+        serverApp.controller("categoryController", ["$scope", "ajaxService", function ($scope, ajaxService) {
+            $scope.categories = window.categories;
+            $scope.showCategories = false;
+            $scope.showReports = false;
+            $scope.enableItemRequest = false;
+            $scope.showCategoryDropdown = false;
+            $scope.showReportDropdown = false;
+            $scope.itemRequestType = "@((int)requestType)";
+
+            if (($scope.itemRequestType == "@((int)DisplayCategory.PublicItems)") || ($scope.itemRequestType == "@((int)DisplayCategory.AllReports)") || ($scope.itemRequestType == "@((int)DisplayCategory.FavouriteItems)") || ($scope.itemRequestType == "@((int)DisplayCategory.RecentItems)") || ($scope.itemRequestType == "@((int)DisplayCategory.AllCategory)")) {
+                $(".tool-tip").hide();
+            }
+
+            $scope.category = "";
+            $scope.search = {
+                "Name": ""
+            };
+
+            $scope.refreshCategorySection = function (categoryId) {
+                ajaxService.getData(getCategoryItem, "")
+                    .then(function (data) {
+                        $scope.categories = data;
+                        refreshScrollerForCategory();
+                    });
+
+                if (categoryId != null) {
+                    $(".item-navigation li").removeClass("active");
+                    $(".all-items").addClass("active");
+                    $(".category-link[data-id='" + categoryId + "']").trigger("click");
+                }
+            }
+
+            $scope.onClickDisplayCategory = function ($event, section) {
+                var gridObj = $("#items").data("ejGrid");
+
+                $("[data-toggle='tooltip']").tooltip();
+                $scope.itemRequestType = $event != "" ? $event.currentTarget.getAttribute("data-display-category") : $(".item-navigation li[data-value='" + section + "']").attr("data-display-category");
+
+                $scope.showOrHidePanels();
+
+                gridObj.model.filterSettings.filteredColumns = [];
+
+                if ($scope.itemRequestType !== "1") {
+                    if ($(".search-area").hasClass("add-background")) {
+                        $(".search-home-section:visible").addClass("show");
+                        if ($(".search-home-section").val() != "") {
+                            var reportScope = angular.element(document.getElementById("server-items-container")).scope();
+                            if (!$("#category-list").is(":visible") || $("#category-list").length <= 0) {
+                                if ($(".all-items").hasClass("active")) {
+                                    gridObj.model.filterSettings.filteredColumns = [{ field: "CategoryName", operator: "equal", value: $("#category-section-name").html() }];
+                                }
+                            }
+                        }
+                    }
+                    gridObj.model.query._params.push({
+                        key: "displayCategory",
+                        value: $scope.itemRequestType
+                    });
+                    gridObj.refreshContent();
+                }
+                else {
+                    $scope.refreshCategorySection();
+                }
+                $("#back-icon").css("display", "none");
+                $("#category-listing").removeClass("specific-dashboards category");
+
+                if ($scope.itemRequestType != "100") {
+                    if ($event != "") {
+                        $("#category-section-name").html($event.currentTarget.getAttribute("data-section")).attr({ "data-original-title": $event.currentTarget.getAttribute("data-section") });
+                    } else {
+                        $("#category-section-name").html($(".item-navigation li[data-value='" + section + "']").attr("data-section")).attr({ "data-original-title": $(".item-navigation li[data-value='" + section + "']").attr("data-section") });
+                    }
+
+                    if (( $scope.itemRequestType == "@((int)DisplayCategory.AllReports)") || ( $scope.itemRequestType == "@((int)DisplayCategory.AllCategory)") || ( $scope.itemRequestType == "@((int)DisplayCategory.RecentItems)") || ( $scope.itemRequestType == "@((int)DisplayCategory.FavouriteItems)")) {
+                        $(".tool-tip").hide();
+                    }
+                }
+                refreshScrollerForCategory();
+            };
+
+            $scope.clearSearch = function () {
+                $("[data-toggle='tooltip']").tooltip();
+
+                if ($scope.search.Name != "")
+                    clearSearch = true;
+                else
+                    clearSearch = false;
+
+                $scope.search.Name = "";
+
+                refreshScrollerForCategory();
+            }
+
+            $scope.getItemsInCategory = function ($event, category) {
+                $("[data-toggle='tooltip']").tooltip();
+                $scope.itemRequestType = $event != "" ? $event.currentTarget.getAttribute("data-display-category") : $(".category-link[data-category='" + category + "']").attr("data-display-category");
+                $scope.category = $event != "" ? $event.currentTarget.getAttribute("data-category") : category;
+
+                $scope.showOrHidePanels();
+
+                var itemGrid = $("#items").data("ejGrid");
+
+                if ($scope.itemRequestType !== "1") {
+                    itemGrid.model.filterSettings.filteredColumns = [{ field: "CategoryName", operator: "equal", value: $scope.category }];
+                    itemGrid.refreshContent();
+                }
+                else {
+                    $scope.refreshCategorySection();
+                }
+
+                if ($scope.itemRequestType == "100") {
+                    $("#category-section-name").html($scope.category).attr({ "data-original-title": $scope.category });
+                }
+                $("#back-icon").css("display", "block");
+                $("#category-listing").addClass("specific-dashboards category");
+
+                var url = $event != "" ? $event.currentTarget.getAttribute("data-value") : $(".category-link[data-category='" + category + "']").attr("data-value");
+                var currentUrl = window.location.pathname + window.location.search;
+                if (currentUrl != url && window.innerWidth >= 1041) {
+                    if (history.pushState != undefined && $event != "") {
+                        history.pushState(null, "", url);
+                    }
+                }
+            };
+
+            $scope.onBackButtonClick = function () {
+                refreshScrollerForCategory();
+                $(".item-list-panel").ejWaitingPopup();
+                $(".item-list-panel").ejWaitingPopup("show");
+                $("[data-toggle='tooltip']").tooltip();
+                $scope.showCategories = true;
+                $scope.showReports = false;
+
+                $scope.refreshCategorySection();
+
+                $("#back-icon").css("display", "none");
+                $("#category-listing").removeClass("specific-dashboards category");
+                $("#category-section-name").html("[[[All Categories]]]").attr({ "data-original-title": "[[[All Categories]]]" });
+                $(".item-list-panel").ejWaitingPopup("hide");
+
+                $scope.showCategoryDropdown = true;
+                $scope.showReportDropdown = false;
+
+                var url = $(".all-items").attr("href");
+                var currentUrl = window.location.pathname + window.location.search;
+                if (currentUrl != url && window.innerWidth >= 1041) {
+                    if (history.pushState != undefined) {
+                        history.pushState(null, "", url);
+                    }
+                }
+            }
+
+            $scope.showOrHidePanels = function () {
+                switch ($scope.itemRequestType) {
+                    case "1":
+                        $scope.showCategories = true;
+                        $scope.showReports = false;
+
+                        $scope.showCategoryDropdown = true;
+                        $scope.showReportDropdown = false;
+                        break;
+
+                    case "2":
+                        $scope.showCategories = false;
+                        $scope.showReports = true;
+
+                        $scope.showCategoryDropdown = false;
+                        $scope.showReportDropdown = true;
+                        break;
+
+                    case "3":
+                        $scope.showCategories = false;
+                        $scope.showReports = true;
+
+                        $scope.showCategoryDropdown = false;
+                        $scope.showReportDropdown = true;
+                        break;
+
+                    case "4":
+                        $scope.showCategories = false;
+                        $scope.showReports = true;
+
+                        $scope.showCategoryDropdown = false;
+                        $scope.showReportDropdown = true;
+                        break;
+
+                    case "8":
+                        $scope.showCategories = false;
+                        $scope.showReports = true;
+
+                        $scope.showCategoryDropdown = false;
+                        $scope.showReportDropdown = true;
+                        break;
+
+                    case "100":
+                        $scope.showCategories = false;
+                        $scope.showReports = true;
+
+                        $scope.showCategoryDropdown = false;
+                        $scope.showReportDropdown = true;
+                        break;
+                }
+            }
+            $scope.showOrHidePanels();
+        }]);
+
+
+</script>
+<!--[if LT IE  10]>
+    <script>
+        i_am_ie9 = true;
+    </script>
+<![endif]-->
+
+}
+@if (Model != null)
+{
+    categories = JsonConvert.SerializeObject(Model);
+}
+
+@section MainSection{
+<input type="text" id="appluncherinputhidden" style="width:0;margin:0;border:0;height:0; display:inherit" />
+<div id="server-items-container" class="server-items-container" ng-cloak ng-controller="categoryController">
+    <span class="su su-sidebar-expand category-collapse pull-left" title="[[[Expand]]]" data-toggle="tooltip" data-placement="top"></span>
+    <div id="item-list-panel" class="item-list-panel pull-left">
+        <ul class="item-navigation" role="tablist">
+            <li class="favorite-items @(ViewBag.Url.IndexOf("/reports?view=favorites") > -1 ? "active" : (@ViewBag.HasFavoriteItem == true ? @activeClass: string.Empty))" href="/@reportCultureUrl?view=favorites" data-value="favorites" title="[[[Favorite Reports]]]" data-toggle="tooltip" data-placement="top" ng-click="onClickDisplayCategory($event)" data-display-category="@((int)DisplayCategory.FavouriteItems)" data-section="Favorite Reports">
+                <a class="tab-header" href="@reportUrl?view=favorites" role="tab">
+                    <i class="su su-favorite"></i>
+                </a>
+            </li>
+            <li class="recent-items @(ViewBag.Url.IndexOf("/reports?view=recent") > -1 ? "active" : String.Empty)" href="/@reportCultureUrl?view=recent" data-value="recent" title="[[[Recent Reports]]]" data-toggle="tooltip" data-placement="top" ng-click="onClickDisplayCategory($event)" data-display-category="@((int)DisplayCategory.RecentItems)" data-section="Recent Reports">
+                <a class="tab-header" href="@reportUrl?view=recent" role="tab">
+                    <i class="su su-recent-dashboards"></i>
+                </a>
+            </li>
+            <li class="all-items @(ViewBag.Url.IndexOf("/reports?view=categories") > -1 ? "active" : String.Empty) @(ViewBag.CategoryName != null ? "active" : String.Empty)" href="/@reportCultureUrl?view=categories" data-value="categories" title="[[[All Categories]]]" data-toggle="tooltip" data-placement="top" ng-click="onClickDisplayCategory($event)" data-display-category="@((int)DisplayCategory.AllCategory)" data-section="All Categories">
+                <a class="tab-header" href="@reportUrl?view=categories" role="tab">
+                    <i class="su su-categoried-dashboard"></i>
+                </a>
+            </li>
+            <li class="public-items @(ViewBag.Url.IndexOf("/reports?view=public") > -1 ? "active" : String.Empty)" href="/@reportCultureUrl?view=public" data-value="public" title="[[[Public Reports]]]" data-toggle="tooltip" data-placement="top" ng-click="onClickDisplayCategory($event)" data-display-category="@((int)DisplayCategory.PublicItems)" data-section="Public Reports">
+                <a class="tab-header" href="@reportUrl?view=public" role="tab">
+                    <i class="su su-public-dashboards"></i>
+                </a>
+            </li>
+            <li class="all-reports @(ViewBag.Url.IndexOf("/reports?view=all") > -1 ? "active" : (@ViewBag.HasFavoriteItem == false ? @activeClass: string.Empty))" href="/@reportCultureUrl?view=all" data-value="all" title="[[[All Reports]]]" data-toggle="tooltip" data-placement="top" ng-click="onClickDisplayCategory($event)" data-display-category="@((int)DisplayCategory.AllReports)" data-section="All Reports">
+                <a class="tab-header" href="@reportUrl?view=all" role="tab">
+                    <i class="su su-all-dashboards"></i>
+                </a>
+            </li>
+            <li class="category-collapse pull-right" title="[[[Collapse]]]" data-toggle="tooltip" data-placement="top">
+                <a class="tab-header" href="">
+                    <i class="su su-sidebar-collapse"></i>
+                </a>
+            </li>
+        </ul>
+
+        <div id="category-listing" class="col-lg-12 col-md-12 col-sm-12 col-xs-12 no-margin @(ViewBag.CategoryName != null ? "category" : string.Empty)">
+            <span class="su su-arrow-back col-lg-1 col-md-1 col-sm-1 col-xs-1 no-padding" id="back-icon" title="[[[Back]]]" ng-click="onBackButtonClick()" style="display: @backButton"></span>
+            @if (sectionName != null)
+            {
+                if (isMarkItemsPublic == false && ViewBag.IsAdmin == true)
+                {
+                    <div class="tool-tip col-lg-1 col-md-1 col-sm-1 col-xs-1" style="padding-left: 7px; cursor:pointer">
+                        <span class="dropdown-toggle" style="display:block; padding-top:8px; " data-toggle="dropdown" id="help-text-default"><span id="error_icon" class="su su-warning-alt" title="" style="color:yellow;"></span></span>
+                        <div class="dropdown-menu" role="menu" id="help-text-message" style="left:18px; width: 300px;padding-left : 5px;margin-left:-11px">
+                            [[[ Public Reports disabled in the]]] <a href="~/administration/report-settings">[[[report settings.</a>]]]
+
+                        </div>
+
+                    </div>
+                }
+                else if (isMarkItemsPublic == false && ViewBag.IsAdmin == false)
+                {
+                    <div class="tool-tip col-lg-1 col-md-1 col-sm-1 col-xs-1" style="padding-left: 7px; cursor:pointer">
+                        <span class="dropdown-toggle" style="display:block; padding-top:8px; " data-toggle="dropdown" id="help-text-default"><span id="error_icon" class="su su-warning-alt" title="" style="color:yellow;"></span></span>
+                        <div class="dropdown-menu" role="menu" id="help-text-message" style="left:18px; width: 300px; padding-left : 5px;margin-left:-11px">
+                            [[[Public Reports disabled by the system administrator. Please contact your system administrator to enable this.]]]
+
+                        </div>
+
+                    </div>
+                }
+                <span id="category-section-name" class="col-lg-5 col-md-5 col-sm-5 col-xs-5" title="@sectionName" data-toggle="tooltip" data-placement="top">@sectionName
+                </span>            }
+            else
+            {
+                <span id="category-section-name" class="col-lg-6 col-md-6 col-sm-6 col-xs-6 no-margin" title="Favorites" data-toggle="tooltip" data-placement="top">[[[Favorites]]]</span>
+            }
+
+            <div style="width:50%; float:right;" class="col-lg-6 col-md-6 col-sm-6 col-xs-6 no-padding text-right sorting" ng-show="showReportDropdown" ng-cloak>
+                <span class="dropdown text-right" id="field">
+                    <button class="btn btn-default dropdown-toggle" data-toggle="dropdown" type="button">
+                        <span class="selected selected-field" data-value="ModifiedDate">[[[Modified Date]]]</span>
+                        <span class="caret"></span>
+                    </button>
+
+                    <ul class="dropdown-menu report-sort">
+                        <li>
+                            <a class="report-sort-options" data-value="Name" href="javascript:void(0);">
+                                <i class="su su-tick"></i>
+                                <span class="search-option">[[[Report Name]]]</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="report-sort-options" data-value="CreatedByDisplayName" href="javascript:void(0);">
+                                <i class="su su-tick"></i>
+                                <span class="search-option">[[[Owner Name]]]</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="report-sort-options" data-value="CreatedDate" href="javascript:void(0);">
+                                <i class="su su-tick"></i>
+                                <span class="search-option">[[[Added Date]]]</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="report-sort-options selected" data-value="ModifiedDate" href="javascript:void(0);">
+                                <i class="su su-tick"></i>
+                                <span class="search-option">[[[Modified Date]]]</span>
+                            </a>
+                        </li>
+                    </ul>
+                </span>
+
+                <span class="su su-sort-down-up text-right" id="order" data-value="descending">
+                    <span class="path1 sorting-icon" style="margin-right: -5px"></span>
+                    <span class="path2 sorting-icon opacity"></span>
+                </span>
+
+                <div class="search-area" role="search">
+                    <span class="su su-search search-item pull-left" data-toggle="@(DeviceDetection.IsMobile ? "" : "tooltip")" data-placement="right" data-container="body" title="[[[Search]]]"></span>
+                    <div id="input-div">
+                        <input type="text" class="search-home-section" id="search-home-page" ng-model="search.Name" placeholder="[[[Search]]]" autocomplete="off" />
+                    </div>
+                    <span class="su su-inner-close close-icon category" ng-click="clearSearch()" id="clear-search" data-toggle="@(DeviceDetection.IsMobile ? "" : "tooltip")" data-placement="right" data-container="body" title="[[[Clear search]]]"></span>
+                </div>
+            </div>
+
+            <div style="width:50%; float:right;" class="col-lg-6 col-md-6 col-sm-6 col-xs-6 no-padding text-right sorting" ng-show="showCategoryDropdown" ng-cloak>
+                <span class="dropdown text-right" id="field">
+                    <button class="btn btn-default dropdown-toggle" data-toggle="dropdown" type="button">
+                        <span class="selected selected-field" data-value="ModifiedDate">[[[Modified date]]]</span>
+                        <span class="caret"></span>
+                    </button>
+
+                    <ul class="dropdown-menu report-sort">
+                        <li>
+                            <a class="report-sort-options" data-value="Name" href="javascript:void(0);">
+                                <i class="su su-tick"></i>
+                                <span class="search-option">[[[Category Name]]]</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="report-sort-options" data-value="CreatedByDisplayName" href="javascript:void(0);">
+                                <i class="su su-tick"></i>
+                                <span class="search-option">[[[Owner name]]]</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="report-sort-options" data-value="CreatedDate" href="javascript:void(0);">
+                                <i class="su su-tick"></i>
+                                <span class="search-option">[[[Added date]]]</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="report-sort-options selected" data-value="ModifiedDate" href="javascript:void(0);">
+                                <i class="su su-tick"></i>
+                                <span class="search-option">[[[Modified date]]]</span>
+                            </a>
+                        </li>
+                    </ul>
+                </span>
+
+                <span class="su su-sort-down-up text-right" id="order" data-value="descending">
+                    <span class="path1 sorting-icon" style="margin-right: -5px"></span>
+                    <span class="path2 sorting-icon opacity"></span>
+                </span>
+
+                <div class="search-area" role="search">
+                    <span class="su su-search search-item pull-left" data-toggle="@(DeviceDetection.IsMobile ? "" : "tooltip")" data-placement="right" data-container="body" title="[[[Search]]]"></span>
+                    <div id="input-div"><input type="text" class="search-home-section" id="search-home-page" ng-model="search.Name" placeholder="[[[Search]]]" autocomplete="off" /></div>
+                    <span class="su su-inner-close close-icon category" ng-click="clearSearch()" id="clear-search" data-toggle="@(DeviceDetection.IsMobile ? "" : "tooltip")" data-placement="right" data-container="body" title="[[[Clear search]]]"></span>
+                </div>
+            </div>
+
+        </div>
+
+        <div id="parent-scroll-element">
+            <div id="scroll-element">
+                <div id="category-list" ng-show="showCategories">
+                    <div id="scroll-content">
+                        <ul id="listing">
+                            <li ng-repeat="category in categories | filter:search | filter:customSearchFilter | orderBy:sortBy" class="category-section">
+                                <a class="category-link" ng-click="getItemsInCategory($event)" data-value="@Html.Encode(reportUrl + "?category={{category.Name}}")" data-display-category="@((int)DisplayCategory.SpecificCategory)" data-id="{{category.Id}}" data-category="{{category.Name}}" href="@Html.Encode(reportUrl + "?category={{category.Name}}")"><span class="category-name" title="{{category.Name}}" data-toggle="tooltip" data-placement="top" data-name="{{category.Name}}" ng-bind="category.Name"></span></a>
+                                <span class="pull-right badge item-count" ng-bind="category.ReportsCount"></span>
+                                <ul class="CategorySettings pull-right">
+                                    <li class="dropdown" ng-if="category.CreatedById==@(userId) || @(Convert.ToBoolean(HttpContext.Current.Session["IsAdmin"]).ToString().ToLower()) == true || category.CanWrite || category.CanDelete">
+                                        <span class="dropdown-toggle su su-settings-1" title="Actions" data-placement="top" data-toggle="dropdown">
+                                        </span>
+                                        <ul class="dropdown-menu" role="menu">
+                                            <li ng-if="category.CreatedById==@(userId) || @(Convert.ToBoolean(HttpContext.Current.Session["IsAdmin"]).ToString().ToLower()) == true">
+                                                <a href="javascript:void(0);" class="item-permissions" title="" data-itemname="{{category.Name}}" data-itemid="{{category.Id}}">
+                                                    <i class="su su-manage-permission"></i>
+                                                    <span>[[[Manage Permissions]]]</span>
+                                                </a>
+                                                <hr />
+                                            </li>
+                                            <li ng-if="category.CanWrite">                                                
+                                                <a class="EditCategory" href="javascript:void(0)" title="" data-item-id="{{category.Id}}">
+                                                    <i class="su su-edit"></i>
+                                                    <span>[[[Update]]]</span>
+                                                </a>
+                                            </li>
+                                            <li ng-if="category.CanDelete">
+                                                <a class="DeleteCategory" data-item-id="{{category.Id}}" title="" data-itemtype="{{category.ItemType}}" data-name="{{category.Name}}" href="javascript:void(0)">
+                                                    <i class="su su-delete"></i>
+                                                    <span>[[[Delete]]]</span>
+                                                </a>
+                                            </li>
+                                        </ul>
+                                </ul>
+                            </li>
+                            <li ng-show="!(categories| filter:search).length" id="category-no-records">[[[No categories available to display]]]</li>
+                        </ul>
+                    </div>
+                    @if (permission[ItemType.Category])
+                    {
+                        <div id="create-new-category" class="col-lg-12">
+                            <div id="create-section" onclick="openNewCategoryPopup()"><span class="su su-add-category add-icon"></span>[[[NEW CATEGORY]]]</div>
+                        </div>
+                    }
+                </div>
+
+            </div>
+        </div>
+
+        <div id="category-info">
+
+        </div>
+        <input type="hidden" id="culture-info" value="@ViewBag.Culture" />
+        <input type="hidden" value="@isMarkItemsPublic.ToString()" id="isMarkItemspublic" />
+        <div id="item-grid-container" data-request-type="{{itemRequestType}}" data data-grid-name="reports" ng-show="showReports">
+            @Html.Partial("../Items/_ItemsList", new ViewDataDictionary { { "gridName", "reports" }, { "categoryName", ViewBag.CategoryName as string }, { "itemName", ViewBag.IsViewRequest == true ? ViewBag.itemName as string : string.Empty }, { "Url", currentUrl.AbsolutePath }, { "category", ViewBag.category }, { "sectionName", ViewBag.sectionName as string }, { "cultureinfo", ViewBag.Culture as string } })
+        </div>
+    </div>
+
+    <div id="item-viewer" class="pull-left">
+        <input id="current-url" type="hidden" data-url="">
+        <iframe id="report_render_iframe" class="report_render" name="targetframe" allowTransparency="true" scrolling="no" frameborder="0" onload=""></iframe>
+        <div id="iframe-content">[[[Select a report to view.]]]</div>
+        @Html.Partial("../Shared/_Footer")
+    </div>
+</div>
+
+<div id="EditCategoryPopup">
+    <iframe id="EditCategoryPopup_iframe" class="categoryDialog"></iframe>
+</div>
+<div id="ReportProcessOption_popup">
+    <iframe id="ReportProcessOption_popup_iframe" class="categoryDialog"></iframe>
+</div>
+<div id="ReportProcessOption_schedule_popup">
+    <iframe id="ReportProcessOption_schedule_popup_iframe" class="categoryDialog"></iframe>
+</div>
+<div id="popup-container" style="display:none">
+    <iframe id="scheduler-popup-iframe" class="datasource-popup-frame"></iframe>
+</div>
+<div id="update-data-source-popup">
+    <iframe id="update-data-source-popup-iframe" class="updateDataSourceDialog"></iframe>
+</div>
+@Html.Partial("../Items/_AddItems")
+}

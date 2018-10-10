@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+@{
+    Layout = null;
+    var reportPath = string.Empty;
+    var categoryName = string.Empty;
+    var reportName = string.Empty;
+    var baseUrl = GlobalAppSettings.SystemSettings.BaseUrl;
+
+    if (!string.IsNullOrWhiteSpace(ViewBag.reportPath))
+    {
+        reportPath = ViewBag.reportPath;
+        categoryName = reportPath.Split('/')[0];
+        reportName = reportPath.Split('/')[1];
+    }
+    else if (!string.IsNullOrWhiteSpace(ViewBag.categoryName) && !string.IsNullOrWhiteSpace(ViewBag.reportName))
+    {
+        categoryName = ViewBag.categoryName;
+        reportName = ViewBag.reportName;
+        reportPath = ViewBag.categoryName + "/" + ViewBag.reportName;
+    }
+
+    var oraganisationName = GlobalAppSettings.SystemSettings.OrganizationName;
+    var displayName = HttpContext.Current.Session["displayname"] != null ? HttpContext.Current.Session["displayname"].ToString() : string.Empty;
+    var emailAddress = HttpContext.Current.Session["emailaddress"] != null ? HttpContext.Current.Session["emailaddress"].ToString() : string.Empty;
+    var notificationCount = new NotificationManagement().GetUnreadNotificationCount();
+    var appLogo = GlobalAppSettings.SystemSettings.StorageType == (int)StorageType.AzureBlob ?
+            GlobalAppSettings.AzureBlob.AzureBlobStorageUri + "/" + GlobalAppSettings.AzureBlob.AzureBlobStorageContainerName + "/" + GlobalAppSettings.GetStorageMode() + "/Content/Images/Application/" + GlobalAppSettings.SystemSettings.MainScreenLogo :
+            Url.Content("~/Content/Images/Application/" + GlobalAppSettings.SystemSettings.MainScreenLogo);
+    var defaultAppLogo = Url.Content("~/Content/Images/Application/Main_Logo.png");
+    var language = Context.GetPrincipalAppLanguageForRequest().GetCultureInfo();
+}
+
+<html lang="en" style="height:100%;width:100%">
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width" />
+    @if (ViewBag.reportName != null)
+    {
+        <title>@ViewBag.reportName - [[[Design Report]]] - @GlobalAppSettings.SystemSettings.OrganizationName</title>
+    }
+    else
+    {
+        <title>Untitled - [[[Design Report]]] - @GlobalAppSettings.SystemSettings.OrganizationName</title>
+    }
+
+    @Styles.Render("~/styles/report-designer")
+    @Styles.Render("~/styles/designer")
+    @Scripts.Render("~/scripts/report-designer")
+
+    <script src="~/Scripts/Localization/ReportDesigner/ej.localetexts.@string.Concat(language,".js")"></script>
+
+    @if (GlobalAppSettings.SystemSettings.StorageType == (int)StorageType.AzureBlob)
+    {
+        <link rel="icon" href="@GlobalAppSettings.AzureBlob.AzureBlobStorageUri/@GlobalAppSettings.AzureBlob.AzureBlobStorageContainerName/@GlobalAppSettings.GetStorageMode()/Content/Images/Application/@GlobalAppSettings.SystemSettings.FavIcon" onerror="if (this.href != '~/Content/Images/Application/Favicon.png') this.href = '~/Content/Images/Application/Favicon.png';" />
+    }
+    else
+    {
+        <link rel="icon" href="~/Content/Images/Application/@GlobalAppSettings.SystemSettings.FavIcon" onerror="if (this.href != '~/Content/Images/Application/Favicon.png') this.href = '~/Content/Images/Application/Favicon.png';" />
+    }
+
+    <style>
+        body {
+            background-color: transparent;
+        }
+
+        #messageBox {
+            width: 100% !important;
+        }
+
+        .message-header {
+            width: 100% !important;
+        }
+
+        .btn-link:focus {
+            text-decoration: none;
+        }
+
+        .btn-link:hover {
+            text-decoration: underline;
+        }
+
+        #messageBox_wrapper {
+            height: 200px !important;
+        }
+
+        .message-content {
+            margin-top: 27px !important;
+        }
+    </style>
+
+<script>
+    var getUserNotificationsPartialViewResultUrl = "@Url.Action("GetUserNotificationsPartialViewResult", "notification")";
+    var controlId = 'container';
+    var isEditReport = false;
+    var webApiQueryDialog = null;
+
+    var categoryName = "@categoryName";
+    var reportName = "@reportName";
+    var datasetName = "@ViewBag.datasetId";
+    var description = "@ViewBag.description";
+    var isEdit = "@ViewBag.isEdit";
+    var isCompatible = "@ViewBag.reportCompatibility";
+    var isCompatiblityTested = "@ViewBag.isReportTested";
+    isCompatiblityTested = isCompatiblityTested.toLowerCase();
+    isEdit = isEdit.toLowerCase();
+    isCompatible = isCompatible.toLowerCase();
+    var pageTitle = "@oraganisationName";
+
+    if(isEdit === "true"){
+        isEditReport = true;
+    }
+
+    var reportDesignerUrl = "@Url.Action("ReportDesigner", "Reports")";
+    var serviceUrl = "@baseUrl.TrimEnd('/')" + "/ReportService/api/Designer";
+    var isSubmit = true;
+    var designerToken = "@ViewBag.AccessToken";
+    $(document).ready(function () {
+        refreshReportDesignerFooter();
+
+        if (isEdit === "true" && isCompatible === "false") {
+            $("#messageBox").ejDialog({
+                width: (parent.window.innerWidth > 460) ? "460px" : (parent.window.innerWidth - 10),
+                height: "200px",
+                showOnInit: false,
+                allowDraggable: true,
+                enableResize: false,
+                showHeader: false,
+                enableModal: true,
+                close: "onMessageDialogClose"
+            });
+            $("body").ejWaitingPopup();
+            $("body").ejWaitingPopup("show");
+            $.ajax({
+                url: "@baseUrl" + '/ReportService/api/Designer/IsReportCompatible',
+                async: true,
+                crossDomain: true,
+                dataType: 'json',
+                type: 'POST',
+                data: JSON.stringify({
+                    reportPath: "/" + "@categoryName" + "/" + "@reportName",
+                    serverUrl: "@baseUrl"
+                }),
+                contentType: 'application/json; charset=utf-8',
+                success: function (data) {
+                    if (data) {
+                        $("body").ejWaitingPopup("hide");
+                        renderDesigner();
+                    }
+                    else {
+                        $("body").ejWaitingPopup("hide");
+                        $("#messageBox .message-content").css("margin-top", window.innerWidth >= 1400 ? "20px" : "");
+                        $("#messageBox").find(".message-box-btn-holder").show();
+                        parent.messageBox("su-report", "[[[Edit Report]]]", "[[[This report is not supported in our Web Report Designer. If you continue to edit the report with Web Report Designer then it will ignore the unsupported report items in report loading. Do you want to continue with Web Report Designer ?]]]", "error", function () {
+                            parent.onCloseMessageBox();
+                            renderDesigner();
+                            $("#messageBox .message-content").css("margin-top", "");
+                        }, function () {
+                            parent.onCloseMessageBox();
+                            window.top.close();
+                            $("#messageBox .message-content").css("margin-top", "");
+                        });
+                    }
+                },
+                error: function (args) {
+                    $("body").ejWaitingPopup("hide");
+                }
+            });
+        }
+        else if ((isEdit === "true" && isCompatible === "true") || isEdit === "false") {
+            renderDesigner();
+        }
+
+        $("#notification-icon").click(function (e) {
+            if (!$("#notification-link").hasClass("open")) {
+                $("#notification-content-area").ejWaitingPopup();
+                $("#notification-content-area").addClass("show");
+                $("#notification-content-area").ejWaitingPopup("show");
+                $("#notification-content-area").removeClass("show");
+                $("#notification-list").attr("src", getUserNotificationsPartialViewResultUrl);
+            }
+        });
+
+        $(document).on("click", "#btn-item-preview", function () {
+            var designer = $('#' + controlId).data('ejReportDesigner');
+            $("#btn-item-design").show();
+            $(".design-item").css("display", "block");
+            $("#btn-item-preview").hide();
+            $(".preview-item").css("display", "none");
+            designer.showPreview();
+        });
+        $(document).on("click", "#btn-item-design", function () {
+            var designer = $('#' + controlId).data('ejReportDesigner');
+            $("#btn-item-preview").show();
+            $(".preview-item").css("display", "block");
+            $("#btn-item-design").hide();
+            $(".design-item").css("display", "none");
+            designer.showDesign();
+        });
+
+        $(window).resize(function () {
+            var windowHeight = $(window).innerHeight();
+            var headerHeight = $("#designer-header").outerHeight();
+            var containerHeight = windowHeight - headerHeight;
+            $("#container").height(containerHeight);
+            $("#container").width($(window).width());
+        });
+    });
+
+    function refreshReportDesignerFooter() {
+        var windowHeight = $(window).innerHeight();
+        var headerHeight = $("#designer-header").outerHeight();
+        var containerHeight = windowHeight - headerHeight;
+        $("#container").height(containerHeight);
+        $("#container").width($(window).width());
+    }
+
+    function renderDesigner() {
+        var qryOptions = null;
+        $(document.body).bind('submit', $.proxy(this.formSubmit, this));
+        $(window).bind('beforeunload', $.proxy(this.windowUnload, this));
+
+        if (!webApiQueryDialog && window.QueryInputDialog) {
+            webApiQueryDialog = new QueryInputDialog($('#' + controlId));
+        }
+        if (webApiQueryDialog) {
+            qryOptions = {
+                toolbarRendering: $.proxy(webApiQueryDialog.renderToolbarItems, webApiQueryDialog),
+                datasetLoaded: $.proxy(webApiQueryDialog.enableButton, webApiQueryDialog),
+                dataModeChanged: $.proxy(webApiQueryDialog.enableButton, webApiQueryDialog)
+            };
+        }
+
+        var designerModel = {
+            serviceUrl: serviceUrl,
+            ajaxBeforeLoad: ajaxBeforeSend,
+            create: $.proxy(controlInitialized, this),
+            saveReportClick: $.proxy(saveMenuClick, this),
+            openReportClick: $.proxy(openMenuClick, this),
+            toolbarRendering: $.proxy(renderToolbar, this),
+            toolbarClick: $.proxy(toolbarClick, this),
+            reportModified: $.proxy(reportModified, this),
+            reportOpened: $.proxy(reportOpened, this),
+            reportSaved: $.proxy(reportSaved, this),
+            destroy: $.proxy(destroyComponent, this),
+            serviceAuthorizationToken: designerToken,
+            toolbarSettings: {
+                items: ej.ReportDesigner.ToolbarItems.All & ~ej.ReportDesigner.ToolbarItems.Preview  & ~ej.ReportDesigner.ToolbarItems.EditDesign
+            },
+            queryDesignerOptions: qryOptions,
+            locale: '@language',
+            reportDataExtensions: window.dataExtensions,
+            reportItemExtensions: window.itemExtensions
+        };
+
+        var designer = new ejReportDesigner($('#' + controlId), designerModel);
+    }
+
+
+    function controlInitialized(args) {
+        if(isEditReport){
+            this.openServerReport(reportName,categoryName);
+        }
+        else{
+            var designer = $('#' + controlId).data('ejReportDesigner');
+
+            var hasDataSet = datasetName && datasetName.length > 0 ? true : false;
+
+            var hasCatagory = categoryName && categoryName.length > 0 ? true : false;
+
+            if(hasDataSet){
+                designer.newServerReport(reportName,datasetName);
+            }
+            else if(hasCatagory){
+                designer.newServerReport(reportName);
+            }
+            else{
+                this.newUntitledReport();
+            }
+        }
+    }
+
+    function reportOpened(args) {
+        isEditReport = true;
+        var newTitle = args.reportName.replace(".rdl", "") + ' - Design Report -' + pageTitle;
+        document.title = newTitle;
+        if (!args.isServerReport) {
+            history.pushState('', newTitle, window.location.href.split("report-designer")[0] + "report-designer");
+        }
+        $('.edit-report').html(args.reportName.replace(".rdl", ""));
+    }
+
+
+    function reportModified(args) {
+        $('#' + controlId + '_file_div').css('display', 'none');
+        if (args.isModified)
+        {
+            $('.report-status').html('(Edited)');
+        }
+    }
+
+    function ajaxBeforeSend(args) {
+        if (args.actionType === 'openServerReport'
+            || args.actionType === 'saveServerReport'
+            || args.actionType === 'createServerReport') {
+            console.log('send');
+            var reportServerData = {
+                'category': categoryName,
+                'reportName': reportName,
+                'description': description,
+                'isEdit' : isEditReport
+            };
+
+            args.data = reportServerData;
+        }
+    }
+
+    function formSubmit(args) {
+        isSubmit = false;
+    }
+
+    function destroyComponent(args) {
+    }
+
+    function saveReport() {
+        var designer = $('#' + controlId).data('ejReportDesigner');
+
+        if(designer.isNewServerReport())
+        {
+            designer.saveReport(reportName);
+            $('.report-status').html('(Saved)');
+        }
+        else{
+            designer.saveReport();
+            $('.report-status').html('(Saved)');
+        }
+    }
+
+    function reportSaved(args) {
+        isEditReport = true;
+    }
+
+    function newUntitledReport() {
+        var designer = $('#' + controlId).data('ejReportDesigner');
+        categoryName = null;
+        datasetName = null;
+        description = null;
+        reportName = 'Untitled';
+        isEditReport = false;
+        var newTitle = 'Untitled - Design Report -' + pageTitle;
+        document.title = newTitle;
+        history.pushState('', newTitle, window.location.href.split("report-designer")[0] + "report-designer");
+        $('.edit-report').html(reportName);
+        designer.newReport(reportName);
+    }
+
+    function saveAsServer(name, category) {
+        var designer = $('#' + controlId).data('ejReportDesigner');
+        categoryName = category;
+        reportName = name;
+        description = null;
+        var newTitle = reportName + '- Design Report -' + pageTitle;
+        document.title = newTitle;
+        history.pushState('', newTitle, window.location.href.split("report-designer")[0] + "report-designer" + '/' + categoryName + '/' + reportName);
+        $('.edit-report').html(reportName);
+        designer.saveReport(reportName);
+    }
+
+    function openServerReport(name, category) {
+        var designer = $('#' + controlId).data('ejReportDesigner');
+        categoryName = category;
+        reportName =  name;
+        description = null;
+        var newTitle = reportName + '- Design Report -' + pageTitle;
+        document.title = newTitle;
+        var trimmedCategoryName = categoryName.split('/');
+        if (trimmedCategoryName.length > 1) {
+            categoryName = trimmedCategoryName[1];
+        }
+        history.pushState('', newTitle, window.location.href.split("report-designer")[0] + "report-designer" + '/' + categoryName + '/' + reportName);
+        $('.edit-report').html(reportName);
+        designer.openReport(reportName);
+    }
+
+    function browseReport(browseType) {
+        var designer = $('#' + controlId).data('ejReportDesigner');
+        var proxy = this;
+        designer.showOpenSaveReportDialog(browseType, function (args) {
+            if (args['type'] === 'Open') {
+                proxy.openServerReport(args.name, args.category);
+            }
+            else if (args['type'] === 'Save') {
+                proxy.saveAsServer(args.name, args.category);
+            }
+        });
+    }
+
+    function openMenuClick(args) {
+        switch (args.select) {
+        case 'Device':
+            this.browseFromClient();
+            args.cancel = true;
+            break;
+        case 'Server':
+            this.browseReport(ej.ReportDesigner.BrowseType.Open);
+            args.cancel = true;
+            break;
+        }
+    }
+
+    function saveMenuClick(args) {
+        switch (args.select) {
+        case 'Save':
+            this.saveReport();
+            args.cancel = true;
+            break;
+        case 'SaveAsDisk':
+            this.downloadReport();
+            args.cancel = true;
+            break;
+        case 'SaveAsServer':
+            this.browseReport(ej.ReportDesigner.BrowseType.Save);
+            args.cancel = true;
+            break;
+        }
+    }
+
+    function browseFromClient() {
+        var designer = $('#' + controlId).data('ejReportDesigner');
+        designer.openReportFromDevice();
+    }
+
+    function downloadReport() {
+        var designer = $('#' + controlId).data('ejReportDesigner');
+        designer.saveToDevice();
+    }
+
+    function windowUnload(args) {
+        var designer = $('#' + controlId).data('ejReportDesigner');
+
+        if (designer.hasReportChanges() && isSubmit) {
+            return 'Changes you made may not be saved';
+        }
+
+        isSubmit = true;
+    }
+
+    function toolbarClick(args) {
+        var designer = $('#' + controlId).data('ejReportDesigner');
+        switch (args.click) {
+        case 'New':
+            args.cancel = true;
+            if(designer.hasReportChanges()){
+                if (confirm("Do you want to discard the modifed changes?") == true) {
+                    this.newUntitledReport();
+                }
+            }
+            else {
+                this.newUntitledReport();
+            }
+            break;
+        case 'Open':
+            break;
+        case 'Save':
+            break;
+        case 'Undo':
+            break;
+        case 'Redo':
+            break;
+        case 'Cut':
+            break;
+        case 'Copy':
+            break;
+        case 'Paste':
+            break;
+        case 'Delete':
+            break;
+        case 'ZoomIn':
+            break;
+        case 'ZoomOut':
+            break;
+        case 'GridLine':
+            break;
+        case 'Setting':
+            break;
+        case 'External':
+            break;
+        }
+    }
+
+    function renderToolbar(args) {
+        var designer = $('#' + controlId).data('ejReportDesigner');
+
+        var $statustoolBar = ej.buildTag('ul.e-reportdesigner-toolbarul', '', { 'float': 'right' }, {});
+        var fileLbl = ej.buildTag('div', '', { 'display': 'block', 'padding': '8px 0px' }, { 'id': controlId + '_file_div' });
+        var spanlbl = ej.buildTag('span', 'Unsaved Changes.  ', {
+            'color': 'red', 'font-size': '13px',
+            'font-family': 'Segoe UI'
+        }, {
+            'id': controlId + '_status_span'
+        });
+
+
+        fileLbl.append(spanlbl);
+        $statustoolBar.append(fileLbl);
+        $(args.target).append($statustoolBar);
+
+    }
+
+</script>
+</head>
+<body style="overflow: hidden; position: static; margin: 0; padding: 0; height: 100%; width: 100%">
+    <div id="designer-header">
+        <div class="user-account">
+            <div id="account-profile" class="dropdown no-padding">
+                <span class="dropdown-toggle" data-toggle="dropdown">
+                    <span class="profile-picture">
+                        <img alt="Profile Picture" src="@Url.Content("~/User/Avatar?Username=" + ((HttpContext.Current.User as ServerPrincipal).UserId) + "&ImageSize=64")" />
+                    </span>
+                </span>
+                <div class="dropdown-menu" id="profile-info-section" role="menu">
+                    <div class="profile-info col-lg-12">
+                        <table>
+                            <tbody>
+                            <tr>
+                                <td class="profile-picture-area">
+                                    <img alt="Profile Picture" src="@Url.Content("~/User/Avatar?Username=" + ((HttpContext.Current.User as ServerPrincipal).UserId) + "&ImageSize=64")" />
+                                </td>
+                                <td class="profile-info-area">
+                                    <ul class="no-margin no-padding">
+                                        <li id="profile-name">@displayName</li>
+                                        <li id="profile-email">@emailAddress</li>
+                                    </ul>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="profile-buttons">
+                        <a href="@Url.Action("ProfilePage", "User")" class="profile-menu-action col-lg-6" title="[[[View my profile]]]">
+                            [[[PROFILE]]]
+                        </a>
+                        <a href="@Url.Action("logout", "accounts")" class="profile-menu-action col-lg-6" title="[[[Log Out]]]">
+                            [[[LOG OUT]]]
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="pull-right" id="notification-section">
+            <div id="notification-link" class="dropdown no-padding">
+                <span id="notification-icon" class="su su-notification-alert dropdown-toggle" data-toggle="dropdown">
+                    @if (notificationCount != 0)
+                    {
+                        <span id="notification-indicator"></span>
+                    }
+                </span>
+                <div id="notification-content-area" class="dropdown-menu notification-content-area" role="menu">
+                    <div id="notification-header">
+                        <span> [[[Notifications]]]</span>
+                        <a href="@Url.Action("getusernotifications", "notification")">[[[View all]]]</a>
+                    </div>
+                    <iframe id="notification-list" class="notification-list"></iframe>
+                </div>
+            </div>
+        </div>
+        <div class="share-item">
+             <button id="btn-item-share" type="button" class="dropdown-toggle">
+                 <span>[[[Share]]]</span>
+             </button>
+        </div>
+        <div class="preview-item">
+            <button id="btn-item-preview" type="button" class="dropdown-toggle preview-rep">
+                <span>[[[Preview]]]</span>
+            </button>
+        </div>
+        <div class="design-item">
+            <button id="btn-item-design" type="button" class="dropdown-toggle preview-rep">
+                <span>[[[Design]]]</span>
+            </button>
+        </div>
+        <div class="main-screen-logo">
+            <a href="@Url.Action("reports", "reports")" class="home-link" data-toggle="tooltip" data-placement="bottom" title="@GlobalAppSettings.SystemSettings.OrganizationName">
+                <img alt="Application Logo" id="application-logo" src="@appLogo" onerror="if (this.src !== '@defaultAppLogo') this.src = '@defaultAppLogo';" />
+            </a>
+        </div>
+        <div class="report-name">
+                <span class="edit-report">@ViewBag.reportName</span>
+                <span class="report-status">[[[(Edited)]]]</span>
+                <span class="report-unsave" style="display:none">Unsaved Changes</span>
+        </div>  
+    </div>
+    <div id="container"></div>
+    @if (ViewBag.isEdit)
+    {
+    <div id="messageBox">
+        <div class="message-header"></div>
+        <div class="message-box-close"></div>
+        <div class="message-content text-center"></div>
+        <div class="message-box-btn-holder" style="display:none"></div>
+    </div>
+    }
+</body>
+</html>

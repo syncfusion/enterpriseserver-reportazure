@@ -1,0 +1,60 @@
+﻿@{
+    ViewBag.Title = GlobalAppSettings.SystemSettings.OrganizationName + " - [[[Data Sources]]]";
+}
+
+
+@model List<ItemDetail>
+
+
+@section styles{
+    @Styles.Render("~/styles/dataSources")
+}
+
+@section scripts{
+    
+    @(!DeviceDetection.IsMobile ? Scripts.Render("~/scripts/datasource-page") : Scripts.Render("~/scripts/datasource-page-mobile"))    
+    <script>
+        var editdatasourceviewIframeUrl = "@Url.Action("editdatasourceview", "datasources")";
+    </script> 
+}
+ 
+}
+
+@section MainSection{
+    <div id="item-grid-container" data-grid-name="datasources" class="row admin-page-container">
+        <input type="hidden" class="page-name" data-content="[[[DATA SOURCES]]]">
+        @if (!DeviceDetection.IsMobile)
+        {
+            <div class="import-area admin-page-header">
+                <h2 class="page-title">[[[DATA SOURCES]]]</h2>
+            </div>
+            <div class="admin-page-body">
+                <div id="search-area" class="pull-right">
+                    <input type="text" id="search-items" class="pull-left no-margin" placeholder="[[[Search data sources]]]" />
+                    <span class="su close-icon su-inner-close pull-left no-margin clear-search" id="clear-search" title="[[[Clear search]]]"></span>
+                    <span class="su su-search search-item pull-left no-margin" title="[[[Search data sources]]]"></span>
+                </div>
+
+                <div class="grid-container grid">
+                    @Html.Partial("../Items/_ItemsGrid", new ViewDataDictionary { { "gridName", "datasources" } })
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="grid-container grid">
+                @Html.Partial("../Items/_ItemsGridForMobile", new ViewDataDictionary { { "gridName", "datasources" } })
+            </div>
+        }
+    </div>
+    <div id="datasource-edit-popup">
+        <iframe id="datasource-edit-popup-iframe" class="datasource-popup-frame" onload="IframeLoad();"></iframe>
+    </div>
+    <div id="popup-container">
+        <iframe id="scheduler-popup-iframe"></iframe>
+    </div>
+    @if (!DeviceDetection.IsMobile)
+    {
+        @Html.Partial("../Items/_AddItems")
+    }
+}

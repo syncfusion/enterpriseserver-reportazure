@@ -1,0 +1,106 @@
+﻿@{ var model = Model as Dictionary<ItemType, bool>; }
+<script>   
+    var addReportIframeUrl = "@Url.Action("addreport", "reports")";
+</script>
+<script>
+    $(document).ready(function () {
+        $("[data-title=tooltip]").tooltip();
+    });
+</script>
+
+@if (model[ItemType.Report] || model[ItemType.Datasource] || model[ItemType.File] || model[ItemType.Category] || model[ItemType.Widget] || model[ItemType.Schedule] || model[ItemType.Dataset])
+{
+    <div id="upload-item-section" class="dropdown no-padding pull-right">
+        <div class="upload-items">
+            <button id="btn-item-create" type="button" class="dropdown-toggle" style="" data-toggle="dropdown" data-title="tooltip" data-placement="bottom" title="[[[Upload]]]">
+                    <span>[[[UPLOAD]]]</span>
+                    <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu" role="menu" id="createButtonOptions">
+                @if (model[ItemType.Report])
+                {
+                    <li id="CreateReport">
+                        <a href="javascript:void(0)" title="" id="upload-report" data-action="Upload">
+                            <i class="su su-report"> </i>
+                            <span>[[[Report]]]</span>
+                        </a>
+                    </li>
+                }               
+                @if (Model[ItemType.Dataset])
+                {
+                    <li id='CreateDataSet'>
+                        <a href="javascript:void(0)" title="" id="upload-dataset" data-action="Upload">
+                            <i class="su su-dataset"> </i>
+                            <span>[[[Dataset]]]</span>
+                        </a>
+                    </li>
+                }
+                @if (Model[ItemType.File])
+                {
+                    <li id='CreateFile' onclick="openNewFilePopup()">
+                        <a href="javascript:void(0)" title="">
+                            <i class="su su-document"> </i>
+                            <span>[[[File]]]</span>
+                        </a>
+                    </li>
+                }
+            </ul>
+        </div>
+        <div class="create-items">
+            @if (model[ItemType.Category] || model[ItemType.Report] || model[ItemType.Dataset] || Model[ItemType.Schedule])
+            {
+                <button id="btn-item-upload" type="button" class="dropdown-toggle" style="" data-toggle="dropdown" data-title="tooltip" data-placement="bottom" title="[[[Create]]]">
+                    <span>[[[CREATE]]]</span>
+                    <span class="caret"></span>
+                </button>
+            }
+            <ul class="dropdown-menu" role="menu" id="createButtonOptions">
+                @if (model[ItemType.Category])
+                {
+                    <li id='CreateCategory' onclick="openNewCategoryPopup()">
+                        <a href="javascript:void(0)" title="">
+                            <i class="su su-folder"> </i>
+                            <span>[[[Category]]]</span>
+                        </a>
+                    </li>
+                }
+                @if (model[ItemType.Report])
+                {
+                    <li id="CreateReport" class="dropdown-submenu">
+                        <a href="javascript:void(0)" title="" id="create-report" data-action="Create">
+                            <i class="su su-report"> </i>
+                            <span>[[[Report]]]</span>
+                        </a>
+                    </li>
+                } 
+                @if (model[ItemType.Datasource])
+                {
+                    <li id='create_datasource' onclick="openNewDataSourcePopup()">
+                        <a href="javascript:void(0)" title="">
+                            <i class="su su-datasource"> </i>
+                            <span>[[[Data Source]]]</span>
+                        </a>
+                    </li>
+                }
+                @if (Model[ItemType.Dataset])
+                {
+                    <li id='Create-DataSet'>
+                        <a href="javascript:void(0)" title="" id="create-dataset" data-action="Create">
+                            <i class="su su-dataset"> </i>
+                            <span>[[[Dataset]]]</span>
+                        </a>
+                    </li>
+                }
+                @if (model[ItemType.Schedule])
+                {
+                    <li id="create_schedule">
+                        <a href="javascript:void(0)" title="">
+                            <i class="su su-nav-schedule"> </i>
+                            <span>[[[Schedule]]]</span>
+                        </a>
+                    </li>
+                }
+            </ul>
+        </div>
+    </div>
+}

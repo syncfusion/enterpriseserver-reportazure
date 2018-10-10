@@ -1,0 +1,71 @@
+﻿<script type="text/javascript">
+    initializeFileSetting(1);
+    function EnablePasswordCondition() {
+        EnablePasswordConditionSection();
+        $("#password-condition-container").show();
+        $("#default-password-info").hide();
+    };
+    function DisablePasswordCondition() {
+        DisablePasswordConditionSection();
+        $("#password-condition-container").hide();
+        $("#default-password-info").show();
+    };
+
+    $(document)
+        .ready(function () {
+            $("#default-password, #custom-password").prop("disabled", "disabled");
+            $("#enable-password-protection").prop("disabled", "disabled");
+        });
+</script>
+
+<div id="schedule-settings-body" class="admin-page-body schedule-password-body">
+    <div class="col-lg-12 col-md-12 col-sm-12 check-box-label form-group">
+        @Html.CheckBox("enable-compression", false, new { @class = "material-checkbox  enable-compression-checkbox" })
+        @Html.Label("enable-compression", "[[[Enable File Compression]]]", new { @class = "clspadleft app-checkbox-label normal-font notransition" })
+    </div>
+    <div class="col-lg-12 col-md-12 col-sm-12 no-padding form-group">
+        @Html.Label("enable-password-protection-label", "[[[Enable Password Protection]]]", new { @class = "col-lg-4 col-md-4 col-sm-4 app-textbox-label no-margin notransition" })
+        <div class="col-lg-8 col-md-8 col-sm-8 no-margin form-input-field pull-left switch-align">
+            <span class="material-switch text-left">
+                <input type="checkbox" id="enable-password-protection" name="isPasswordProtected" />
+                <label for="enable-password-protection" class="label-primary cls-margin-top"></label>
+            </span>
+        </div>
+    </div>
+    <div class="col-lg-12 col-md-12 col-sm-12 no-padding form-group">
+        @Html.Label("password-type-label", "[[[Password Type]]]", new { @class = "col-lg-4 col-md-4 col-sm-4  app-textbox-label no-margin password-label-align" })
+        <div class="col-lg-8 col-md-8 col-sm-8 no-margin form-input-field pull-left">
+            <div class="pull-left col-lg-4 col-md-4 col-sm-4 no-margin no-padding">
+                @Html.RadioButton("password-type", "", new { @class = "css-radio", @checked = "checked", onclick = "DisablePasswordCondition()", id = "default-password" })
+                @Html.Label("default-password", "[[[Default Password]]]", new { @class = "pull-left app-radio-label normal-font cls-margin-top8 notransition" })
+            </div>
+            <div class="pull-left col-lg-4 col-md-4 col-sm-4 no-margin no-padding">
+                @Html.RadioButton("password-type", false, new { @class = "css-radio", onclick = "EnablePasswordCondition()", id = "custom-password" })
+                @Html.Label("custom-password", "[[[Custom Password]]]", new { @class = "pull-left app-radio-label normal-font cls-margin-top8 notransition" })
+            </div>
+            <div class="bg-info col-lg-8 col-md-8 col-sm-8" id="default-password-info">
+                [[[Default password creation uses the first four characters of your Username and the last four characters of your email address.]]]
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-12 col-md-12 col-sm-12 no-padding form-group" id="password-condition-container" style="display: none">
+        @Html.Label("password-condition-label", "[[[Password Condition]]]", new { @class = "col-lg-4 col-md-4 col-sm-4  app-textbox-label no-margin notransition passwordcondition-label-align" })
+        <div class="col-lg-8 col-md-8 col-sm-8 no-margin form-input-field pull-left" id="password-condition-section">
+            <div class="password-condition-section col-lg-12 col-md-12 col-sm-12 cls-margin-bot">
+                <div class="i-search-fields  pull-left">
+                    <select data-width="50px" class="select-picker no-padding field-key-position" disabled="disabled" data-size="2"></select>
+                </div>
+                <div class="pull-left cls-margin">
+                    @Html.TextBox("field-key-count", "", new { @class = "form-control field-key-count pull-left numeric-text-box", disabled = "disabled" })
+                </div>
+                <div class="pull-left">
+                    @Html.Label("field-key-label", "[[[character of]]]", new { @class = "pull-left app-textbox-label no-margin notransition" })
+                    <div class="i-search-fields  pull-left cls-padleft10">
+                        <select data-width="90px" class="selectpicker select-picker field-key" disabled="disabled" data-size="4"></select>
+                    </div>
+                </div>
+                <span class="su-add pwd-condition-btn app-textbox-label no-margin" data-toggle="tooltip" data-placement="right" title="[[[Add New Condition]]]"></span>
+            </div>
+        </div>
+    </div>
+</div>

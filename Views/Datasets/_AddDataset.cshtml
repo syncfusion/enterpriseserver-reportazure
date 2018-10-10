@@ -1,0 +1,189 @@
+﻿<!DOCTYPE html>
+@{
+    Layout = null;
+    var isSuccess = ViewData["IsSuccess"] != null ? Convert.ToBoolean(ViewData["IsSuccess"]) : false;
+    var datasourceList = ViewData["DatasourceList"] as List<ItemDetail>;
+}
+<html class="report-server">
+@if (isSuccess == false)
+{
+
+    <head>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0">
+        <title>
+            @ViewBag.Title
+        </title>
+
+        <style>
+            [contentEditable=false]:empty:not(:focus):before {
+                content: attr(data-text);
+            }
+        </style>
+
+        @Styles.Render("~/styles/add-datasets")
+
+        @Scripts.Render("~/scripts/add-datasets")
+
+        <script>
+            var datasetselectdatasourceUrl ="@Url.Action("DatasetSelectDataSource", "Datasets")";
+            var isDatasetExistUrl = "@Url.Action("IsDatasetExist", "Datasets")";
+            var addDatasetUrl = "@Url.Action("AddSharedDataset", "Datasets")";
+            var deletetemporarydatasetUrl = "@Url.Action("DeleteTemporaryDataset", "Datasets")";
+            $(document).ready(function () {
+                $(document).on("click", ".PopupClose", function (e) {
+                    $("#addDataSetDom").find("iframe").contents().find("html").html("");
+                    eDialog = parent.$("#addDataSetDom").data("ejDialog");
+                    eDialog.close();
+                });
+            });
+
+            function load() {
+                $('[data-toggle="tooltip"]').tooltip();
+                if (($(parent.window).width()) > 1400) {
+                    $(".dialog").addClass("iframe");
+                }
+
+                if (($(parent.window).width()) < 1400) {
+                    $(".dialog").removeClass("iframe");
+                }
+            }
+        </script>
+    </head>
+    <body onload="load();">
+    <input type="hidden" id="publishedFileName" value="none">
+    <input type="hidden" id="rsd_filename" value="Browse file path">
+    <form name="addItemForm" id="addItemForm" method="post" action="@Url.Action("AddDataset", "Datasets")" enctype="multipart/form-data" autocomplete="off">
+
+        <div id="PopupContainer" class="col-lg-12 no-padding dialog">
+            <div class="col-xs-12 dialog-header">
+                <span class="su su-dataset Head-icon"></span>
+                @{
+                    if (ViewBag.Action == "Upload")
+                    {
+                        <span class="PopupTitle">[[[Upload Dataset]]]</span>
+                    }
+                    else if (ViewBag.Action == "Create")
+                    {
+                        <span class="PopupTitle">[[[Create Dataset]]]</span>
+                    }
+                }
+                <a href="javascript:void(0);" title="Close" data-toggle="tooltip" data-placement="bottom" class="PopupClose"><span class="su su-close"></span></a>
+            </div>
+
+            <div class="dialog-body file-content-height col-xs-12 no-padding">
+                <div id="general-file-container">
+                    <table width="100%" cellspacing="10px" cellpadding="0" border="0">
+                        <tbody>
+                        <tr>
+                            <td class="col-md-2 text-right"><div class="bottom-margin30">[[[Name]]]<span class="mandatory">*</span></div></td>
+                            <td class="col-md-10">
+                                <span>
+                                            <input type="text" id="file_name" autofocus name="dataSetName" maxlength="255" class="form-control bottom-margin30 edit-datasetname-field text" tabindex="1">
+                                            <span id="validate-name" class="validation-message text"></span>
+                                            <div id="plugin_validation" class="validation-message text"></div>
+                                        </span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-xs-2 text-right"><div class="bottom-margin30">[[[Description]]]</div></td>
+                            <td class="col-xs-10">
+                                <textarea style="resize: none;" name="description" class="form-control bottom-margin30 text" id="file-description" maxlength="1024" tabindex="2"></textarea>
+                                <span class="notification help-text">
+                                            <span class="help-text-mandatory">*</span>[[[1024 characters maximum]]]
+                                        </span>
+                            </td>
+                        </tr>
+                            
+                        @{
+                            if (ViewBag.Action == "Upload")
+                            {
+                                <tr>
+                                    <td class="col-xs-2 text-right"><div class="bottom-margin30" id="rsd-label">[[[RSD File]]]<span class="mandatory">*</span></div></td>
+                                    <td class="col-xs-10">
+                                        <iframe id="dataset_upload_iframe" style="border: none;" src="@Url.Action("UploadDatasetView", "Datasets")" scrolling="no" tabindex="-1"></iframe>
+                                        <span id="validate-file" class="validation-message text"></span>
+                                        <span id="uploadValidation" class="ErrorMessage text"></span>
+                                    </td>
+                                </tr>
+                            }
+                            else if (ViewBag.Action == "Create")
+                            {
+                                <tr>
+                                    <td class="col-xs-2">
+                                        <div class="bottom-margin35 text-right">[[[DataSource]]]</div>
+                                    </td>
+                                    <td class="col-xs-10">
+                                        <div class="dropdown datasource-selection">
+                                            <select id="selected-datasource" data-live-search="true" title='[[[Select DataSource]]]' name="dataset-name" class="selectpicker form-control bottom-margin30" data-none-results-text="[[[No results match]]]" data-size="3">
+                                                <option value="" selected="selected">[[[Select DataSource]]]</option>
+                                                @for (var item = 0; item < datasourceList.Count; item++)
+                                                {
+                                                    var selected = @datasourceList[item].Id == null ? "selected" : ""; ;
+                                                    <option value="@datasourceList[item].Id" @selected>@datasourceList[item].Name</option>
+                                                }
+                                            </select>
+                                            <span id="DatasetMessage" class="ErrorMessage hide">[[[Please select Dataset]]]</span>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        </tbody>
+                    </table>
+                    @{
+                        if (ViewBag.Action == "Upload")
+                        {
+                            <div class="col-xs-12 DisplayNone" id="datasource_list">
+                                <h4 class="heading">[[[Select Data Source]]]</h4>
+                                <table id="datasource_list_table"></table>
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+
+            <div class="dialog-footer">
+                <div class="pull-right">
+                    @if (ViewBag.Action == "Create")
+                    {
+                        <input type='button' title="" value="[[[Create]]]" id="create-report-dataset" class="btn primary-button small-right-margin" disabled="disabled">
+                    }
+                    else if (ViewBag.Action == "Upload")
+                    {
+                        <input type="button" title="" class="btn primary-button" id="publish_file" onclick="addDataSet()" value="[[[Save]]]" tabindex="4" disabled/>
+                    }
+                    <input type="button" title="" class="btn secondary-button" id="cancelAddDataSet" onclick="closeNewDatasetAddPopup()" value="[[[Cancel]]]" tabindex="5">
+                    <input type="submit" class="hide-content" style="display: none;"/>
+                </div>
+            </div>
+        </div>
+    </form>
+    <form action="@Url.Action("DatasetDesigner", "Reports")" id="create-report-form" method="POST" target="_blank">           
+        <input id="dataset-description" name="description" type="hidden" value="">
+        <input id="dataset-name" name="datasetName" type="hidden" value="">
+        <input id="datasource-name" name="datasourceName" type="hidden" value="">
+        <input id="edit-value" name="isEdit" type="hidden" value="">
+    </form>
+    </body>
+
+}
+else
+{
+
+    <head>
+        @Styles.Render("~/styles/add-datasets")
+
+        @Scripts.Render("~/scripts/add-datasets")
+    </head>
+
+}
+</html>
+@if (ViewBag.Action == "Create")
+{
+    <script>
+        $(function () {
+                window.parent.$('#addDataSetDom_wrapper').ejWaitingPopup("hide");
+        });
+    </script>
+}

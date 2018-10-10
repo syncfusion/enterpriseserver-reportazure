@@ -1,0 +1,117 @@
+﻿@{
+    var displayName = HttpContext.Current.Session["displayname"] != null ? HttpContext.Current.Session["displayname"].ToString() : string.Empty;
+    var emailAddress = HttpContext.Current.Session["emailaddress"] != null ? HttpContext.Current.Session["emailaddress"].ToString() : string.Empty;
+    var notificationCount = new NotificationManagement().GetUnreadNotificationCount();
+    var appLogo = GlobalAppSettings.SystemSettings.StorageType == (int)StorageType.AzureBlob ?
+                    GlobalAppSettings.AzureBlob.AzureBlobStorageUri + "/" + GlobalAppSettings.AzureBlob.AzureBlobStorageContainerName + "/" + GlobalAppSettings.GetStorageMode() + "/Content/Images/Application/" + GlobalAppSettings.SystemSettings.MainScreenLogo :
+                    Url.Content("~/Content/Images/Application/" + GlobalAppSettings.SystemSettings.MainScreenLogo);
+    var defaultAppLogo = Url.Content("~/Content/Images/Application/Main_Logo.png");
+
+    var requestUrl = HttpContext.Current.Request.Url.ToString();
+    var absolutePath = HttpContext.Current.Request.Url.AbsolutePath;
+}
+
+<script>
+    $(document).ready(function () {
+        $("[data-title=tooltip]").tooltip();
+    });
+</script>
+
+<div class="header-bar col-lg-12 col-md-12 col-sm-12">
+    <div class="main-screen-logo mobile-hidden">
+        <a href="@Url.Action("reports", "reports")" class="home-link" data-toggle="tooltip" data-placement="bottom" title="@GlobalAppSettings.SystemSettings.OrganizationName">
+            <img alt="Application Logo" id="application-logo" src="@appLogo" onerror="if (this.src !== '@defaultAppLogo') this.src = '@defaultAppLogo';" />
+        </a>
+    </div>
+    <div class="mobile-menu-icon text-center mobile-visible collapsed" data-toggle="collapse" aria-expanded="false" data-target="#menu-area">
+        <span>
+            <i class="su su-mobile-menu-icon"></i>
+        </span>
+    </div>
+    <div class="org-name-wrapper">
+        <h5 class="header-org-name">@GlobalAppSettings.SystemSettings.OrganizationName</h5>
+    </div>
+
+    <div class="user-account mobile-hidden">
+        <div id="account-profile" class="dropdown no-padding">
+            <span class="dropdown-toggle" data-toggle="dropdown">
+                <span class="profile-picture">
+                    <img alt="Profile Picture" src="@Url.Content("~/User/Avatar?Username=" + ((HttpContext.Current.User as ServerPrincipal).UserId) + "&ImageSize=64")" />
+                </span>
+            </span>
+            <div class="dropdown-menu" id="profile-info-section" role="menu">
+                <div class="profile-info col-lg-12">
+                    <table>
+                        <tbody>
+                            <tr>
+                                <td class="profile-picture-area">
+                                    <img alt="Profile Picture" src="@Url.Content("~/User/Avatar?Username=" + ((HttpContext.Current.User as ServerPrincipal).UserId) + "&ImageSize=64")" />
+                                </td>
+                                <td class="profile-info-area">
+                                    <ul class="no-margin no-padding">
+                                        <li id="profile-name">@displayName</li>
+                                        <li id="profile-email">@emailAddress</li>
+                                    </ul>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="profile-buttons">
+                    <a href="@Url.Action("ProfilePage", "User")" class="profile-menu-action col-lg-6" title="[[[View my profile]]]">
+                        [[[PROFILE]]]
+                    </a>
+                    <a href="@Url.Action("logout", "accounts")" class="profile-menu-action col-lg-6" title="[[[Log Out]]]">
+                        [[[LOG OUT]]]
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @if (!DeviceDetection.IsMobile)
+    {
+        <div class="pull-right" id="notification-section">
+            <div id="notification-link" class="dropdown no-padding">
+                <span id="notification-icon" class="su su-notification-alert dropdown-toggle" data-toggle="dropdown">
+                @if (notificationCount != 0)
+                {
+                    <span id="notification-indicator"></span>
+                }
+            </span>
+                <div id="notification-content-area" class="dropdown-menu notification-content-area" role="menu">
+                    <div id="notification-header">
+                        <span> [[[Notifications]]]</span>
+                        <a href="@Url.Action("getusernotifications", "notification")">[[[View all]]]</a>
+                    </div>
+                    <iframe id="notification-list" class="notification-list"></iframe>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="pull-right" id="notification-section">
+            <a id="notification-link" class="notification-mobile-link no-padding" href= "@Url.Action("getusernotifications", "notification")">
+                <span id="notification-icon" class="su su-notification-alert">
+                    @if (notificationCount != 0)
+                    {
+                        <span id="notification-indicator"></span>
+                    }
+                </span>
+            </a>
+        </div>
+    }
+    @if ((absolutePath == "/" ||
+                            absolutePath == Url.Content("~/") ||
+                            requestUrl.IndexOf("/reports", StringComparison.CurrentCultureIgnoreCase) > 0 ||
+                            requestUrl.IndexOf("/data-sources", StringComparison.CurrentCultureIgnoreCase) > 0 ||
+                            requestUrl.IndexOf("/datasets", StringComparison.CurrentCultureIgnoreCase) > 0 ||
+                            requestUrl.IndexOf("/files", StringComparison.CurrentCultureIgnoreCase) > 0 ||
+                            requestUrl.IndexOf("/schedules", StringComparison.CurrentCultureIgnoreCase) > 0) &&
+                            (ViewBag.ItemAddOptions != null && !DeviceDetection.IsMobile)
+                        )
+    {
+        Html.RenderPartial("~/Views/Items/_ItemAddOptions.cshtml", ViewBag.ItemAddOptions as Dictionary<ItemType, bool>);
+    }
+</div>

@@ -1,0 +1,156 @@
+﻿@{
+    Layout = null;
+    var datasourceList = ViewData["ItemsList"] as List<ItemDetail>;
+    var dataSourceNames = ViewData["DataSourceName"] as List<DataSourceInfo>;
+    var categoryList = ViewData["CategoryList"] as List<CategoryDetail>;
+    var currentCategoryName = HttpContext.Current.Request.QueryString["categoryName"].ToString();
+    var datasourcePermissionFlag = false;
+}
+<!DOCTYPE html>
+<html class="report-server">
+@if (dataSourceNames.Count != 0)
+{
+    <head>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0">
+        <title>
+            Update Data Source(s)
+        </title>
+        <script>
+            var updatedatasource = "@Url.Action("updatedatasource", "reports")";
+            var getdatasourcedetailsofreport = "@Url.Action("GetDataSourceDetailsbyReportId", "reports")";
+            var getdatasourceUrl = "@Url.Action("GetItems", "datasources")";
+            var getReportUrl = "@Url.Action("GetReportWithSharedDataSource", "reports")";
+            var rootBaseUrl = '@Url.Content("~/")';
+            var categoryName = "@HttpContext.Current.Request.QueryString["categoryName"].ToString()";
+            var itemId = "@HttpContext.Current.Request.QueryString["itemId"].ToString()";
+            var itemName = "@HttpContext.Current.Request.QueryString["itemName"].ToString()";
+        </script>
+        @Styles.Render("~/styles/update-datasource")
+        @Scripts.Render("~/scripts/update-datasource")
+
+        <script type="text/javascript">
+        $(function () {
+            $("#new-datasource-tab-content").css("height", window.innerHeight - 234 + "px");
+            window.parent.ShowWaitingProgress("#update-data-source-popup_wrapper", "hide");
+        });
+        </script>
+
+    </head>
+    <body style="background-color:white" id="datasource-update">
+        <div class="col-md-12 header-menu dialog-header">
+            <span class="su su-nav-datasource Head-icon"></span>
+            <span class="PopupTitle modal-title">[[[Update Data Source(s)]]]</span>
+            <div class="dashboard-name report-name"><div class="float-left">[[[Update data sources connected to]]]&nbsp;</div><div class="item-name" data-toggle="tooltip" data-placement="bottom" data-original-title="@ViewBag.FullItemName">@ViewBag.FullItemName</div></div>
+            <a href="javascript:void(0);" title="[[[Close]]]" class="PopupClose" onclick="closeUpdateDataSourcePopup()"><span class="su su-close"></span></a>
+        </div>
+    <div id="datasource-popup-module">
+        <div class="col-sm-12 col-xs-12 category-module">
+            <div class="col-sm-2 col-xs-2 no-padding align-center"><label>[[[Category ]]]<span class="mandatory">*</span></label></div>
+            <div class="category-dropdown col-sm-4 col-xs-4">
+                <select id="selected_category" data-live-search="true" title='[[[Select category]]]' name="categoryId" class="selectpicker col-sm-4 col-xs-4" data-size="5">
+                    <option value="" selected="selected" class="hide-option" disabled="disabled">[[[Select category]]]</option>
+                    @foreach (CategoryDetail category in categoryList)
+                    {
+                        if (category.Name == currentCategoryName)
+                        {
+                            <option value="@category.Id" selected="selected">@category.Name</option>
+                        }
+                        else
+                        {
+                            <option value="@category.Id">@category.Name</option>
+                        }
+                    }
+                </select>
+                <span id="category-message" class="ErrorMessage validate-error" style="display: none">[[[Please select category]]]</span>
+                <input type="hidden" id="category_change_validation" name="isCategoryChanged" value="false" />
+            </div>
+        </div>
+        <div class="col-sm-12 col-xs-12 report-module">
+            <div class="col-sm-2 col-xs-2 no-padding align-center"><label>[[[Report ]]]<span class="mandatory">*</span></label></div>
+            <div class="report-dropdown col-sm-4 col-xs-4">
+                <select id="selected_report" data-live-search="true" title='[[[Select report]]]' name="reportId" class="selectpicker col-sm-4 col-xs-4" data-size="5">
+                    <option value="" selected="selected" class="hide-option" disabled="disabled">[[[Select Report]]]</option>
+                </select>
+                <span id="report-message" class="ErrorMessage validate-error" style="display: none">[[[Please select report]]]</span>
+                <input type="hidden" id="report_change_validation" name="isReportChanged" value="false" />
+
+            </div>
+        </div>
+        <div class="datasource-btns dialog-footer col-xs-12">
+            <div class="col-xs-7 message-area">
+                <div class="col-md-12 error-message"></div>
+                <div class="col-md-12 success-message"></div>
+            </div>
+            <div class="buttons-area pull-right no-padding">
+                <input type='button' title='' id="share-datasource" value='[[[Update]]]' class='btn primary-button' data-item-id=@ViewData["ItemId"] data-mapid="name" tabindex="17">
+                <input type='button' title='' value='[[[Cancel]]]' class='btn secondary-button' onclick="closeUpdateDataSourcePopup()" tabindex="18">
+            </div>
+        </div>
+        <form id='new-datasource-tab-content' class='col-md-12 update-datasource-tab-contents' autocomplete="off">
+            <div class='col-md-12 no-top-margin new-datasource-content-holder' id='new-datasource-content-holder'>
+                <table id="report-datasources" width="100%" cellspacing="10px" cellpadding="0" border="0">
+                    <tr>
+                        <th>[[[Data Source Name]]]</th>
+                        <th colspan="2">[[[Select Data Source]]]</th>
+                    </tr>
+                    @for (var i = 0; i < dataSourceNames.Count; i++)
+                    {
+                        datasourcePermissionFlag = false;
+                        <tr>
+                            <td>
+                                @dataSourceNames[i].DataSourceName
+                            </td>
+                            <td>
+                                <div id="data-source-container">
+                                    <select data-live-search="true" class="selectpicker bottom-margin30 update-datasource form-control" data-container="body" name="@dataSourceNames[i].DataSourceName" data-original-value="@dataSourceNames[i].DataSourceId">
+                                        @for (var item = 0; item < datasourceList.Count; item++)
+                                        {
+                                            if (datasourceList[item].Name == dataSourceNames[i].Name)
+                                            {
+                                                datasourcePermissionFlag = true;
+                                                <option value="@datasourceList[item].Id" selected="selected">@datasourceList[item].Name</option>
+                                            }
+                                            else
+                                            {
+                                                <option value="@datasourceList[item].Id">@datasourceList[item].Name</option>
+                                            }
+                                        }
+                                        
+                                        @if (!datasourcePermissionFlag)
+                                        {
+                                            <option value="@dataSourceNames[i].DataSourceId" selected="selected">@dataSourceNames[i].Name</option>
+                                        }
+                                    </select>
+                                </div>
+                            </td>
+                            <td>
+                                <span id="add-new-datasource" class="su-add" data-toggle="tooltip" data-placement="left" title="[[[Add new Data Source]]]"></span>
+                            </td>
+                        </tr>
+                    }
+                </table>
+            </div>
+        </form>
+    </div>
+    </body>
+}
+
+else
+{
+    <head>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0">
+        @Styles.Render("~/styles/update-datasource")
+        @Scripts.Render("~/scripts/update-datasource")
+        <script>
+            $(document).ready(function () {
+                closeUpdateDataSourcePopup();
+                parent.messageBox("su-update-data-source", "[[[Update Data Source(s)]]]", "[[[Internal server error. Please try again.]]]", "success", function () {
+                    parent.onCloseMessageBox();
+                });
+            });
+        </script>
+    </head>
+}
+</html>
