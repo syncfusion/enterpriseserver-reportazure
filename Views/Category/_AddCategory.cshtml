@@ -1,0 +1,101 @@
+﻿<!DOCTYPE html>
+@{
+    Layout = null;
+    var isSuccess = ViewData["IsSuccess"] != null && Convert.ToBoolean(ViewData["IsSuccess"]);
+    var categoryName = ViewData["CategoryName"];
+}
+<html class="report-server">
+    <head>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0">
+        <title>
+            @ViewBag.Title
+        </title>
+
+        @Styles.Render("~/styles/add-category")
+        @Scripts.Render("~/scripts/add-category")
+
+        <script type="text/javascript">
+            var isCategoryExistUrl = "@Url.Action("iscategoryexist", "category")";
+            var setLanguageUrl = "@Url.Action("SetLanguage", "Administration")";
+
+            $(document).ready(function () {
+                $('[data-toggle="tooltip"]').tooltip();
+            });
+
+            function load() {
+                $('[data-toggle="tooltip"]').tooltip();
+                if (($(parent.window).width()) > 1400) {
+                    $(".dialog").addClass("iframe");
+                }
+
+                if (($(parent.window).width()) < 1400) {
+                    $(".dialog").removeClass("iframe");
+                }
+            }
+        </script>
+    </head>
+<body style="background:white;" onload="load();" class="dialog">
+    <div class="col-md-12 dialog-header">
+        <span class="su su-folder Head-icon"></span>
+        <span class="PopupTitle">[[[Create Category]]]</span>
+        <a href="javascript:void(0);" class="PopupClose" title="Close" data-toggle="tooltip" data-placement="bottom" onclick="closeAddItemPopup()"><span class="su su-close"></span></a>
+    </div>
+    @if (isSuccess == false)
+{
+    <form id="addCategoryForm" name="addCategoryForm" method="post" action="@Url.Action("addcategory","category")" autocomplete="off">
+        <div id="create_category_content" class="col-md-12 dialog-body">
+            <table>
+                <tbody>
+                    <tr class="bottomPadding5">
+                        <td class="text-right padding-right-15"><div class="bottom-margin30">[[[Category Name]]]<span class="mandatory">*</span></div></td>
+                        <td>
+                            <span>
+                                <input type="text" id="category_name" autofocus class="popup form-control bottom-margin30 text" name="categoryName" maxlength="255" tabindex="1">
+                                <span id="validate-name" class="validation-message text"></span>
+                                <div id="plugin_validation" class="validation-message text"></div>
+                            </span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="text-right padding-right-15"><div class="bottom-margin30">[[[Description]]]</div></td>
+                        <td>
+                            <textarea name="description" class="form-control bottom-margin30 text" maxlength="1024" id="category_description" tabindex="2"></textarea>
+                            <span class="notification help-text">
+                                <span class="help-text-mandatory">*</span>[[[1024 characters maximum]]]
+                            </span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <input type="submit" class="hide-content" />
+    </form>
+    <div class="category-btns dialog-footer">
+        <div class="pull-right">
+            <input type="submit" title="" class="btn primary-button" value="[[[Add]]]" tabindex="3" onclick="addItemValidate()">
+            <input type="button" title="" class="btn secondary-button" onclick="closeAddItemPopup()" value="[[[Cancel]]]" tabindex="4">
+        </div>
+    </div>
+    }
+    else
+    {
+        <script>
+            $(document).ready(function () {
+                var categoryScope = parent.angular.element(parent.document.getElementById("server-items-container")).scope();
+                parent.$(".item-list-panel").ejWaitingPopup();
+                parent.onCategoryDialogBoxClose();
+                parent.messageBox("su-folder", "[[[Add Category]]]", "[[[Category has been added successfully.]]]", "success", function () {
+                    var gridName = window.parent.$('#item-grid-container').attr("data-grid-name");
+                    if (gridName == "reports") {
+                        categoryScope.refreshCategorySection();
+                    }
+                    parent.onCloseMessageBox();
+                    parent.$(".item-list-panel").ejWaitingPopup("show");
+                    setTimeout(function () { parent.$(".item-list-panel").ejWaitingPopup("hide"); }, 500);
+                });
+            });
+        </script>
+    }
+</body>
+</html>

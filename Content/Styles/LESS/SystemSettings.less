@@ -1,0 +1,912 @@
+﻿@import (reference) "../Fonts/font-RobotoRegular.css";
+@import (reference) "Themes/Default.less";
+@import (reference) "Mixins.less";
+//Confirmation message Dialog box
+#duplicate-table-list {
+    .message-header {
+        font-size: @app-large-text-size;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+
+        span {
+            margin-right: 5px;
+
+            .su-delete {
+                color: @validation-text-color;
+            }
+        }
+
+        span.su-close {
+            cursor: pointer;
+        }
+    }
+
+    .message-box-close {
+        color: @primary-text-color;
+        cursor: pointer;
+        font-size: 14px;
+        position: absolute;
+        right: 15px;
+        top: 8px;
+
+        &:hover {
+            color: @primary-btn-bg;
+        }
+    }
+
+    .message-content {
+        margin-top: 35px;
+        font-size: @app-text-size;
+        max-height: 122px;
+        overflow: auto;
+
+        .list-area {
+            padding: 10px 0 0 50px;
+            text-align: left;
+        }
+    }
+
+    .message-box-btn-holder {
+        background: @admin-pages-border-color none repeat scroll 0 0;
+        border-top: 1px solid @grid-border-color;
+        bottom: 0;
+        padding: 10px;
+        position: absolute;
+        right: 0;
+        width: 100%;
+        text-align: center;
+
+        .secondary-button {
+            .button(@secondary-btn-bg, @secondary-btn-text-color, @secondary-btn-hover, @btn-height-normal, false);
+            border: 1px solid @secondary-btn-border;
+            margin-left: 10px;
+        }
+    }
+}
+
+.configuration-status {
+    color: white;
+    font-family: robotoregular;
+    font-size: 14px;
+}
+
+.system-startUp-settings-bg {
+    background-color: @login-bg;
+    font-family: RobotoRegular;
+    font-size: @app-large-text-size;
+    vertical-align: middle;
+    display: table;
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    left: 0;
+
+    .system-settings-startup-page-fields {
+        border-width: 1px;
+        width: 300px;
+        margin: 11px auto 0 auto;
+    }
+
+    .no-margin-dropdown-ul {
+        margin-left: -9px;
+    }
+
+    .startup-page-conatiner {
+        padding: 0;
+        display: table-cell;
+        vertical-align: middle;
+        width: 100%;
+        height: 100%;
+        position: relative;
+
+        #system-settings-general {
+            background-color: @admin-page-bg;
+            display: table;
+            vertical-align: middle;
+            border-radius: 5px;
+            margin: 45px auto;
+            width: 380px;
+            margin-bottom: 140px;
+
+            .system-settings-startup-logo {
+                margin: 25px auto;
+                width: 255px;
+                text-align: center;
+            }
+
+            .title {
+                font-size: @app-large-text-size + 2;
+                font-weight: 400;
+                padding: 5px;
+                margin-bottom: 10px;
+                text-align: center;
+            }
+
+            .content {
+                color: @sub-text-color;
+                font-weight: 300;
+                margin-bottom: 10px;
+                display: block;
+                width: 82%;
+                margin: auto;
+            }
+
+            .content, .dropdown-menu, .form-control, .text {
+                font-size: @app-text-size;
+            }
+
+            .form-control {
+                height: @textbox-height;
+            }
+
+            .full-width {
+                width: 100% !important;
+            }
+
+            .center-align {
+                text-align: center;
+                clear: both;
+            }
+
+            .txt-holder, .table-prefix {
+                position: relative;
+                width: 300px;
+                margin: auto auto;
+            }
+
+            .startup-validation {
+                display: block;
+                color: @validation-text-color;
+                font-size: @app-text-size;
+                text-align: left;
+            }
+
+            #connection-string {
+                resize: none;
+            }
+
+            .su-eye {
+                cursor: pointer;
+                position: absolute;
+                right: 7px;
+                top: 8px;
+            }
+
+            .info-area {
+                cursor: pointer;
+                position: absolute;
+                right: -22px;
+                top: 6px;
+            }
+
+            .dsn-info {
+                cursor: pointer;
+                position: absolute;
+                top: 17px;
+                right: -29px;
+            }
+
+            #dsn-messgage {
+                left: 15px;
+                margin: 0;
+                min-width: 205px;
+                width: 40px;
+                z-index: 997;
+                padding: 5px 8px;
+            }
+
+            #dsn-message-oracle {
+                left: 15px;
+                margin: 0;
+                min-width: 205px;
+                width: 40px;
+                z-index: 997;
+                padding: 5px 8px;
+            }
+
+            .display-none {
+                display: none;
+            }
+
+            .validation-messages {
+                color: @validation-text-color;
+                height: 20px;
+            }
+
+            .character-limits {
+                color: @sub-text-color;
+                float: left;
+                font-size: @app-text-size;
+                margin-top: 5px;
+            }
+
+            .input-alignment {
+                margin-bottom: 11px;
+            }
+
+            #password-field, .password-field {
+                right: 30px;
+            }
+
+            .show-hide-password {
+                display: inline !important;
+                color: @primary-text-color !important;
+            }
+
+            #prefix-message, #prefix-message-mysql, #prefix-message-oracle, #prefix-message-postgresql {
+                left: 15px;
+                margin: 0;
+                min-width: 205px;
+                width: 40px;
+                z-index: 997;
+                padding: 5px 8px;
+            }
+
+            .fake-password {
+                visibility: hidden;
+                position: absolute;
+                left: -99999px;
+            }
+
+            #system-settings-db-selection-container {
+                display: block;
+
+                .text-wrap {
+                    .bootstrap-select li a > span.text {
+                        display: block;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                        white-space: nowrap;
+                        width: 240px;
+                    }
+                }
+                //Database selection container styles
+                .system-settings-db-selection-field {
+                    text-align: center;
+
+                    .database-types {
+                        margin-bottom: 15px;
+                    }
+
+                    .database-dropdown-margin {
+                        margin-bottom: 10px;
+
+                        > div.bootstrap-select {
+                            width: 300px !important;
+                        }
+                    }
+
+                    .sqlcenot {
+                        display: none;
+                        position: relative;
+
+                        .su {
+                            display: block;
+                            color: @sub-text-color;
+                        }
+
+                        .dropdown-menu {
+                            padding: 8px;
+                            top: -59px;
+                            width: 300px;
+                        }
+                    }
+
+                    #connection-validation {
+                        margin: 0 auto;
+                        padding: 5px 0 0;
+                        width: 100%;
+                        float: left;
+
+                        .validation-errors {
+                            display: none;
+                            color: @validation-text-color;
+                            font-size: @app-text-size;
+                            margin: 2px auto 11px auto;
+                            min-height: 10px;
+                            text-align: center;
+                            width: 100%;
+                        }
+
+                        .cursor-type {
+                            cursor: pointer;
+                        }
+                    }
+
+                    #help-message {
+                        padding: 5px;
+                        left: 270px;
+                        width: 200px;
+                    }
+
+                    label {
+                        font-weight: 500;
+                        cursor: pointer;
+                    }
+
+                    .new-db {
+                        display: inline-block;
+                        float: left;
+                        margin: 11px 0;
+                    }
+
+                    .existing-db {
+                        display: inline-block;
+                        float: left;
+                        margin: 11px 0;
+                        padding-left: 36px;
+                        padding-top: 0;
+                    }
+
+                    #db-content-holder {
+
+                        .databse-dropdown {
+                            .bootstrap-select {
+                                margin: 0;
+                            }
+
+                            #waiting-icon {
+                                right: -35px;
+                                top: 4px;
+                                position: absolute;
+                            }
+                        }
+
+                        .dropdown-menu {
+                            .inner {
+                                a {
+                                    padding: 3px 12px;
+                                }
+                            }
+                        }
+                    }
+
+                    #mysql-content-holder {
+                        .database-dropdown-mysql {
+                            .bootstrap-select {
+                                margin: 0;
+                            }
+
+                            #waiting-iconmysql {
+                                right: -35px;
+                                top: 4px;
+                                position: absolute;
+                            }
+                        }
+
+                        .dropdown-menu {
+                            .inner {
+                                a {
+                                    padding: 3px 12px;
+                                }
+                            }
+                        }
+                    }
+
+                    #oracle-content-holder {
+                        .database-dropdown-oracle {
+                            .bootstrap-select {
+                                margin: 0;
+                            }
+
+                            #waiting-icon-oracle {
+                                right: -35px;
+                                top: 4px;
+                                position: absolute;
+                            }
+                        }
+
+                        .dropdown-menu {
+                            .inner {
+                                a {
+                                    padding: 3px 12px;
+                                }
+                            }
+                        }
+                    }
+
+                    #postgresql-content-holder {
+                        .database-dropdown-postgresql {
+                            .bootstrap-select {
+                                margin: 0;
+                            }
+
+                            #waiting-icon-postgressql {
+                                right: -35px;
+                                top: 4px;
+                                position: absolute;
+                            }
+                        }
+                    }
+                }
+
+                .placeholder {
+                    position: absolute;
+                    left: 50%;
+                    margin-left: -136px;
+                    margin-top: -28px;
+                    color: @AuthorColor;
+                }
+            }
+            //Database selection container ends
+            //File storage container styles
+            #system-settings-filestorage-container {
+                display: none;
+                text-align: center;
+
+                .database-types {
+                    margin: 20px 0;
+
+                    .center-storage-types {
+                        float: none;
+                        margin: 0 auto;
+                        width: 378px;
+
+                        > div {
+                            float: left;
+                            width: 50%;
+                        }
+
+                        span.text {
+                            float: left;
+                            margin-left: 3px;
+                            margin-top: 2px;
+                        }
+
+                        .is-blob-storage-label {
+                            color: @profile-btn-text-color;
+                            cursor: pointer;
+                            font-weight: 500;
+                        }
+
+                        .file-storage-disabled {
+                            cursor: default;
+                        }
+
+                        .blob-storage-align {
+                            margin-left: -9px;
+                        }
+                    }
+                }
+
+                .storage-block {
+                    padding-top: 50px;
+
+                    .azure-validation {
+                        padding: 32px 0 32px 0;
+                    }
+
+                    .blob-error-message {
+                        color: @validation-text-color;
+                        font-size: @app-text-size;
+                    }
+
+                    #blob-storage-form {
+                        display: none;
+                        width: 600px;
+                        margin: auto;
+                        padding-top: 12px;
+
+                        .form-div {
+                            float: left;
+                            position: relative;
+                            width: 100%;
+                        }
+
+                        .custom-endpoint-form-element {
+                            display: none;
+                        }
+
+                        .text-caption {
+                            color: @profile-btn-text-color;
+                            font-size: @app-text-size - 1;
+                            float: left;
+                            margin: 0;
+                            text-align: left;
+                        }
+
+                        textarea.form-control {
+                            height: 80px;
+                        }
+
+                        .sub-head {
+                            font-size: @app-large-text-size;
+                            margin-bottom: 6px;
+                            text-align: left;
+                        }
+
+                        .connection-types {
+                            text-align: left;
+                            margin-bottom: 5px;
+
+                            label.connection-label {
+                                cursor: pointer;
+                                margin-bottom: 0;
+                                font-weight: normal;
+
+                                span {
+                                    color: @profile-btn-text-color;
+                                    float: left;
+                                    font-size: @app-text-size;
+                                    margin-top: 2px;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                .placeholder {
+                    position: absolute;
+                    left: 50%;
+                    margin-left: -122px;
+                    margin-top: -28px;
+                    color: @AuthorColor;
+                }
+            }
+            //File storage container settings ends
+            //Include Sample Resource container styles
+            #system-settings-admins-container {
+                display: none;
+
+                #include-samples {
+                    text-align: center;
+                    #delete-resource-info{
+                        cursor: pointer;
+                    }
+                    
+                    .info-detail{
+                        padding: 5px;
+                    }
+                }
+
+                .include-sample {
+                    margin: 20px 0;
+
+                    .center-include-samples {
+                        > div {
+                            float: left;
+                        }
+
+                        span.text {
+                            float: left;
+                            margin-left: 3px;
+                            margin-top: 0px;
+                        }
+
+                        .pointer {
+                            color: @profile-btn-text-color;
+                            cursor: pointer;
+                            font-weight: 500;
+                        }
+
+                        .file-storage-disabled {
+                            cursor: default;
+                        }
+
+                        .blob-storage-align {
+                            margin-left: -9px;
+                        }
+
+                        margin-left: 15px;
+                    }
+                }
+            }
+            //Include Sample Resource container ends
+            //User account container styles
+            #system-settings-user-account-container {
+                display: none;
+                text-align: center;
+
+                .admin-account-fields-container {
+                    width: 270px;
+                    margin: auto;
+
+                    .admin-avatar {
+                        border-radius: 70px;
+                        height: 120px;
+                        margin: 10px auto;
+                        overflow: hidden;
+                        width: 120px;
+                    }
+
+                    .form-div {
+                        position: relative;
+                    }
+
+                    input[type="text"], input[type="password"] {
+                        margin: 10px auto 0;
+                        width: 270px;
+                    }
+
+                    .username-description {
+                        top: 0%;
+                        margin-top: 34px;
+                        min-width: 280px;
+
+                        .username-contain {
+                            padding-left: 7px;
+                        }
+                    }
+
+                    .mail-description {
+                        top: 0%;
+                        margin-top: 34px;
+                        min-width: 280px;
+
+                        .mail-contain {
+                            padding-left: 7px;
+                        }
+                    }
+
+                    #username-detail, #mail-detail {
+                        padding-left: 7px;
+                    }
+
+                    .show-hide-password {
+                        color: @primary-text-color;
+                        display: block;
+                    }
+
+                    .placeholder {
+                        position: absolute;
+                        left: 50%;
+                        margin-left: -122px;
+                        margin-top: -28px;
+                        color: @AuthorColor;
+                    }
+
+                    #new-password, #confirm-password {
+                        right: 30px;
+                    }
+                }
+
+                #admin-account-submit-container {
+                    margin-top: 25px;
+                }
+            }
+            //User account container ends
+            //Proceed button style
+            .button-alignment {
+                padding-top: 11px;
+            }
+
+            .btn-holder {
+                margin: -10px auto;
+
+                .proceed-button {
+                    background: @primary-btn-bg;
+                    border: none;
+                    border-radius: 50%;
+                    color: @primary-btn-text-color;
+                    height: 70px;
+                    margin-bottom: -30px;
+                    width: 70px;
+                    outline: none;
+
+                    &:hover {
+                        background: darken(@primary-btn-bg, 10%);
+                    }
+
+                    &:disabled {
+                        background: #CCC;
+                        cursor: default;
+                    }
+                }
+            }
+
+            #move-to-next {
+                margin-top: 20px;
+            }
+
+            #mysql-odbc-dropdown, #oracle-odbc-dropdown {
+                .bootstrap-select:not([class*="col-"]):not([class*="form-control"]):not(.input-group-btn) {
+                    width: 300px;
+                }
+            }
+            //style for Duplicate table list
+            #duplicate-table-list {
+                .message-header {
+                    font-size: @app-large-text-size + 2;
+                    //overflow: hidden;
+                    overflow: auto;
+                    text-overflow: ellipsis;
+                    white-space: nowrap;
+                    width: 400px;
+
+                    span {
+                        margin-right: 5px;
+                    }
+
+                    .su-login-error {
+                        color: @validation-text-color;
+                        margin-left: 2px;
+                    }
+
+                    .popup-close {
+                        cursor: pointer !important;
+                    }
+                }
+
+                .message-content {
+                    margin-top: 10px;
+                    font-size: @app-large-text-size;
+                    height: 125px;
+                    overflow-y: auto;
+                    text-align: left;
+
+                    .list-area {
+                        padding: 5px 0 0 40px;
+                        text-align: left;
+                    }
+                }
+
+                .message-box-btn-holder {
+                    background: #e5e5e5 none repeat scroll 0 0;
+                    border-top: 1px solid #bbb;
+                    bottom: 0;
+                    padding: 10px;
+                    position: absolute;
+                    right: 0;
+                    width: 100%;
+                    text-align: center;
+                }
+
+                .e-scroller {
+                    overflow: auto;
+                }
+            }
+        }
+        //General system settings
+        .notransition:before, .notransition:after {
+            /*CSS animations*/
+            animation: none !important;
+            -moz-animation: none !important;
+            -ms-animation: none !important;
+            -o-animation: none !important;
+            -webkit-animation: none !important;
+        }
+
+        .layout-footer {
+            float: none !important;
+        }
+    }
+    //startup page container ends
+}
+//startup setting bg container ends
+
+
+
+/* don't show the eye for password inputs */
+::-ms-reveal {
+    width: 0;
+    height: 0;
+}
+
+::-ms-clear {
+    width: 0;
+    height: 0;
+}
+
+* {
+    outline: none !important;
+}
+
+*:focus {
+    outline: none !important;
+}
+
+.bs-searchbox {
+    input[type="text"] {
+        color: @primary-text-color;
+    }
+}
+
+input[type="radio"][class="css-radio"] + label:before {
+    top: 1px !important;
+}
+
+#base-footer-div {
+    bottom: 0;
+}
+
+//Password policy rules
+ul#password_policy_rules {
+    margin-left: -35px !important;
+    margin-top: 10px !important;
+    margin-bottom: 100px;
+}
+
+#password_policy_rules #p_policy_heading {
+    padding-bottom: 5px;
+    white-space: normal;
+    text-align: left;
+    margin-left: 40px;
+}
+
+#password_policy_rules {
+    li {
+        text-align: left;
+        margin-left: 40px;
+        font-size: @app-text-size !important;
+
+        span {
+            font-size: @app-text-size !important;
+            padding-right: 10px !important;
+        }
+    }
+}
+
+@media screen and (min-width: 1400px) {
+    .system-startUp-settings-bg {
+        font-size: @app-large-text-size + 2;
+
+        .startup-page-conatiner {
+            #system-settings-general {
+                .form-control {
+                    height: @textbox-lg-height;
+                }
+
+                .btn, .content, .dropdown-menu, .form-control, .text, .validation-errors, .blob-error-message {
+                    font-size: @app-large-text-size;
+                }
+
+                #system-settings-filestorage-container {
+                    .database-types .center-storage-types > div {
+                        span.text {
+                            margin-top: 0;
+                        }
+                    }
+
+                    .storage-block #blob-storage-form {
+                        .text-caption {
+                            font-size: @app-text-size;
+                        }
+
+                        .sub-head {
+                            font-size: @app-large-text-size + 2;
+                        }
+                    }
+                }
+
+                #duplicate-table-list {
+                    .message-header {
+                        font-size: @app-large-text-size + 4;
+                    }
+
+                    .message-content {
+                        font-size: @app-large-text-size + 2;
+                    }
+                }
+            }
+        }
+    }
+
+    ul#password-policy-rules {
+        font-size: @app-text-size;
+    }
+
+    #password-policy-rules li span {
+        font-size: @app-text-size !important;
+    }
+}
+
+@media screen and (max-width: 1400px) {
+    .placeholder {
+        margin-top: -23px !important;
+    }
+}
+
+#enablefooter {
+    width: auto;
+    padding-left: 0;
+}
+
+#lang_menu {
+    padding-left: 0;
+    padding-right: 0;
+}
+
+.form-control[disabled] {
+    cursor: default;
+}
