@@ -1,0 +1,85 @@
+﻿@model ItemDetail
+<!DOCTYPE html>
+@{ 
+    Layout = null;
+}
+
+<html class="report-server">
+    <head>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0">
+        <title>
+            @ViewBag.Title
+        </title>
+        <script>
+    var editcategoryUrl = "@Url.Action("editcategory", "category")";
+            var reportsUrl = "@Url.Action("reports", "reports")";
+
+            function load() {
+                $('[data-toggle="tooltip"]').tooltip();
+                if (($(parent.window).width()) > 1400) {
+                    $(".dialog").addClass("iframe");
+                }
+
+                if (($(parent.window).width()) < 1400) {
+                    $(".dialog").removeClass("iframe");
+                }
+            }
+        </script>
+
+        @Styles.Render("~/styles/edit-category")
+        @Scripts.Render("~/scripts/edit-category")
+    </head>
+<body style="background:white;" onload="load();" class="dialog">
+    <div class="col-md-12 dialog-header">
+        <span class="su su-folder Head-icon"></span>
+        <span class="PopupTitle">
+            [[[Update Category]]]
+        </span>
+        <a href="javascript:void(0);" class="PopupClose" title="Close" data-toggle="tooltip" data-placement="bottom" onclick="closeEditCategoryPopup()"><span class="su su-close"></span></a>
+    </div>
+    <form id="create_category_content" class="col-md-12 dialog-body" method="post" enctype="multipart/form-data" autocomplete="off">
+        <table>
+            <tbody>
+                <tr>
+                    <td class="text-right padding-right-15"><div class="bottom-margin30">[[[Category Name]]]<span class="mandatory">*</span></div></td>
+                    <td>
+                        <span>
+                            <input type="text" id="category_name" class="popup form-control text-field bottom-margin30 text" maxlength="255" value="@Model.Name" tabindex="1" autofocus name="categoryName">
+                            <span id="validate-name" class="validation-message text"></span>
+                            <div id="plugin_validation" class="validation-message text"></div>
+                        </span>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="text-right padding-right-15"><div class="bottom-margin30">[[[Description]]]</div></td>
+                    <td>
+                        <textarea class="form-control text-field top-margin text" maxlength="1024" id="category_description" tabindex="2">@Model.Description</textarea>
+                        <span class="help-text">
+                            <span class="help-text-mandatory">*</span>[[[1024 characters maximum]]]
+                        </span>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </form>
+    <div class="category-btns dialog-footer">
+        <div class="pull-right">
+            <input type="submit" title="" class="col-md-2 btn primary-button" value="[[[Update]]]" onclick="updateCategory()" id="saveEditCategory" disabled="disabled" tabindex="3">
+            <input type="button" title="" class="col-md-2 btn secondary-button" onclick="closeEditCategoryPopup()" value="[[[Cancel]]]" tabindex="4">
+        </div>
+    </div>
+</body>
+</html>
+
+<script>
+    $(function () {
+        window.isEdited = false;
+        window.editData = {
+            ItemId: "@Model.Id",
+            Name: "@Model.Name",
+            Description: "@Model.Description"
+        }
+        window.parent.$("#EditCategoryPopup_wrapper").ejWaitingPopup("hide");
+    });
+</script>

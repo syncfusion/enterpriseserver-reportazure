@@ -1,0 +1,158 @@
+﻿@import (reference) "Mixins.less";
+
+#version-window-container {
+    padding: 0 !important;
+
+    iframe {
+        border: none;
+        float: left;
+        height: 615px;
+        width: 100%;
+    }
+}
+
+#permission-popup {
+    padding: 0 !important;
+
+    iframe {
+        border: none;
+        float: left;
+        height: 500px;
+        width: 100%;
+    }
+}
+
+#item-delete-confirmation {
+    padding: 0 !important;
+    .modal();
+
+    .modal-content {
+        .modal-body {
+            display:table !important;
+            height: 65px;
+            
+            .delete-item {
+                font-size: @app-text-size;
+                text-align:left;
+            }
+            }
+            .success-area{
+                clear:left;
+            }
+            .text-center{
+                text-align:center;
+            }
+        }
+    }
+
+#delete-div {
+    padding: 0 !important;
+    .modal();
+
+    .modal-content {
+        .modal-body {
+            display:table !important;
+            height: 65px;
+            
+            .deleteItem {
+                font-size: @app-text-size;
+            }
+            }
+            .success-area{
+                clear:left;
+            }
+            .text-center{
+                text-align:center;
+            }
+        }
+    }
+
+@media screen and (min-width: 1400px)
+{
+    #item-delete-confirmation{
+        .modal(@app-large-text-size);
+    
+    .modal-content {
+    .modal-body {
+         .delete-item {
+                font-size: @app-large-text-size;
+            }
+        }
+    .modal-footer{
+        .validation-area,.success-area{
+            margin-top: -3px;
+        }
+    }
+    }
+}
+}
+#CreateReport:hover > ul{
+    display: block;
+}
+#CreateDataSet:hover > ul{
+    display: block;
+}
+
+#CreateReport.dropdown-submenu>a{
+    span.caret{      
+            width: 0; 
+            height: 0; 
+            border-color: transparent;
+            border-style: solid;
+            border-width: 5px 0px 5px 5px;
+            border-left-color: #1b1e24;
+            margin-left: 40px;
+    }
+}
+
+#CreateDataSet.dropdown-submenu>a{
+    span.caret{      
+            width: 0; 
+            height: 0; 
+            border-color: transparent;
+            border-style: solid;
+            border-width: 5px 0px 5px 5px;
+            border-left-color: #1b1e24;
+            margin-left: 35px;
+    }
+}
+
+.designer-views{
+    max-width: 50px;
+    top: 33px !important;
+    left: -101% !important;
+}
+.dataset-designer-views{
+    max-width: 50px;
+    top: 93px !important;
+    left: -101% !important;
+}
+#datasource-edit-popup,#datasource-popup,#update-datasource-popup{
+    padding: 0;
+
+    .datasource-popup-frame{
+        border: 0;
+        background: white;
+        float: left;
+        height: 490px;
+        width: 648px;
+    }
+    #update-datasource-popup-iframe{
+        border: 0;
+        background: white;
+        float: left;
+        height: 300px;
+        width: 800px;
+    }
+   .add-datasource-frame{
+        border: 0;
+        background: white;
+        float: left;
+        height: 355px;
+        width: 800px;
+    }
+    .resize {
+        height: 330px !important;
+    }
+}
+

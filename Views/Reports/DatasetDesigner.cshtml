@@ -1,0 +1,375 @@
+﻿<!DOCTYPE html>
+@{
+    Layout = null;
+    var reportPath = string.Empty;
+    var categoryName = string.Empty;
+    var reportName = string.Empty;
+    var datasourceName = string.Empty;
+    var baseUrl = GlobalAppSettings.SystemSettings.BaseUrl;
+
+    if (!string.IsNullOrWhiteSpace(ViewBag.datasourceName))
+    {
+        datasourceName = ViewBag.datasourceName;
+    }
+
+    var displayName = HttpContext.Current.Session["displayname"] != null ? HttpContext.Current.Session["displayname"].ToString() : string.Empty;
+    var emailAddress = HttpContext.Current.Session["emailaddress"] != null ? HttpContext.Current.Session["emailaddress"].ToString() : string.Empty;
+    var notificationCount = new NotificationManagement().GetUnreadNotificationCount();
+    var appLogo = GlobalAppSettings.SystemSettings.StorageType == (int)StorageType.AzureBlob ?
+            GlobalAppSettings.AzureBlob.AzureBlobStorageUri + "/" + GlobalAppSettings.AzureBlob.AzureBlobStorageContainerName + "/" + GlobalAppSettings.GetStorageMode() + "/Content/Images/Application/" + GlobalAppSettings.SystemSettings.MainScreenLogo :
+            Url.Content("~/Content/Images/Application/" + GlobalAppSettings.SystemSettings.MainScreenLogo);
+    var defaultAppLogo = Url.Content("~/Content/Images/Application/Main_Logo.png");
+    var language = Context.GetPrincipalAppLanguageForRequest().GetCultureInfo();
+}
+
+<html lang="en" style="height:100%;width:100%">
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width" />
+    @if (ViewBag.datasetName != null)
+    {
+        <title>@ViewBag.datasetName - [[[Design Dataset]]] - @GlobalAppSettings.SystemSettings.OrganizationName</title>
+    }
+    else
+    {
+        <title>Untitled - [[[Design Dataset]]] - @GlobalAppSettings.SystemSettings.OrganizationName</title>
+    }
+
+    @Styles.Render("~/styles/report-designer")
+    @Styles.Render("~/styles/designer")
+    @Scripts.Render("~/scripts/report-designer")
+
+    <script src="~/Scripts/Localization/querydesigner/ej.localetexts.@string.Concat(language,".js")"></script>
+
+    @if (GlobalAppSettings.SystemSettings.StorageType == (int)StorageType.AzureBlob)
+    {
+        <link rel="icon" href="@GlobalAppSettings.AzureBlob.AzureBlobStorageUri/@GlobalAppSettings.AzureBlob.AzureBlobStorageContainerName/@GlobalAppSettings.GetStorageMode()/Content/Images/Application/@GlobalAppSettings.SystemSettings.FavIcon" onerror="if (this.href != '~/Content/Images/Application/Favicon.png') this.href = '~/Content/Images/Application/Favicon.png';" />
+    }
+    else
+    {
+        <link rel="icon" href="~/Content/Images/Application/@GlobalAppSettings.SystemSettings.FavIcon" onerror="if (this.href != '~/Content/Images/Application/Favicon.png') this.href = '~/Content/Images/Application/Favicon.png';" />
+    }
+    <style>
+        .e-querydesigner-toolbarcontainer ul:nth-of-type(2) {
+            display: none;
+        }
+    </style>
+    <script>
+        var getUserNotificationsPartialViewResultUrl = "@Url.Action("GetUserNotificationsPartialViewResult", "notification")";
+        var controlId = 'container';
+		var isEditReport = false;
+
+        var categoryName = "@categoryName";
+        var reportName = "@reportName";
+        var datasetName = "@ViewBag.datasetName";
+        var description = "@ViewBag.description";
+        var isEdit = "@ViewBag.isEdit";
+		var datasource = "@ViewBag.datasourceName";
+        isEdit = isEdit.toLowerCase();
+
+		if(isEdit === "true"){
+		    isEditReport = true;
+        }
+
+        var serviceUrl = "@baseUrl.TrimEnd('/')" + "/ReportService/api/Designer";
+        var isSubmit = true;
+		var ctrlId = 'container';
+
+		$(document).ready(function () {
+		    refreshDatasetDesignerFooter();
+            renderQueryDesigner();
+            $("#notification-icon").click(function (e) {
+                if (!$("#notification-link").hasClass("open")) {
+                    $("#notification-content-area").ejWaitingPopup();
+                    $("#notification-content-area").addClass("show");
+                    $("#notification-content-area").ejWaitingPopup("show");
+                    $("#notification-content-area").removeClass("show");
+                    $("#notification-list").attr("src", getUserNotificationsPartialViewResultUrl);
+                }
+            });
+
+            $(document).on("click", "#btn-item-preview", function () {
+                $("#btn-item-design").show();
+                $(".design-item").css("display", "block");
+                $("#btn-item-preview").hide();
+                $(".preview-item").css("display", "none");
+            });
+            $(document).on("click", "#btn-item-design", function () {
+                $("#btn-item-preview").show();
+                $(".preview-item").css("display", "block");
+                $("#btn-item-design").hide();
+                $(".design-item").css("display", "none");
+            });
+
+            $(window).resize(function () {
+                var windowHeight = $(window).innerHeight();
+                var headerHeight = $("#designer-header").outerHeight();
+                var containerHeight = windowHeight - headerHeight;
+                $("#container").height(containerHeight);
+                $("#container").width($(window).width());
+            });
+        });
+
+        function refreshDatasetDesignerFooter() {
+            var windowHeight = $(window).innerHeight();
+            var headerHeight = $("#designer-header").outerHeight();
+            var containerHeight = windowHeight - headerHeight;
+            $("#container").height(containerHeight);
+            $("#container").width($(window).width());
+        }
+
+		function renderQueryDesigner() {
+        var designerModel = {
+        serviceUrl: serviceUrl,
+        toolbarSettings: {
+            items: ej.QueryDesigner.ToolbarItems.All & ~ej.QueryDesigner.ToolbarItems.Cancel & ~ej.QueryDesigner.ToolbarItems.Save & ~ej.QueryDesigner.ToolbarItems.InputDataSet
+        },
+        create: $.proxy(controlInitialization, this),
+        toolbarRendering: $.proxy(renderQueryToolbar, this),
+        locale: '@language'
+       };
+        var designer = new ejQueryDesigner($('#' + ctrlId), designerModel);
+       }
+
+	   function controlInitialization(args) {
+		if(isEditReport){
+           editDataSet(datasetName);
+		}else{
+		    newDataSet(datasource);
+		}
+      }
+
+	  function renderQueryToolbar(args) {
+    var $divsave = ej.buildTag('div', '', { 'margin': '1px 5px', 'float': 'left', 'display': 'inline-block', 'padding-top': '0.5px' }, {});
+    var saveButton = this.btnSaveTag = ej.buildTag('button.e-reportdesigner-dataset-btn', 'Save', {}, { id: ctrlId + '_query_save_btn' });
+    $divsave.append(saveButton);
+    $(args.target).find('#' + ctrlId + '_div_dataset_save').before($divsave);
+    saveButton.ejButton({
+        width: '78px', showRoundedCorner: false, size: 'mini',
+        contentType: ej.ContentType.TextOnly, 'height': '25px',
+        'click': $.proxy(this.saveQueryDataSet, this)
+    });
+}
+
+function saveQueryDataSet(event) {
+    var queryDesigner = $('#' + ctrlId).data('ejQueryDesigner');
+    queryDesigner.getDataSet(function (args) {
+        doAjaxPost(serviceUrl + '/PostDesignerAction/', JSON.stringify({
+            'designerAction': isEditReport ? 'SaveSharedDataSet' : 'CreateSharedDataSet',
+            'sharedData': args.newSharedDataSet,
+            'name': datasetName,
+            'sharedDataMapping': args.sharedDataMapping
+        }), {
+            fnction: function (args) {
+			    if(!isEditReport){
+            	   isEditReport = true;
+				}
+            },
+            indicator: [function () {
+                    $('#' + ctrlId + '_div_designerArea').data('ejWaitingPopup').show();
+                },
+                function () {
+                    $('#' + ctrlId + '_div_designerArea').data('ejWaitingPopup').hide();
+                }]
+        });
+    });
+}
+
+function newDataSet(selectData) {
+    var designer = $('#' + ctrlId).data('ejQueryDesigner');
+    doAjaxPost(serviceUrl + '/PostDesignerAction/', JSON.stringify({
+        'designerAction': ej.ReportUtil.DesignerAction.dataSourceCatalog,
+    }), {
+        fnction: function (args) {
+            var dataSources = [];
+            for (var index = 0; index < args.length; index++) {
+                var dataSource = ej.ReportUtil.createDataSource();
+                dataSource.ConnectionProperties = null;
+                dataSource.DataSourceReference = args[index].Id;
+                dataSource.Name = args[index].Name;
+                dataSources.push(dataSource);
+            }
+            designer.newDataSet(selectData, dataSources);
+        },
+        indicator: [function () {
+                $('#' + ctrlId + '_div_designerArea').data('ejWaitingPopup').show();
+            },
+            function () {
+                $('#' + ctrlId + '_div_designerArea').data('ejWaitingPopup').hide();
+            }]
+    });
+}
+
+function editDataSet(dataSetName) {
+    var queryDesigner = $('#' + ctrlId).data('ejQueryDesigner');
+    doAjaxPost(serviceUrl + '/PostDesignerAction/', JSON.stringify({
+        'designerAction': ej.ReportUtil.DesignerAction.dataSourceCatalog,
+    }), {
+        fnction: function (args) {
+            var dataSources = [];
+            for (var index = 0; index < args.length; index++) {
+                var dataSource = ej.ReportUtil.createDataSource();
+                dataSource.ConnectionProperties = null;
+                dataSource.DataSourceReference = args[index].Id;
+                dataSource.Name = args[index].Name;
+                dataSources.push(dataSource);
+            }
+            editSharedDataSet(dataSetName, dataSources);
+        },
+        indicator: [function () {
+                $('#' + ctrlId + '_div_designerArea').data('ejWaitingPopup').show();
+            },
+            function () {
+                $('#' + ctrlId + '_div_designerArea').data('ejWaitingPopup').hide();
+            }]
+    });
+}
+
+function downloadDataSet() {
+    var queryDesigner = $('#' + ctrlId).data('ejQueryDesigner');
+    queryDesigner.getDataSet(function (args) {
+        ej.ReportUtil.doPostBack(serviceUrl + '/PostDesignerAction/', { 'name': args.newSharedDataSet.Name + '.rsd', 'sharedData': JSON.stringify(args.newSharedDataSet) }, queryDesigner);
+    });
+}
+
+function editSharedDataSet(dataSetName, dataSources) {
+    var queryDesigner = $('#' + ctrlId).data('ejQueryDesigner');
+    doAjaxPost(serviceUrl + '/PostDesignerAction/', JSON.stringify({
+        'designerAction': ej.ReportUtil.DesignerAction.sharedDataSet,
+        'reportInfo': {
+            'dataSetRefer': dataSetName
+        }
+    }), {
+        fnction: function (args) {
+            queryDesigner.editDataSet(args, dataSources);
+        },
+        indicator: [function () {
+                $('#' + ctrlId + '_div_designerArea').data('ejWaitingPopup').show();
+            },
+            function () {
+                $('#' + ctrlId + '_div_designerArea').data('ejWaitingPopup').hide();
+            }]
+    });
+}
+
+function doAjaxPost(url, jsonObj, callBack) {
+    $.ajax({
+        type: 'POST',
+        url: url,
+        async: true,
+        crossDomain: true,
+        contentType: 'application/json; charset=utf-8',
+        dataType: 'json',
+        data: jsonObj,
+        beforeSend: function (req) {
+            if (callBack && callBack.indicator && callBack.indicator.length > 0) {
+                ej.ReportUtil.invokeCallBack(callBack.indicator[0], {});
+            }
+        },
+        success: function (data) {
+            if (data && typeof (data.Data) !== 'undefined') {
+                data = data.Data;
+            }
+            var jsonData = data;
+            if (callBack) {
+                if (callBack.indicator && callBack.indicator.length > 0) {
+                    ej.ReportUtil.invokeCallBack(callBack.indicator[1], {});
+                }
+                if (callBack.fnction) {
+                    ej.ReportUtil.invokeCallBack(callBack.fnction, jsonData);
+                }
+            }
+        },
+        error: function (msg, textStatus, errorThrown) {
+            if (callBack && callBack.indicator && callBack.indicator.length > 0) {
+                ej.ReportUtil.invokeCallBack(callBack.indicator[1], {});
+            }
+        }
+    });
+}
+    </script>
+</head>
+<body style="overflow:hidden;position:static;margin:0; padding: 0;height:100%;width:100%">
+    <div id="designer-header">
+        <div class="user-account">
+            <div id="account-profile" class="dropdown no-padding">
+                <span class="dropdown-toggle" data-toggle="dropdown">
+                    <span class="profile-picture">
+                        <img alt="Profile Picture" src="@Url.Content("~/User/Avatar?Username=" + ((HttpContext.Current.User as ServerPrincipal).UserId) + "&ImageSize=64")" />
+                    </span>
+                </span>
+                <div class="dropdown-menu" id="profile-info-section" role="menu">
+                    <div class="profile-info col-lg-12">
+                        <table>
+                            <tbody>
+                                <tr>
+                                    <td class="profile-picture-area">
+                                        <img alt="Profile Picture" src="@Url.Content("~/User/Avatar?Username=" + ((HttpContext.Current.User as ServerPrincipal).UserId) + "&ImageSize=64")" />
+                                    </td>
+                                    <td class="profile-info-area">
+                                        <ul class="no-margin no-padding">
+                                            <li id="profile-name">@displayName</li>
+                                            <li id="profile-email">@emailAddress</li>
+                                        </ul>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="profile-buttons">
+                        <a href="@Url.Action("ProfilePage", "User")" class="profile-menu-action col-lg-6" title="[[[View my profile]]]">
+                            [[[PROFILE]]]
+                        </a>
+                        <a href="@Url.Action("logout", "accounts")" class="profile-menu-action col-lg-6" title="[[[Log Out]]]">
+                            [[[LOG OUT]]]
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="pull-right" id="notification-section">
+            <div id="notification-link" class="dropdown no-padding">
+                <span id="notification-icon" class="su su-notification-alert dropdown-toggle" data-toggle="dropdown">
+                    @if (notificationCount != 0)
+                    {
+                        <span id="notification-indicator"></span>
+                    }
+                </span>
+                <div id="notification-content-area" class="dropdown-menu notification-content-area" role="menu">
+                    <div id="notification-header">
+                        <span> [[[Notifications]]]</span>
+                        <a href="@Url.Action("getusernotifications", "notification")">[[[View all]]]</a>
+                    </div>
+                    <iframe id="notification-list" class="notification-list"></iframe>
+                </div>
+            </div>
+        </div>
+        <div class="share-item">
+            <button id="btn-item-share" type="button" class="dropdown-toggle">
+                <span>[[[Share]]]</span>
+            </button>
+        </div>
+        <div class="preview-item" style="display: none">
+            <button id="btn-item-preview" type="button" class="dropdown-toggle preview-rep">
+                <span>[[[Preview]]]</span>
+            </button>
+        </div>
+        <div class="design-item" style="display: none">
+            <button id="btn-item-design" type="button" class="dropdown-toggle preview-rep">
+                <span>[[[Design]]]</span>
+            </button>
+        </div>
+        <div class="main-screen-logo">
+            <a href="@Url.Action("reports", "reports")" class="home-link" data-toggle="tooltip" data-placement="bottom" title="@GlobalAppSettings.SystemSettings.OrganizationName">
+                <img alt="Application Logo" id="application-logo" src="@appLogo" onerror="if (this.src !== '@defaultAppLogo') this.src = '@defaultAppLogo';" />
+            </a>
+        </div>
+        <div class="report-name">
+            <span class="edit-report">@ViewBag.datasetName</span>
+            <span class="report-status" style="display: none">[[[(Edited)]]]</span>
+            <span class="report-unsave" style="display:none">Unsaved Changes</span>
+        </div>
+    </div>
+    <div id="container"></div>
+</body>
+</html>

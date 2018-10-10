@@ -1,0 +1,34 @@
+﻿@{
+    Layout = null;
+}
+@using Syncfusion.RDL.DOM
+@model List<ReportParameter>
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+</head>
+<body>
+    <input type="hidden" value="@ViewBag.Username" id="userName" />
+    <div class="col-sm-12 col-xs-12 no-padding parameter-popup-body" id="parameters-panel">
+        @foreach (var parameter in @Model)
+        {
+            <div class="col-sm-12 col-xs-12 no-padding">
+                <div class="col-sm-2 col-xs-2 no-padding align-center"><label class="parameter-label">@parameter.Prompt.TrimEnd(':')</label></div>
+                <div class="col-sm-4 col-xs-4"><input type="text" class="form-control" id="@parameter.Name" name="@parameter.Name" dataType="@parameter.DataType" value= "@String.Join(",", parameter.DefaultValue == null? new List<string>() : parameter.DefaultValue.Values.ToList())" @(parameter.Hidden ? "disabled" : "") maxlength="50"></div>
+                <div class="page-indent text col-sm-2 col-xs-2">
+                    @Html.CheckBox(@parameter.Name + "-use-default", parameter.Hidden, new { @class = "material-checkbox use-default", @dataAttrId = @parameter.Name, @id = @parameter.Name + "-use-default" })
+                    @Html.Label(@parameter.Name + "-use-default", "[[[Use Default]]]", new { @class = "normal-font" })
+                </div>
+                <div class="col-sm-4 col-xs-4 no-padding validate-error" id="@parameter.Name-error-container">
+                    <div id="@parameter.Name-parameter-validator"></div>
+                </div>
+            </div>
+        }
+    </div>
+</body>
+</html>
+<script>
+    var parameterObj= @Html.Raw(Json.Encode(Model));;
+</script>
+@Scripts.Render("~/Scripts/ScheduleParameter")

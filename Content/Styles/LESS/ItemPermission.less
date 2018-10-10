@@ -1,0 +1,275 @@
+﻿@import (reference) "Mixins.less";
+
+.permission-popup {
+    .modal();
+
+    .modal {
+        display: inline-block !important;
+        position: absolute;
+
+        .modal-dialog {
+            height: 500px;
+            margin: 0 !important;
+            padding: 0;
+            width: 100%;
+
+            .modal-content {
+                height: 500px;
+
+                .modal-body {
+                    height: 400px;
+                    max-height: 400px;
+                    padding: 10px;
+                    overflow-x: hidden;
+
+                    .nav-tabs {
+                        .users-tab {
+                            margin-left: 20px;
+                        }
+
+                        li {
+                            a {
+                                color: @primary-text-color;
+                            }
+                        }
+
+                        .active {
+                            a {
+                                color: @primary-btn-bg;
+                            }
+                        }
+                    }
+
+                    .assigned-permission {
+                        height: 35px;
+
+                        h4 {
+                            padding-top: 8px;
+                            font-size: @app-text-size;
+                        }
+                    }
+
+                    .bs-deselect-all, .bs-select-all {
+                        display: none;
+                    }
+
+                    .disabled {
+                        display: none;
+                        font-size: 0;
+                        height: 0;
+                    }
+
+                    .hide-option {
+                        cursor: default;
+                        display: none;
+                        font-size: 0;
+                        height: 0;
+
+                        span {
+                            color: @profile-border-color !important;
+                        }
+                    }
+
+                    .bs-deselect-all-custom, .bs-select-all-custom {
+                        font-size: @app-text-size;
+                        color: @primary-btn-bg;
+
+                        &:hover {
+                            text-decoration: underline;
+                        }
+                        }
+                     .bs-select-all-custom .bs-select-custom-tick {
+                            display: none;
+                            }
+                        .bs-deselect-all-custom .bs-select-custom-tick {
+                            display: inline;
+                            float: right;
+                            margin-right: 30px;
+                        }
+                    
+                    .bs-actionsbox:hover, .bs-select-all-custom :hover {
+                        cursor: pointer;
+                    }
+
+                    .permission-container-padding {
+                        padding: 20px 0;
+
+                        #item-user-permission-container, #item-group-permission-container {
+                            margin-top: 10px;
+                        }
+                    }
+
+                    .tab-header-menu {
+                        background: transparent;
+                    }
+
+                    .bootstrap-select {
+                        width: 265px;
+                        padding: 0 !important;
+                    }
+
+                    .header-menu {
+                        background: @secondary-btn-bg none repeat scroll 0px 0px;
+                        padding: 10px;
+                        width: 100%;
+                        z-index: 9;
+                        float: left;
+                        margin: 0px;
+
+                        .header-tab {
+                            font-size: @app-text-size;
+                            padding-left: 30px;
+                            padding-right: 50px;
+                            float: left;
+                            margin-top: 8px;
+                        }
+                    }
+
+                    .user-group {
+                        padding: 10px 0;
+                    }
+
+                    #permission-container {
+                        padding-left: 0px !important;
+                        #itempermissiongridstring_CustomFDlg .e-dlgfields{
+                            .e-btncontainer>div {  
+                                margin-left: -66px;
+                            }
+                        }
+                        .e-gridheader {
+                            .item-header {
+                                display: inline;
+                            }
+
+                            .e-headercell {
+                                &:last-child {
+                                    cursor: default;
+                                }
+                            }
+                        }
+                    }
+
+                    #user-search-container, #group-search-container, .button-area,#permission-container{ 
+                        padding-right: 0px !important;
+                        }
+                  
+                    .dropdown-menu {
+                        padding: 3px !important;
+
+                        li {
+                            overflow: hidden;
+                            text-overflow: ellipsis;
+                            white-space: nowrap;
+                            width: 240px;
+
+                            a {
+                                background: none;
+
+                                .text {
+                                    color: @primary-text-color;
+                                    float: left;
+                                    font-size: @app-text-size;
+                                    overflow: hidden;
+                                    text-overflow: ellipsis;
+                                    white-space: nowrap;
+                                    width: 195px;
+
+                                    &:focus, &:active {
+                                        color: @secondary-btn-bg;
+                                    }
+                                }
+
+                                .check-mark {
+                                    font-size: @app-text-size;
+                                    left: 210px;
+
+                                    &:focus, &:active {
+                                        color: @secondary-btn-bg;
+                                    }
+                                }
+
+                                &:hover {
+                                    background: none;
+                                }
+                            }
+
+                            &:hover {
+                                background-color: @admin-pages-border-color;
+                            }
+
+                            &:focus, &:active {
+                                background-color: @primary-btn-bg;
+                            }
+                        }
+
+                        .check-mark {
+                            margin: 0 !important;
+                        }
+                        .selected{
+                            background-color:@primary-btn-bg;
+                            .text,.check-mark{
+                                color:@secondary-btn-bg;
+                            }
+                            &:hover{
+                                background-color:@primary-btn-bg;
+                            }
+                        }
+                    }
+                      #access-selection-container {
+                        padding-right: 0px !important;
+                        .dropdown-menu {
+                     
+                        li {
+                             width: 270px !important;
+                            }
+                    }
+                        }
+                }
+            }
+        }
+    }
+}
+
+.permissions {
+    .modal(@app-large-text-size,@textbox-lg-height);
+
+    .modal {
+        .modal-dialog {
+            .modal-content {
+                .modal-body {
+                    .assigned-permission {
+                        h4 {
+                            font-size: @app-large-text-size;
+                        }
+                    }
+
+                    .bs-deselect-all-custom, .bs-select-all-custom {
+                        font-size: @app-large-text-size;
+                    }
+
+                    .header-menu {
+                        .header-tab {
+                            font-size: @app-large-text-size;
+                        }
+                    }
+
+                    .dropdown-menu {
+                        li {
+                            a {
+                                .text, .check-mark {
+                                    font-size: @app-large-text-size;
+                                }
+
+                                &:hover, &:focus, &:active {
+                                    .text, .check-mark {
+                                        font-size: @app-large-text-size;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

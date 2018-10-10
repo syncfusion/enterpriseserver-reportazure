@@ -1,0 +1,175 @@
+﻿<!DOCTYPE html>
+@{ 
+    Layout = null;
+    var datasetList = ViewData["DatasetList"] as List<ItemDetail>;
+    var selectedDataset = (Guid?)ViewData["SelectedItem"];
+}
+<html class="report-server">
+    <head>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0">
+        <title>
+            Add New Report
+        </title>
+        <script>
+            var isItemExistinCategoryUrl = "@Url.Action("IsItemExistInSameCategory", "reports")";
+            var editreportUrl = "@Url.Action("editreport", "reports")";
+            var addsharedrdlreportUrl = "@Url.Action("addsharedrdlreport", "reports")";
+            var addembeddedrdlreportUrl = "@Url.Action("addembeddedrdlreport", "reports")";
+            var deletetemporaryrdlreportUrl = "@Url.Action("deletetemporaryrdlreport", "reports")";
+            var reportselectdatasourceUrl = "@Url.Action("reportselectdatasource", "reports")";
+            var reportselectdatasetUrl = "@Url.Action("reportselectdataset", "reports")";
+            var reportDesignerUrl = "@Url.Action("ReportDesigner", "Reports")";
+
+            function load() {
+                window.parent.parent.$("#report_popup_wrapper").ejWaitingPopup("hide");
+                $('[data-toggle="tooltip"]').tooltip();
+                if (($(parent.window).width()) > 1400) {
+                    $(".dialog").addClass("iframe");
+                }
+
+                if (($(parent.window).width()) < 1400) {
+                    $(".dialog").removeClass("iframe");
+                }
+            }
+        </script>
+
+        @Scripts.Render("~/scripts/add-report")
+        @Styles.Render("~/styles/add-report")
+    </head>
+<body style="background-color:white" onload="load();">
+
+    <div id="createReportPopupHolder" class="add-report-module dialog">
+        <input type="hidden" name="selectedFolderId" id="selectedFolderId" value="" />
+        <input type="hidden" id="publishedFileName" value="none">
+        <input type="hidden" id="rdl_filename" value="Browse file path">
+        <div class="col-md-12 dialog-header">
+            <span class="su su-report Head-icon"></span>            
+            @{
+                if (ViewBag.Action == "Upload")
+                {
+                    <span class="PopupTitle">[[[Upload Report]]]</span>
+                }
+                else if(ViewBag.Action == "Create")
+                {
+                    <span class="PopupTitle">[[[Create Report]]]</span>
+                }
+            }
+            <a href="javascript:void(0);" class="PopupClose" title="[[[Close]]]" data-toggle="tooltip" data-placement="bottom" onclick="closeNewRDLAddPopup()"><span class="su su-close"></span></a>
+        </div>
+        <form id='new_rdl_tab_content' class='dialog-body col-xs-12 no-padding add-report-form' autocomplete="off">
+            <div class='col-xs-12 padding-bottom20 new-rdl-content-holder' id='new_rdl_content_holder'>
+                <table cellspacing='10' cellpadding='0' border='0' width='100%'>
+                    <tr>
+                        <td class="col-xs-3">
+                            <div class="bottom-margin35 text-right">[[[Category]]]<span class="mandatory">*</span></div>
+                        </td>
+                        <td class="col-xs-9">
+                            <div>
+                                <select id="selected_category" data-live-search="true" title='[[[Select category]]]' name="categoryId" class="selectpicker form-control bottom-margin30" data-none-results-text="[[[No results match]]]" data-size="5" style="width:100%;margin-bottom:15px;">
+                                    @for (var item = 0; item < Model.Count; item++)
+                                    {
+                                        <option value="@Model[item].Id">@Model[item].Name</option>
+                                    }
+                                </select>
+                                <span id="CategoryMessage" class="ErrorMessage hide">[[[Please select category]]]</span>
+                                @if (Model.Count == 0)
+                                {
+                                    <span id="emtpyCategoryList" class="ErrorMessage">* [[[Please create a category to group the report]]]</span>
+                                }
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-xs-3 text-right"><div class="bottom-margin30">[[[Name]]]<span class="mandatory">*</span></div></td>
+                        <td  class="col-xs-9">
+                            <div>
+                                <input type='text' autofocus="" class='form-control bottom-margin30 edit-field text' name='file_name' id='file_name' maxlength="255" />
+                                <span id='report_name_validation_error' class='validation-messages text' style="margin-top: 0px;"></span>
+                                @*<span id="fileNameMessage" class="ErrorMessage hide">Please enter report name</span>*@
+                                <div id="plugin_validation" class="validation-messages text" style="margin-top: 0px;"></div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-xs-3 text-right"><div class="bottom-margin30">[[[Description]]]</div></td>
+                        <td class="col-xs-9">
+                            <textarea style="resize: none;" id='file-description' class='form-control bottom-margin35' maxlength="1024"></textarea>
+                            <span class="notification help-text">
+                                <span class="help-text-mandatory">*</span>[[[1024 characters maximum]]]
+                            </span>
+                        </td>
+                    </tr>                   
+                    @{
+                        if (ViewBag.Action == "Upload")
+                        {
+                            <tr>
+                                <td class="col-xs-3 text-right"><div class="bottom-margin35">[[[RDL File]]]<span class="mandatory">*</span></div></td>
+                                <td class="col-xs-9">
+                                    <iframe id="report_upload_iframe" class="bottom-margin30" style="height: 35px" src="@Url.Action("UploadReportView", "Reports")" scrolling="no" tabindex="-1"></iframe>
+                                    <span id="uploadValidation" class="ErrorMessage"></span>
+                                </td>
+                            </tr>
+                        }
+
+                        else if (ViewBag.Action == "Create")
+                        {
+                            <tr>
+                                <td class="col-xs-3">
+                                    <div class="bottom-margin35 text-right">[[[Dataset]]]</div>
+                                </td>
+                                <td class="col-xs-9">
+                                    <div class="dropup">
+                                        <select id="selected-dataset" data-live-search="true" title='[[[Select Dataset]]]' name="dataset-name" class="selectpicker form-control bottom-margin30" data-none-results-text="[[[No results match]]]" data-size="3">
+                                            <option value="" selected="selected">[[[Select Dataset]]]</option>
+                                            @for (var item = 0; item < datasetList.Count; item++)
+                                            {
+                                                var selected = @selectedDataset == @datasetList[item].Id ? "selected" : ""; ;
+                                                <option value="@datasetList[item].Id" @selected>@datasetList[item].Name</option>
+                                            }
+                                        </select>
+                                        <span id="DatasetMessage" class="ErrorMessage hide">[[[Please select Dataset]]]</span>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                }
+                </table>
+                <div class="col-md-12 DisplayNone no-padding" id="datasource_list">
+                    <h4>[[[Select Data Source(s)]]]</h4>
+                    <table id="datasource_list_table"></table>
+                </div>
+                <div class="col-md-12 DisplayNone no-padding" id="dataset_list">
+                    <h4>[[[Select Dataset(s)]]]</h4>
+                    <table id="dataset_list_table"></table>
+                </div>
+            </div>
+        </form>
+
+        <form action="@Url.Action("ReportDesigner", "Reports")" id="create-report-form" method="POST" target="_blank">
+            <input id="report-name" name="reportName" type="hidden" value="">
+            <input id="category-name" name="categoryName" type="hidden" value="">
+            <input id="report-description" name ="description" type="hidden" value = "">
+            <input id="dataset-name" name ="datasetName" type="hidden" value = "">
+            <input id="edit-value" name="isEdit" type="hidden" value="">
+            <input id="dataset-guid" name="datasetId" type="hidden" value="">
+        </form>
+        <div class='col-md-12 dialog-footer new-report-button-holder'>
+            <div class='create-rdl-btns'>
+            @{
+                    if (ViewBag.Action == "Create")
+                    {
+                        <input type="button" title="" value="[[[Create]]]" id="create-report-in-designer" class="btn primary-button small-right-margin"disabled>
+                    }
+
+                    else if (ViewBag.Action == "Upload")
+                    {
+                        <input type="button" title="" value="[[[Save]]]" id="publish_report" onclick="addRDLReport()" class="btn primary-button small-right-margin" disabled>
+                    }
+                }                
+                <input type="button" title="" value="[[[Cancel]]]" class="btn secondary-button NoStyleCloseClick" onclick="closeNewRDLAddPopup()">
+            </div>
+        </div>
+    </div>
+</body>
+</html>
