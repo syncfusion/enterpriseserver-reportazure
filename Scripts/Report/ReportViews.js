@@ -728,11 +728,11 @@ function ViewReportClick(args) {
             if (i >= 1) {
                 filtered_li += "<hr/>";
             }
-            var paramName = args[i].Name.trim();
+            var paramName = args[i].name.trim();
 
             filtered_li += "<li class='unsaved-filter'><div class='param-name'>[[[" +
                 paramName +
-                "]]]</div><div class='param-value'rel='tooltip' data-placement='left' data-original-title='[[[" + args[i].Labels[0] + "]]]'>[[[" +
+                "]]]</div><div class='param-value'rel='tooltip' data-placement='left' data-original-title='[[[" + args[i].labels[0] + "]]]'>[[[" +
                 appliedParametersForUI(args[i]) +
                 "]]]</div></li>";
         }
@@ -788,14 +788,14 @@ function ViewReportClick(args) {
 
 function appliedParametersForUI(args) {
     var values = "";
-	if(args.DataType == "DateTime"){
-	values = args.Value;
-	}
-    else if (((args.Labels === null || args.Labels === "undefined" || args.Labels === ""))) {
-        values = args.Label;
+    if (args.dataType == "DateTime") {
+        values = args.value;
+    }
+    else if (((args.labels === null || args.labels === "undefined" || args.labels === ""))) {
+        values = args.label;
     }
     else {
-        values = args.Labels.toString();
+        values = args.labels;
     }
 
     return values;
@@ -869,7 +869,7 @@ function QueryStringFormation(args, isFilterUpdate) {
     jQuery.each(args,
         function (index, item) {
             if ($.isNumeric(index)) {
-                var value = args[index].IsMultiValue ? args[index].Values : (args[index].Value != undefined ? args[index].Value : args[index].Values);
+                var value = args[index].isMultiValue ? args[index].values : (args[index].value != undefined ? args[index].value : args[index].values);
                 var parameterValue = "";
                 if ($.isArray(value)) {
                     if (value.length > 1) {
@@ -883,12 +883,12 @@ function QueryStringFormation(args, isFilterUpdate) {
                     }
                 }
                 if (parameterValue == "") {
-                    parameterValue ="\"" + value + "\"";
+                    parameterValue = "\"" + value + "\"";
                 }
-                var nullable = args[index].IsNullable != undefined ? args[index].IsNullable.toString().toLowerCase() : args[index].Nullable.toString().toLowerCase();
-                queryString += "{\"name\":\"" + args[index].Name + "\",\"values\":[" + parameterValue + "],\"nullable\":" + nullable + "},";
+                var nullable = args[index].nullable;
+                queryString += "{\"name\":\"" + args[index].name + "\",\"values\":[" + parameterValue + "],\"nullable\":" + nullable + "},";
                 if (isFilterUpdate) {
-                    parameterArray.push(args[index].Name.trim());
+                    parameterArray.push(args[index].name);
                     valueArray.push(value);
                 }
             }
