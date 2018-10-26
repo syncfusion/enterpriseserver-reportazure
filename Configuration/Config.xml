@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<SystemSettings xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <OrganizationName>Syncfusion Report Server</OrganizationName>
-  <WelcomeNoteText>Welcome to Syncfusion Report Server</WelcomeNoteText>
-  <InstallationFolder>Syncfusion</InstallationFolder>
-  <CopyrightInformation>Copyright &amp;copy 2001 - $$CurrentYear$$ Syncfusion Inc.   |   All Rights Reserved</CopyrightInformation>
-  <IsShowPoweredBySyncfusion>true</IsShowPoweredBySyncfusion>
-  <DRM>dgZZBTRqtB37rCqrb64PcmrYq/jCtLQM9FpEem/e+ImbGggGCCzqgXWeQgoD42Fsg/1Z8fB2pQ/fH32YrqYNJs6vcluw9QhKdNxmGRNW6aeFPv8VNA9baGmhYe4VGHqZG6LFQaKdHVqdWZesqg7pNg==</DRM>
-</SystemSettings>
