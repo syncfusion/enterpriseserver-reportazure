@@ -1,0 +1,175 @@
+﻿@model NotificationSettings
+@{
+    var userDetail = (User)ViewBag.UserDetail;
+    var groupList = ViewBag.GroupList;
+    ViewBag.Title = GlobalAppSettings.SystemSettings.OrganizationName + " - [[[My Profile]]]";
+}
+
+@section styles{
+    @Styles.Render("~/Styles/profile")
+}
+@section scripts{
+    @Scripts.Render("~/Scripts/profile")
+
+    <script type="text/javascript">
+        var updateprofilepictureUrl = "@Url.Action("updateprofilepicture", "User")";
+        var isAdmin = @Html.Raw(Json.Encode(ViewBag.IsAdminAccount));
+        var fileUploadUrl = "@Url.Action("Upload", "fileupload")";
+        var avatarUrl = "@Url.Action("Avatar", "User")";
+        var updateUserProfileUrl = "@Url.Action("UpdateUserProfile", "User")";
+        var updatepasswordUrl = "@Url.Action("updatepassword", "User")";
+        var rootUrl = "@Url.Content("~/")";
+        var rootBaseUrl = "@Url.Content("~/")";
+        if (rootBaseUrl.toLowerCase() == "/")
+            rootBaseUrl = "";
+        var deleteavatarUrl = "@Url.Action("deleteavatar", "User")";
+        var getdefaultavatarUrl = "@Url.Action("getdefaultavatar", "User")";
+
+        $(document).ready(function () {
+            $("#avatar-button-click, #avatar-delete-click").css("display","none");
+
+            if (@ViewBag.EditProfile > 0) {
+                $("#edit").trigger("click");
+            }
+            if(@ViewBag.EditNotification > 0){
+                $("#edit-settings").trigger("click");
+            }
+            $('[data-toggle="tooltip"]').tooltip();
+            var fulldata = JSON.parse(@Html.Raw(Json.Encode(ViewBag.ProfileDetail)));
+            window.dateFormat = "@GlobalAppSettings.SystemSettings.DateFormat";
+            editUser(fulldata, "@GlobalAppSettings.SystemSettings.DateFormat");
+
+            $(document).on("click", ".popup-close", function (e) {
+                $(".edit-profile-field").attr("value","updateUserProfileUrl");
+                $("#profile-picture").attr("src", "@Url.Content("~/Content/Images/Preview.jpg")");
+                $('#upload-image').attr("disabled", "disabled");
+                 if ($(".img-container").children().hasClass("jcrop-active")) {
+                    $('#profile-picture').data("Jcrop").destroy();
+                 }
+                $(function () {
+                    $("#avatar-upload-box").ejDialog({
+                         showOnInit: false,
+                        allowDraggable: true,
+                        enableResize: false,
+                        width: "600px",
+                        enableModal: true,
+                        showHeader: false,
+                        close: "DialogBoxClose",
+                        closeOnEscape: true
+                    });
+                 });
+                 eDialog = $("#avatar-upload-box").data("ejDialog");
+                 eDialog.close();
+             });
+         });
+    </script>
+}
+@section MainSection{
+    <div id="edit-profile-base-div" class="col-lg-12 col-sm-12 col-md-12 col-xs-12 no-margin no-padding">
+        <input type="hidden" class="page-name" data-content="[[[USER PROFILE]]]">
+        <input type="hidden" id="user-id" value="@((HttpContext.Current.User as ServerPrincipal).UserId)" />
+        <span id="is-aduser">@ViewBag.IsAdUser</span>
+        <span id="logged-user">@ViewBag.LoggedUser</span>
+        <div class="col-lg-12 col-sm-12 col-md-12 col-xs-12 no-padding admin-page-container" id="user-profile-master">
+            <div id="edit-profile-heading-div" class="col-lg-12 col-md-12 co-sm-12 col-xs-12 admin-page-header">
+                <hgroup>
+                    <h1 class="col-xs-3 col-sm-4 col-md-4 col-lg-4 section-heading page-title header">[[[MY PROFILE]]]</h1>
+                </hgroup>
+                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-8 button-section">
+                    @if (!ViewBag.IsAdUser)
+                    {
+                        <a href="@Url.Action("EditPassword","User")" class="link-button pull-right edit-password" title="">[[[Change Password]]]</a>
+                    }
+                    <a href="@Url.Action("UserPermission","User")" class="link-button permission-button pull-right" title="">[[[View My Permissions]]]</a>
+                </div>
+            </div>
+            <div class="profile-section col-lg-12 col-md-12 col-sm-12 col-xs-12 no-padding admin-page-body">
+                <div class="img-view-holder col-lg-12 col-md-12 col-sm-10 col-xs-12">
+                    <img id="user-profile-picture" src="@Url.Content("~/User/Avatar?Username="+ ((HttpContext.Current.User as ServerPrincipal).UserId)+ "&ImageSize=110")" />
+                    <span class="su su-edit-inverse profile-picture-edit-button" id="avatar-button-click" title="[[[Edit profile picture]]]"></span>
+                    <span class="su su-delete profile-picture-edit-button" id="avatar-delete-click" title="[[[Delete profile picture]]]"></span>
+                </div>
+                <div id="edit-profile-form-div" class="col-sm-6 col-xs-12 no-padding margin-top10">
+                    <form class="form-horizontal edit-profile-form" autocomplete="off">
+                        <div class="form-group no-padding">
+                            <label class="label-panel text-right app-textbox-label app-textbox-label">[[[Username]]]</label>
+                            <div class="col-sm-5 col-xs-12 group-list">
+                                @Html.TextBox("user-name", userDetail.UserName, new { id = "user-name", @class = "form-control content-size disable-content", disabled = "disabled" })
+                            </div>
+                        </div>
+                        <div class="form-group no-padding line-spacing">
+                            <label class="label-panel text-right app-textbox-label">[[[First Name]]]<span class="mandatory">*</span> </label>
+                            <div class="col-sm-5 col-xs-12 group-list">
+                                @Html.TextBox("user-firstname", userDetail.FirstName, new { id = "user-firstname", placeholder = "[[[Please enter first name]]]", @class = "form-control content-size edit-profile-field disable-content", disabled = "disabled" })
+                                <span id="first-name-validation" class="alert-messages validation-message"></span>
+                            </div>
+                        </div>
+                        <div class="form-group no-padding line-spacing">
+                            <label class="label-panel text-right app-textbox-label">
+                                [[[Last name]]]
+                            </label>
+                            <div class="col-sm-5 col-xs-12 group-list">
+                                @Html.TextBox("user-lastname", userDetail.LastName, new { id = "user-lastname", placeholder = "[[[Please enter last name]]]", @class = "form-control content-size edit-profile-field disable-content", disabled = "disabled" })
+                                <span id="last-name-validation" class="alert-messages validation-message"></span>
+                            </div>
+                        </div>
+                        <div class="form-group no-padding line-spacing">
+                            @if (ViewBag.IsAdminAccount)
+                            {
+                                <label class="label-panel text-right app-textbox-label">[[[Email]]] </label>
+                            }
+                            else
+                            {
+                                <label class="label-panel text-right app-textbox-label">[[[Email]]] </label>
+                            }
+                            <div class="col-sm-5 col-xs-12 group-list">
+                                @Html.TextBox("user-email", userDetail.Email, new { id = "user-email", placeholder = "[[[Please enter email address]]]", @class = "form-control content-size edit-profile-field disable-content", disabled = "disabled" })
+                                <span id="email-duplicate-validation" class="alert-messages validation-message"></span>
+                            </div>
+                        </div>
+                        <div class="form-group no-padding line-spacing">
+                            <label class="label-panel text-right app-textbox-label">
+                                [[[Phone]]]
+                            </label>
+                            <div class="col-sm-5 col-xs-12 group-list">
+                                @Html.TextBox("user-phonenumber", userDetail.ContactNumber, new { id = "user-phonenumber", placeholder = "[[[Please enter phone number]]]", @class = "form-control content-size edit-profile-field disable-content", disabled = "disabled" })                                <span id="contact-validation" class="alert-messages validation-message"></span>
+                            </div>
+                        </div>
+                        <div class="form-group no-padding line-spacing" id="group-div">
+                            <label class="label-panel text-right app-textbox-label">
+                                [[[Groups]]]
+                            </label>
+                            <div class="col-sm-5 col-xs-12 group-list">
+                                @{
+                                    for (var group = 0; group < ViewBag.GroupList.Count; group++)
+                                    {
+                                        <div id="groups" class="content-size" title="@ViewBag.GroupList[group].Name" data-html="false" data-container="body" data-toggle="tooltip" data-placement="auto top">
+                                            @ViewBag.GroupList[group].Name
+                                        </div>
+                                    }
+                                }
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <div id="edit-button" class="col-sm-3 col-xs-12 no-padding">
+                    @if (!ViewBag.IsAdUser)
+                    {
+                        <input type="button" class="secondary-button pull-right" id="edit" title="" value="[[[Edit Profile]]]">
+                    }
+                    <input type="button" class="secondary-button pull-right popup-close" title="" id="cancel-button" value="[[[Cancel]]]">
+                    <input type="button" class="primary-button pull-right inactive-content" id="save-button" title="" onclick="SaveProfile()" value="[[[Save]]]">
+                </div>
+                <div class="col-xs-12 col-sm-4 col-md-4 col-lg-3 no-padding" id="message">
+                    <h5 id="success-message"></h5>
+                </div>
+            </div>
+
+            @Html.Partial("_UserNotificationPreference")
+        </div>
+    </div>
+    <input type="hidden" id="image" value="" />
+    <span id="baseurl" data-url="@Url.Content("~/")"></span>
+    @Html.Partial("_ProfilePictureUploadBox")
+}

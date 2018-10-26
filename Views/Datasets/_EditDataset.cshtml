@@ -1,0 +1,117 @@
+﻿<!DOCTYPE html>
+@{ 
+    Layout = null;
+}
+    <html class="report-server">
+    <head>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0">
+        <title>
+            @ViewBag.Title
+        </title>
+        @Styles.Render("~/styles/edit-datasets")
+        @Scripts.Render("~/scripts/edit-datasets")
+
+  <script>
+    var editDatasetUrl = "@Url.Action("EditDataset", "Datasets")";
+    var datasetselectdatasourceUrl = "@Url.Action("DatasetSelectDataSource", "Datasets")";
+    var isDatasetExistUrl = "@Url.Action("IsDatasetExist", "Datasets")";
+    var deletetemporarydatasetUrl = "@Url.Action("DeleteTemporaryDataset", "Datasets")";
+      $(document).ready(function () {
+          var firstLoad = true;
+          $("#dataset_upload_iframe").load(function () {
+            if (firstLoad) {
+                createEditDatasetPopup(@Html.Raw(Json.Encode(ViewData["datasetInfo"])));
+                firstLoad = false;
+            }
+            window.focus();
+        });
+      });
+
+      function load() {
+          $('[data-toggle="tooltip"]').tooltip();
+          if (($(parent.window).width()) > 1400) {
+              $(".dialog").addClass("iframe");
+          }
+
+          if (($(parent.window).width()) < 1400) {
+              $(".dialog").removeClass("iframe");
+          }
+      }
+  </script>
+    </head>
+    <body style="background:white;" onload="load();">
+        <form id="editItemForm" name="editItemForm" method="post" enctype="multipart/form-data" autocomplete="off">
+            <div id="PopupContainer" class="col-lg-12 no-padding dialog">
+                <input type="hidden" id="publishedFileName" value="none">
+                <div class="col-xs-12 dialog-header">
+                    <span class="su su-dataset Head-icon"></span>
+                    <span class="PopupTitle">[[[Update Dataset]]]</span>
+                    <a href="javascript:void(0);" title="[[[Close]]]" data-toggle="tooltip" data-placement="bottom" class="PopupClose"><span class="su su-close"></span></a>
+                </div>
+
+                <div class="dialog-body col-xs-12 no-padding file-content-height">
+                    <div id="general-file-container">
+                        <table width="100%" cellspacing="10px" cellpadding="0" border="0">
+                            <input type="hidden" name="ItemId" value="@Model.Id" />
+                            <tbody>
+                                <tr>
+                                    <td class="col-md-2 text-right"><div class="bottom-margin30">[[[Name]]]<span class="mandatory">*</span></div></td>
+                                    <td class="col-md-10">
+                                        <span>
+                                            <input type="text" id="file_name" name="Name" class="form-control text-field bottom-margin30 text" maxlength="255" value="@Model.Name" tabindex="1">
+                                            <span id="validate-name" class="validation-message text"></span>
+                                            <div id="plugin_validation" class="validation-message text"></div>
+                                            <input type="hidden" id="name_change_validation" name="IsNameChanged" value="false" />
+                                        </span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="col-xs-2 text-right"><div class="bottom-margin30">[[[Description]]]</div></td>
+                                    <td class="col-xs-10">
+                                        <textarea style="resize: none;" name="description" class="form-control text-field bottom-margin30 text" maxlength="1024" id="file-description" tabindex="2">@Model.Description</textarea>
+                                        <span class="notification help-text">
+                                            *[[[1024 characters maximum]]]
+                                        </span>
+                                        <input type="hidden" id="description_change_validation" name="IsDescriptionChanged" value="false" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="col-xs-2 text-right"><div class="rsd-file-label bottom-margin35" id="rsd-label">[[[RSD File]]]<span class="mandatory">*</span></div></td>
+                                    <td class="col-xs-10">
+                                        <iframe id="dataset_upload_iframe" style="border: none;" src="@Url.Action("UploadDatasetView", "Datasets")" scrolling="no" tabindex="-1"></iframe>
+                                        <span id="validate-file" class="validation-message text"></span>
+                                        <span id="uploadValidation" class="ErrorMessage text"></span>
+                                    </td>
+                                </tr>
+                                <tr id="version_comment">
+                                    <td class="col-xs-2 text-right">
+                                        <div class="bottom-margin30 ">[[[Version comments]]]</div>
+                                    </td>
+                                    <td class="col-xs-10">
+                                        <textarea id='comment' class='form-control bottom-margin30 text' name="versionComment" readonly="" maxlength="1024" tabindex="3"></textarea>
+                                        <span class="notification help-text">
+                                            *[[[1024 characters maximum]]]
+                                        </span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div class="col-md-12 DisplayNone" id="datasource_list">
+                            <h4 class="datasource-table-header heading">[[[Select Data Source]]]</h4>
+                            <table id="datasource_list_table"></table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xs-12 dialog-footer rightAlign">
+                    <div class="pull-right">
+                        <input type="submit" class="hide-content" style="display: none;"/>
+                        <input type="button" title="" class="btn primary-button" value="[[[Update]]]" id="publish_file" onclick="EditDataset()" disabled tabindex="4">
+                        <input type="button" title="" class="btn secondary-button" id="cancelEditDataSet" onclick="closeNewDatasetAddPopup()" value="[[[Cancel]]]" tabindex="4">
+                    </div>
+                </div>
+            </div>
+        </form>
+    </body>
+</html>

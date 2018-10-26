@@ -1,0 +1,127 @@
+﻿<!DOCTYPE html>
+@{ 
+    Layout = null;
+}
+<html class="report-server">
+    <head>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0">
+        <title>
+            Update Report
+        </title>
+        <script>
+            var isItemExistinCategoryUrl = "@Url.Action("IsItemExistInSameCategory", "reports")";
+            var isItemExistinCategoryForUpdateUrl = "@Url.Action("IsItemExistInSameCategoryForUpdate", "reports")";
+            var editreportUrl = "@Url.Action("editreport", "reports")";
+            var addsharedrdlreportUrl = "@Url.Action("addsharedrdlreport", "reports")";
+            var addembeddedrdlreportUrl = "@Url.Action("addembeddedrdlreport", "reports")";
+            var deletetemporaryrdlreportUrl = "@Url.Action("deletetemporaryrdlreport", "reports")";
+            var reportselectdatasourceUrl = "@Url.Action("reportselectdatasource", "reports")";
+            var reportselectdatasetUrl = "@Url.Action("reportselectdataset", "reports")";
+        </script>
+
+        @Scripts.Render("~/scripts/add-report")
+        @Styles.Render("~/styles/add-report")
+        <script>
+            $(function () {
+                createEditRdlPopup(@Html.Raw(Json.Encode(ViewData["reportInfo"])));
+                window.focus();
+            });
+
+            function load() {
+                $('[data-toggle="tooltip"]').tooltip();
+                if (($(parent.window).width()) > 1400) {
+                    $(".dialog").addClass("iframe");
+                }
+
+                if (($(parent.window).width()) < 1400) {
+                    $(".dialog").removeClass("iframe");
+                }
+            }
+        </script>
+    </head>
+<body style="background-color: white" onload="load();">
+    <form name="addReportForm" id="edit-report-form" method="post" enctype="multipart/form-data" autocomplete="off">
+        <div id="createReportPopupHolder" class="col-lg-12 no-padding edit-report-module dialog">
+            <input type="hidden" name="selectedFolderId" id="selectedFolderId" value="" />
+            <input type="hidden" id="publishedFileName" value="none">
+            <div class="col-xs-12 dialog-header">
+                <span class="su su-report Head-icon"></span>
+                <span class="PopupTitle extendedTitle">[[[Update Report]]]</span>
+                <a href="javascript:void(0);" title="[[[Close]]]" data-toggle="tooltip" data-placement="bottom" class="PopupClose" onclick="closeNewRDLAddPopup()"><span class="su su-close"></span></a>
+            </div>
+            <div id="new_rdl_tab_content" class="col-xs-12 no-padding dialog-body">
+                <div class='col-md-12  new-rdl-content-holder' id='new_rdl_content_holder'>
+                    <table cellspacing='10' cellpadding='0' border='0' width='100%'>
+                        <tr>
+                            <td class="col-xs-3">
+                                <div class="bottom-margin35 text-right">[[[Category]]]<span class="mandatory">*</span></div>
+                            </td>
+                            <td class="col-xs-9">
+                                <div>
+                                    <select id="selected_category" data-live-search="true" data-none-results-text="[[[No results match]]]" title='Select category' name="categoryId" class="selectpicker form-control bottom-margin30" data-size="5" style="width: 100%; margin-bottom: 15px;" tabindex="1" autofocus>
+                                        @for (var item = 0; item < Model.Count; item++)
+                                        {
+                                            <option value="@Model[item].Id">@Model[item].Name</option>
+                                        }
+                                    </select>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-xs-3 text-right"><div class="bottom-margin30">[[[Name]]]<span class="mandatory">*</span></div></td>
+                            <td class="col-xs-9">
+                                <div>
+                                    <input type='text' class='form-control edit-text-fields bottom-margin30 text' name='file_name' id='file_name' maxlength="255" tabindex="2" />
+                                    <span id='report_name_validation_error' class='validation-messages text' ></span>
+                                    <div id="plugin_validation" class="validation-messages text"></div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-xs-3 text-right"><div class="bottom-margin30">[[[Description]]]</div></td>
+                            <td class="col-xs-9">
+                                <textarea style="resize: none;" id='file-description' class='form-control edit-text-fields bottom-margin35' maxlength="1024" tabindex="3"></textarea>
+                                <span class="notification help-text">
+                                    <span class="help-text-mandatory">*</span>[[[1024 characters maximum]]]
+                                </span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-xs-3 text-right"><div class="bottom-margin35">[[[RDL File]]]<span class="mandatory">*</span></div></td>
+                            <td class="col-xs-9">
+                                <input type="hidden" name="rdl_filename" id="rdl_filename" />
+                                <iframe id="report_upload_iframe" style="height:35px" class="bottom-margin30" src="@Url.Action("UploadReportView", "Reports")" scrolling="no" tabindex="-1"></iframe>
+                                <span id="uploadValidation" class="ErrorMessage text"></span>
+                            </td>
+                        </tr>
+                        <tr id="version_comment" class="DisplayNone">
+                            <td class="col-xs-3 text-right"><div class="bottom-margin30">[[[Version comments]]]</div></td>
+                            <td class="col-xs-9">
+                                <textarea id='comment' class='form-control edit-text-fields bottom-margin30 text' maxlength="1024" tabindex="4"></textarea>
+                                <span class="notification help-text">
+                                    <span class="help-text-mandatory">*</span>[[[1024 characters maximum]]]
+                                </span>
+                            </td>
+                        </tr>
+                    </table>
+                    <div class="col-md-12 DisplayNone no-padding text" id="datasource_list">
+                        <h4>[[[Select Data Source(s)]]]</h4>
+                        <table id="datasource_list_table"></table>
+                    </div>
+                    <div class="col-md-12 DisplayNone no-padding text" id="dataset_list">
+                        <h4>[[[Select Dataset(s)]]]</h4>
+                        <table id="dataset_list_table"></table>
+                    </div>
+                </div>
+            </div>
+            <div class='col-xs-12 new-report-button-holder rightAlign no-left-padding fixed-footer dialog-footer'>
+                <div class='create-rdl-btns pull-right'>
+                    <input type='button' title="" value='[[[Update]]]' id='publish_report' onclick="addRDLReport()" class='btn primary-button small-right-margin' disabled tabindex="5">
+                    <input type='button' title="" value='[[[Cancel]]]' class='btn secondary-button NoStyleCloseClick' onclick="closeNewRDLAddPopup()" tabindex="6">
+                </div>
+            </div>
+        </div>
+    </form>
+</body>
+</html>

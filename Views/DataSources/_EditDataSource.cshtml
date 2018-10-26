@@ -1,0 +1,261 @@
+﻿<!DOCTYPE html>
+@{ 
+    Layout = null;
+}
+<html class="report-server">
+    <head>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0">
+        <title>
+            Update Data Source popup
+        </title>
+        <script>
+            var editdatasourceUrl = "@Url.Action("editdatasource", "datasources")";
+            var testdatasourceconnectionUrl = "@Url.Action("testdatasourceconnection", "datasources")";
+
+            function load() {
+                $('[data-toggle="tooltip"]').tooltip();
+                if (($(parent.window).width()) > 1400) {
+                    $(".dialog").addClass("iframe");
+                }
+
+                if (($(parent.window).width()) < 1400) {
+                    $(".dialog").removeClass("iframe");
+                }
+            }
+        </script>
+        @Styles.Render("~/styles/add-datasource")
+        @Scripts.Render("~/scripts/iframe", "~/scripts/edit-datasource")
+    </head>
+<body style="background-color:white" onload="load();">
+    <div id="PopupContainer" class="col-lg-12 no-padding dialog">
+        <div class="col-xs-12 dialog-header">
+            <span class="su su-datasource head-icon"></span>
+            <span class="popup-title">[[[Update Data Source]]]</span>
+            <a href="javascript:void(0);" title="[[[Close]]]" data-toggle="tooltip" data-placement="bottom" class="PopupClose" onclick="parent.onDataSourceEditDialogClose()"><span class="su su-close"></span></a>
+        </div>
+        <div id="datasource_popup_module" class="dialog-body col-xs-12 no-padding">
+            <div class="datasource-btns col-md-12 no-top-margin">
+                <div class="pull-right">
+                    <input type='button' title='' id="publish_datasource" value='[[[Update]]]' onclick="updateDataSource()" class='btn primary-button margin-right' data-mapid="name" tabindex="17">
+                    <input type='button' title='' value='[[[Cancel]]]' class='btn secondary-button' onclick="parent.onDataSourceEditDialogClose()" tabindex="18">
+                </div>
+            </div>
+            <form id='new_datasource_tab_content' class='col-md-12 rdl-datasource-tab-contents' autocomplete="off">
+                <div class='col-md-12 no-top-margin new-datasource-content-holder' id='new_datasource_content_holder'>
+                    <table id='datasource_table'>
+                        <tr>
+                            <td class="col-md-2 text-right">
+                                <div class="bottom-margin30">[[[Name]]]<span class="mandatory">*</span></div>
+                            </td>
+                            <td class="col-md-10">
+                                <span>
+                                    <input type='text' id='new_datasource_name' name="new_datasource_name" class='form-control validate-fields edit-text-fields bottom-margin30 text' maxlength="255" tabindex="1" autofocus />
+                                    <span id='datasource_name_validation_error' class='datasource-validation-messages text'></span>
+                                    <div id="plugin_validation" class="datasource-validation-messages validation-margin text"></div>
+                                </span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-2 text-right">
+                                <div class="bottom-margin30">[[[Description]]]</div>
+                            </td>
+                            <td class="col-md-10">
+                                <textarea id='new_datasource_description' name="new_datasource_description" class='form-control edit-text-fields bottom-margin30 text' maxlength="1024" tabindex="2"></textarea>
+                                <span class="notification help-text">
+                                    <span class="help-text-mandatory">*</span>[[[1024 characters maximum]]]
+                                </span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-2 text-right"><div class="bottom-margin30 text">[[[Data Source type]]]</div></td>
+                            <td class="col-md-10">
+                                @{Html.RenderPartial("~/Views/Items/_DataSourceSupportList.cshtml", ViewBag.DataSource as List<string>);}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-2 text-right">
+                                <div class="bottom-margin30 text">[[[Connection string]]]</div>
+                            </td>
+                            <td class="col-md-10">
+                                <textarea id='new_datasource_connectionstring' name="new_datasource_connectionstring" class='form-control validate-fields bottom-margin30 text' tabindex="4"></textarea>
+                                <div id='datasource_connstring_validation_error' class='datasource-validation-messages validation-margin text'></div>
+                            </td>
+                        </tr>
+                        <tr id="connect_prop" class="disable_connections">
+                            <td class="col-md-2 text-right">
+                                <span class="bottom-margin30 text">[[[Connect using]]]:</span>
+                            </td>
+                            <td class="col-md-10">
+                                <div class="full-width connection-types">
+                                    <div class="full-width no-margin no-padding">
+                                        @Html.RadioButton("connect_using", "Prompt", new { @class = "css-radio", @id = "connect_option_prompt" })
+                                        @Html.Label("connect_option_prompt", "[[[Credentials supplied by the user running the report]]]", new { @class = "text labels notransition" })
+                                    </div>
+                                    <div class="full-width connection-sub-types page-indent bottom-margin10 text">
+                                        <span>[[[Display the following text to prompt user for a username and password]]]:</span>
+                                    </div>
+                                    <div class="full-width connection-sub-types page-indent text">
+                                        <input type="text" id="prompt_text" value="[[[Type or enter a username and password to access the Data Source:]]]" class="form-control connection-type-prompt bottom-margin30 text" tabindex="6" />
+                                    </div>
+                                    <div class="full-width connection-sub-types page-indent text">
+                                        @Html.CheckBox("enable_windows_prompt", new { @class = "material-checkbox nodetext connection-type-prompt", @id = "enable_windows_prompt" })
+                                        @Html.Label("enable_windows_prompt", "[[[Use as Windows credentials when connecting to the Data Source]]]", new { @class = "text cbk-labels NotificationContent notransition" })
+                                    </div>
+                                </div>
+
+                                <div class="full-width connection-types locale-label-align">
+                                    <div class="full-width no-margin no-padding text">
+                                        @Html.RadioButton("connect_using", "Store", new { @class = "css-radio", @id = "connect_option_store" })
+                                        @Html.Label("connect_option_store", "[[[Credentials stored securely in the report server]]]", new { @class = "text labels" })
+                                    </div>
+                                    <div class="full-width connection-sub-types table-page-indent">
+                                        <table>
+                                            <tr>
+                                                <td class="col-md-2 text-right">[[[Username]]]:</td>
+                                                <td class="col-md-10">
+                                                    <input type="text" class="form-control connection-type-server validate-fields edit-text-fields text" name="connection_stored_username" id="connection_stored_username" style="width: 250px;" tabindex="9" />
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="col-md-2 text-right">[[[Password]]]:</td>
+                                                <td class="col-md-10">
+                                                    <input type="password" class="form-control connection-type-server validate-fields edit-text-fields text" name="connection_stored_password" placeholder="&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;" id="connection_stored_password" style="width: 250px;" tabindex="10" />
+                                                    <div id="password-field" class="su su-eye ViewGreen showHidePassword"></div>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                        <span id="datasource_credential_validation_error1" class="datasource-validation-messages validation-margin-credentials text"></span>
+                                        <span id="datasource_credential_validation_error2" class="datasource-validation-messages validation-margin-credentials text"></span>
+                                    </div>
+                                    <div class="full-width connection-sub-types page-indent text">
+                                        @Html.CheckBox("enable_windows_stored", new { @class = "material-checkbox nodetext connection-type-server", @id = "enable_windows_stored", @disabled = "disabled" })
+                                        @Html.Label("enable_windows_stored", "[[[Use as Windows credentials when connecting to the Data Source]]]", new { @class = "text cbk-labels NotificationContent notransition" })
+                                    </div>
+                                    <div class="full-width connection-sub-types page-indent text disable_impersonate locale-label-align">
+                                        @Html.CheckBox("enable_impersonate", new { @class = "material-checkbox nodetext connection-type-server", @id = "enable_impersonate", @disabled = "disabled" })
+                                        @Html.Label("enable_impersonate", "[[[Impersonate the authenticated user after a connection has been made to the Data Source]]]", new { @class = "text cbk-labels NotificationContent notransition" })
+                                    </div>
+                                </div>
+
+                                <div class="full-width connection-types text locale-label-align">
+                                    @Html.RadioButton("connect_using", "Integrated", new { @class = "css-radio", @id = "connect_option_windows" })
+                                    @Html.Label("connect_option_windows", "[[[Windows Integrated Security]]]", new { @class = "text labels" })
+                                </div>
+                                <div class="full-width connection-types text">
+                                    @Html.RadioButton("connect_using", "None", new { @class = "css-radio", @id = "connect_option_none" })
+                                    @Html.Label("connect_option_none", "[[[Credentials are not required]]]", new { @class = "text labels" })
+                                </div>
+                                <div class="full-width connection-types text">
+                                    <input id="test_connection" type="button" value="[[[Test Connection]]]" onclick="onTestDataSourceConnection()" class="btn primary-button" tabindex="15">
+                                </div>
+                                <div class="full-width">
+                                    <span id="connection_test_validation_error" class="datasource-validation-messages validation-margin-credentials text"></span>
+                                </div>
+                            </td>
+                        </tr>
+
+                        <tr id="version_comment_tr">
+                            <td class="col-md-2 text-right">
+                                <div class="bottom-margin30 text">[[[Version comments]]]</div>
+                            </td>
+                            <td class="col-md-10">
+                                <textarea id='comment' class='form-control edit-text-fields bottom-margin30 text' readonly="" maxlength="1024" tabindex="16"></textarea>
+                                <span class="notification help-text">
+                                    <span class="help-text-mandatory">*</span>[[[1024 characters maximum]]]
+                                </span>
+                            </td>
+                        </tr>
+                    </table>
+                </div><div class='horizontal-splitline no-top-margin'></div>
+            </form>
+        </div>
+    </div>
+</body>
+</html>
+<script>
+    $(function () {
+        parent.$("#datasource-edit-popup_wrapper").ejWaitingPopup("hide");
+        $("#new_datasource_tab_content").css("height", window.innerHeight - 113 + "px");
+
+        $(document).on("change", "#enable_windows_prompt", function () {
+            onCheckboxChange();
+        });
+
+        $(document).on("change", "#enable_impersonate", function () {
+            onCheckboxChange();
+        });
+
+        $(document).on("change", "#enable_windows_stored", function () {
+            onCheckboxChange();
+        });
+
+        $(document).on("change", "#connect_option_prompt", function () {
+            onConnectionTypeChange("connect_option_prompt");
+        });
+
+        $(document).on("change", "#connect_option_store", function () {
+            onConnectionTypeChange("connect_option_store");
+        });
+
+        $(document).on("change", "#connect_option_windows", function () {
+            onConnectionTypeChange("connect_option_windows");
+        });
+
+        $(document).on("change", "#connect_option_none", function () {
+            onConnectionTypeChange("connect_option_none");
+        });
+
+        createEditDataSourcePopup(@Html.Raw(Json.Encode(ViewData["dataSourceInfo"])),@Html.Raw(Json.Encode(ViewData["dataSourceDefinition"])));
+        
+        $("#datasource-type").on("change", function (e) {
+            if ($("#datasource-type").val() != "XML" && $("#new_datasource_connectionstring").val() != "") {
+                var connectUsing = $('input:radio[name=connect_using]:checked').val().toLowerCase();
+                if (connectUsing === "store" && ($("#connection_stored_username").val() === "" || $("#connection_stored_password").val() === "")) {
+                    $("#test_connection").attr("disabled", "disabled");
+                }
+                else {
+                    $("#test_connection").removeAttr("disabled");
+                }
+            } else {
+                $("#test_connection").attr("disabled", "disabled");
+            }
+            dataSourceEditValidation();
+        });
+
+        $(document).on("keyup", ".edit-text-fields", function (e) {
+            if ($(this).attr("id") === "new_datasource_name") {
+                if (window.editData.Name !== $(this).val()) {
+                    window.editData.IsNameChanged = true;
+                }
+                else {
+                    window.editData.IsNameChanged = false;
+                }
+            }
+            if ($(this).attr("id") === "new_datasource_description") {
+                if (window.editData.Description !== $(this).val()) {
+                    window.editData.IsDescriptionChanged = true;
+                }
+                else {
+                    window.editData.IsDescriptionChanged = false;
+                }
+            }
+            dataSourceEditValidation();
+        });
+        $(document).on("keyup", "#new_datasource_connectionstring", function (e) {
+            if ($("#datasource-type").val() != "XML" && $("#new_datasource_connectionstring").val() != "") {
+                var connectUsing = $('input:radio[name=connect_using]:checked').val().toLowerCase();
+                if (connectUsing === "store" && ($("#connection_stored_username").val() === "" || $("#connection_stored_password").val() === "")) {
+                    $("#test_connection").attr("disabled", "disabled");
+                }
+                else {
+                    $("#test_connection").removeAttr("disabled");
+                }
+            } else {
+                $("#test_connection").attr("disabled", "disabled");
+            }
+            dataSourceEditValidation();
+        });
+        window.parent.$("#datasource-edit-popup_wrapper").ejWaitingPopup("hide");
+    });
+</script>
