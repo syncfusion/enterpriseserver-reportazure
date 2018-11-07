@@ -1795,6 +1795,20 @@
             <value></value>
             <remarks></remarks>
         </member>
+        <member name="P:Syncfusion.EJ.ReportWriter.PDFOptions.EnableComplexScript">
+             <summary>
+             Gets or sets a value indicating that content of the text should be treated as complex script text layout rendering.
+             </summary>
+             <value>True if to consider as complex script; otherwise, false.</value>
+            <example>
+            <code>
+            ReportWriter reportWriter = new ReportWriter();
+            reportWriter.PDFOptions = new PDFOptions();
+            reportWriter.PDFOptions.EnableComplexScript = true;
+            </code>
+            </example>
+             <remarks></remarks>
+        </member>
         <member name="T:Syncfusion.EJ.ReportWriter.PPTOptions">
             <summary>
             To set the PPTOptions of PPT Writter
