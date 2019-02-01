@@ -1,0 +1,100 @@
+﻿@{
+    Layout = null;
+    ViewBag.MessageBox = false;
+
+}
+<html class="report-server">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0">
+    <meta http-equiv='Content-Type' content='text/html; charset=UTF-8'>
+
+    @Styles.Render("~/styles/connection-error")
+    <title>[[[EmbedReport Error]]]</title>
+    <style>
+        h2 {
+            border-bottom: 1px solid #e2e2e2;
+            font-size: 30px;
+            font-weight: 500;
+            padding-bottom: 15px;
+        }
+
+        ul li {
+            margin: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="renderError" style="font-family: RobotoRegular;margin-left: 30px;margin-right: 30px;margin-top: 50px;display:none;">
+        <h2>[[[Unable to render public report.]]]</h2>
+        <h3>[[[Possible causes:]]]</h3>
+        <p>Report cannot be rendered as the System Administrator has disabled viewing public report or Authorization failed to render report.</p>
+        <h3>[[[Solution:]]]</h3>
+        <ul>
+            <li>[[[Contact your System Administrator to enable viewing public reports. Click ]]]<a href="http://help.syncfusion.com/">[[[here]]]</a> [[[for more details.]]]</li>
+            <li>[[[You don't have access to this report in the Report Server. Please contact your System Administrator to get access. Click here to learn more about sharing a report.]]]</li>
+        </ul>
+    </div>
+    <div id="renderReportError" style="font-family: RobotoRegular;margin-left: 30px;margin-right: 30px;margin-top: 50px;display:none;">
+        <h2>[[[Unable to render public report.]]]</h2>
+
+        <h3>[[[Possible causes:]]]</h3>
+        <p>Report cannot be rendered as the System Administrator has disabled viewing public report.</p>
+        <h3>[[[Solution:]]]</h3>
+        <ul>
+            <li>[[[If you have read access to this report, you can set the authentication details in the embedded file. Click here for more details.]]]</li>
+            <li>[[[Contact your System Administrator to enable viewing public reports. Click ]]] <a href="http://help.syncfusion.com">[[[here]]]</a> [[[ for more details..]]]</li>
+
+        </ul>
+    </div>
+    <div id="serverauthentication" style="display:none;">
+        <h2>[[[Embed using server authentication]]]</h2>
+        <p>[[[Authorization failed to render report.]]]</p>
+
+        <h3>[[[Possible causes:]]]</h3>
+        <p>Private reports cannot be rendered without valid authentication</p>
+        <h3>[[[Solution:]]]</h3>
+        <ul>
+            <li>[[[If you have read access to this report, you can set the authentication details in the embedded file. Click ]]]<a href="http://help.syncfusion.com">[[[here]]]</a>[[[for more details.]]]</li>
+        </ul>
+    </div>
+    <div id="windowsadauthentication" style="display:none;">
+        <h2>[[[Embed using windows authentication]]]</h2>
+        <p>[[[Authorization failed to render report.]]]</p>
+
+        <h3>[[[Possible causes:]]]</h3>
+        <p>Private reports cannot be rendered without valid authentication</p>
+        <h3>[[[Solution:]]]</h3>
+        <ul>
+            <li>[[[This report has been embedded using Windows AD Authentication. Please make sure you are already logged in using Windows AD authentication and have access to the Report Server.]]]</li>
+        </ul>
+    </div>
+    <div id="azureadauthentication" style="display:none;">
+        <h2>[[[Embed using azure ad authentication]]]</h2>
+        <p>[[[Authorization failed to render report.]]]</p>
+
+        <h3>[[[Possible causes:]]]</h3>
+        <p>Private reports cannot be rendered without valid authentication</p>
+        <h3>[[[Solution:]]]</h3>
+        <ul>
+            <li>[[[This report has been embedded using Azure AD Authentication. Please make sure you are already logged in using Azure AD Authentication and have access to the Report Server. ]]]</li>
+        </ul>
+    </div>
+
+    <div id="authorizationError" style="font-family: RobotoRegular;margin-left: 30px;margin-right: 30px;margin-top: 50px;display:none;">
+
+        <h2>[[[Authorization failed to render report.]]]</h2>
+
+        <h3>[[[Possible causes:]]]</h3>
+        <p>Private reports cannot be rendered without valid authentication</p>
+        <h3>[[[Solution:]]]</h3>
+        <ul>
+            <li>[[[You don't have access to this report in the Report Server. Please contact your System Administrator to get access. Click ]]]<a href="http://help.syncfusion.com">[[[here]]]</a> [[[to learn more about sharing a report. ]]]</li>
+        </ul>
+    </div>
+
+
+</body>
+</html>
+
+

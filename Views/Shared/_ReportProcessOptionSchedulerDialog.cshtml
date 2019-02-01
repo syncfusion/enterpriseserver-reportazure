@@ -1,0 +1,285 @@
+﻿@model List<ItemDetail>
+<!DOCTYPE html>
+@{ 
+    Layout = null;
+}
+<html class="report-server">
+    <head>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0">
+
+        <script>
+    var getRecurrenceTypeUrl = "@Url.Action("GetRecurrenceType", "scheduler")";
+    var getScheduleInfoUrl = "@Url.Action("GetScheduleInfo", "scheduler")";
+    var updateScheduleUrl = "@Url.Action("UpdateSchedule", "scheduler")";
+    var addProcessScheduleUrl = "@Url.Action("AddProcessOptionSchedule", "Reports")";
+    var rootBaseUrl = '@Url.Content("~/")';
+        </script>
+
+        @Styles.Render("~/Styles/ProcessOptionSchedulerDialog")
+
+        @Scripts.Render("~/Scripts/ProcessOptionSchedulerDialog")
+        <script>
+
+            $(document).ready(function () {
+                addPlacehoder("#ScheduleDialog");
+                var itemId = "@HttpContext.Current.Request.QueryString["itemId"].ToString()";
+
+                var option = @Html.Raw(ViewBag.ProcessOption);
+                var origin = "@ViewBag.Origin";
+                var processOption = option.Data;
+                if (processOption.data != "") {
+                    if (option.Data.data.RenderRecentData.CacheWithSchedule.ScheduleInfo != null && origin=='recentdata') {
+                        editSchedule(itemId, option.Data.data.RenderRecentData.CacheWithSchedule.ScheduleInfo);
+                    } else if (option.Data.data.RenderSnapshot.ReportScheduleSnapshot.ScheduleInfo != null && origin=='snapshot') {
+                        editSchedule(itemId, option.Data.data.RenderSnapshot.ReportScheduleSnapshot.ScheduleInfo);
+                    }
+                    else
+                    {
+                        createSchedule(itemId);
+                    }
+                } else {
+                    createSchedule(itemId);
+                }
+            });
+
+            function load() {
+                if (($(parent.window).width()) > 1400) {
+                    $(".dialog").addClass("iframe");
+                }
+
+                if (($(parent.window).width()) < 1400) {
+                    $(".dialog").removeClass("iframe");
+                }
+            }
+        </script>
+    </head>
+
+<body class="schedule-dialog" onload="load();">
+    <div id="PopupContainer" class="col-lg-12 no-padding dialog">
+        <div class="col-xs-12 dialog-header">
+            <div class="col-sm-10 col-xs-10 no-padding"><span title="[[[Schedule]]]" class="su su-calendar-1 Head-icon" style="padding-right: 5px;"></span><span class="PopupTitle SchedulePopupTitle">[[[Schedule Info]]]</span></div>
+            <div class="col-sm-2 col-xs-2 no-padding"><a href="javascript:void(0);" style="float:right;" title="[[[Close]]]" class="scheduleEditPopup"><span id="schedulePopup" class="su su-close"></span></a></div>
+        </div>
+        <div class="share-popup col-xs-12 no-padding dialog-body" id="ScheduleDialog">
+            <div class="col-sm-12 col-xs-12 no-margin no-padding schedule-popup-body" id="SchedulePanel">
+                <div class="col-sm-12 col-xs-12 no-padding cls-leftmargin" style="margin-top: 4px;">
+                    <div class="col-sm-2 col-xs-2"><label class="clslab text">[[[Type]]]</label></div>
+                    <div id="recurrenceType_container" class="col-sm-4 col-xs-4 no-margin i-search-fields" style="width:250px">
+                        <select id="recurrenceType" class="selectpicker text" title="[[[Select Recurrence Type]]]"></select>
+                    </div>
+                </div>
+                <div class="col-sm-12 col-xs-12 no-padding cls-leftmargin" id="dailyScheduleOption" style="display:block;">
+                    <div class="col-sm-12 col-xs-12 no-padding" style="margin-top: 4px;">
+                        <div class="col-sm-2 col-xs-2 recurs-label"><label class="clslab text">[[[Recurs]]]</label></div>
+                        <div class="col-sm-10 col-xs-10" id="dailySchedule">
+
+                            <div class="pull-left">
+                                <div class="pull-left">
+                                    @Html.RadioButton("dailyRecurrenceType", " ", new { @class = "css-radio", @id = "dailyEveryXdays" })
+                                    @Html.Label("dailyEveryXdays", "[[[Every]]]", new { @class = "pointer normal-font notransition" })
+                                </div>
+                                <div class="clspad pull-left top-margin">
+                                    <input type="text" for="dailyEveryXdays" class="form-control pull-left" id="everyXDays">
+                                </div>
+                                <div class="clspad pull-left">
+                                    <label for="dailyEveryXdays" class="pointer normal-font pull-left">[[[day(s)]]]</label>
+                                </div>
+                            </div>
+                            <div class="pull-left clspadleft">
+                                @Html.RadioButton("dailyRecurrenceType", " ", new { @class = "css-radio", @id = "dailyWeekdays" })
+                                @Html.Label("dailyWeekdays", "[[[Every weekday]]]", new { @class = "pointer normal-font notransition" })
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-12 col-xs-12 no-padding cls-options" id="weeklyScheduleOption">
+                    <div class="col-sm-12 col-xs-12 no-padding noMargin text">
+                        <div class="col-sm-2 col-xs-2 recurs-label"><label class="clslab">[[[Recurs]]]</label></div>
+                        <div class="col-sm-10 col-xs-10">
+                            <label class="clslab pointer cls-float">[[[Every]]]</label>
+                            <div class="monthly-select"><input type="text" style="float:left" class="form-control" id="everyXWeeks"></div>
+                            <label class="clslab pointer clspad">[[[week(s)]]]</label>
+                        </div>
+                    </div>
+                    <div class="col-sm-12 col-xs-12 no-padding noMargin text">
+                        <div class="col-sm-2 col-xs-2"></div>
+                        <div class="col-sm-10 col-xs-10" id="daysCheckBox">
+                            <div class="col-sm-2 col-xs-2 no-padding no-margin">
+                                @Html.CheckBox("sunday", new { @class = "material-checkbox cls-float daygroup", @id = "sun" })
+                                @Html.Label("sun", "[[[Sunday]]]", new { @class = "clslab pointer clspadleft notransition" })
+                            </div>
+                            <div class="col-sm-2 col-xs-2 no-padding no-margin">
+                                @Html.CheckBox("monday", new { @class = "material-checkbox cls-float daygroup", @id = "mon" })
+                                @Html.Label("mon", "[[[Monday]]]", new { @class = "clslab pointer clspadleft notransition" })
+                            </div>
+                            <div class="col-sm-2 col-xs-2 no-padding no-margin">
+                                @Html.CheckBox("tuesday", new { @class = "material-checkbox cls-float daygroup", @id = "tues" })
+                                @Html.Label("tues", "[[[Tuesday]]]", new { @class = "clslab pointer clspadleft notransition" })
+                            </div>
+                            <div class="col-sm-2 col-xs-3 no-padding no-margin">
+                                @Html.CheckBox("wednesday", new { @class = "material-checkbox cls-float daygroup", @id = "wed" })
+                                @Html.Label("wed", "[[[Wednesday]]]", new { @class = "clslab pointer clspadleft notransition" })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-12 col-xs-12 no-padding noMargin text">
+                        <div class="col-sm-2 col-xs-2"></div>
+                        <div class="col-sm-10 col-xs-10" id="daysCheckBox">
+                            <div class="col-sm-2 col-xs-2 no-padding no-margin">
+                                @Html.CheckBox("thursday", new { @class = "material-checkbox cls-float daygroup", @id = "thu" })
+                                @Html.Label("thu", "[[[Thursday]]]", new { @class = "clslab pointer clspadleft notransition" })
+                            </div>
+                            <div class="col-sm-2 col-xs-2 no-padding no-margin">
+                                @Html.CheckBox("friday", new { @class = "material-checkbox cls-float daygroup", @id = "fri" })
+                                @Html.Label("fri", "[[[Friday]]]", new { @class = "clslab pointer clspadleft notransition" })
+                            </div>
+                            <div class="col-sm-2 col-xs-2 no-padding no-margin">
+                                @Html.CheckBox("saturday", new { @class = "material-checkbox cls-float daygroup", @id = "sat" })
+                                @Html.Label("sat", "[[[Saturday]]]", new { @class = "clslab pointer clspadleft notransition" })
+                            </div>
+                            <div class="col-sm-4 col-xs-4 no-padding no-margin validate-error" id="weeklyDayErrorContainer">
+                                <div id="weeklyDaysValidator"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-12 col-xs-12 no-padding cls-options" id="monthlyScheduleOption">
+                    <div class="col-sm-12 col-xs-12 no-padding noMargin text">
+                        <div class="col-sm-2 col-xs-2 recurs-label"><label class="clslab">[[[Recurs]]]</label></div>
+                        <div class="col-sm-10 col-xs-10">
+
+                            @Html.RadioButton("monthly", " ", new { @class = "css-radio", @id = "monthly" })
+                            @Html.Label("monthly", "[[[Day]]]", new { @class = "pointer normal-font pull-left mar-top notransition" })
+                            <div class="cls-day pull-left">
+                                <input type="text" class="pull-left" id="monthlyDate">
+                            </div>
+                            <label for="monthly" class="pointer normal-font pull-left mar-top">[[[of every]]]</label>
+                            <div class="cls-day pull-left">
+                                <input type="text" id="monthlyEveryXMonths">
+                            </div>
+                            <label for="monthly" class="pointer normal-font pull-left">[[[month(s)]]]</label>
+                        </div>
+                    </div>
+                    <div class="col-sm-12 col-xs-12 no-padding text">
+                        <div class="col-sm-2 col-xs-2"></div>
+                        <div class="col-sm-10 col-xs-10">
+                            <div class="pull-left">
+                                @Html.RadioButton("monthly", " ", new { @class = "css-radio", @id = "monthlyDOW" })
+                                @Html.Label("monthlyDOW", "[[[The]]]", new { @class = "pointer normal-font pull-left notransition" })
+                            </div>
+                            <div id="monthlyDOWWeek_container" class="i-search-fields monthly-select small-width bs-width pull-left">
+                                <select id="monthlyDOWWeek" data-width="110px" class="selectpicker schedule pull-left" data-size="5"></select>
+                            </div>
+                            <div id="monthlyDOWDay_container" class="i-search-fields monthly-select large-width pull-left">
+                                <select id="monthlyDOWDay" data-width="160px" class="selectpicker schedule pull-left" data-size="5"></select>
+                            </div>
+                            <div class="pull-left">
+                                <label for="monthlyDOW" class="pointer pull-left normal-font button-left">[[[of every]]]</label>
+                                <div class="monthly-select top-margin pull-left"><input type="text" id="monthlyDOWEveryXMonths" class="pull-left"></div>
+                                <label for="monthlyDOW" class="pull-left pointer normal-font button-left">[[[month(s)]]]</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-12 col-xs-12 no-padding cls-options" style="margin-top:0px;" id="yearlyScheduleOption">
+                    <div class="col-sm-12 col-xs-12 no-padding text">
+                        <div class="col-sm-2 col-xs-2 recurs-label"><label class="clslab">[[[Recurs]]]</label></div>
+                        <div class="col-sm-10 col-xs-10">
+                            <label class="clslab cls-float">[[[Every]]]</label>
+                            <div class="monthly-select"><input type="text" id="everyXYears"></div>
+                            <label class="clslab clspad">[[[year(s)]]]</label>
+                        </div>
+                    </div>
+                    <div class="col-sm-12 col-xs-12 no-padding text">
+                        <div class="col-sm-2 col-xs-2"></div>
+                        <div class="col-sm-10 col-xs-10">
+                            @Html.RadioButton("yearly", " ", new { @class = "css-radio", @id = "yearly" })
+                            @Html.Label("yearly", "[[[The]]]", new { @class = "pointer normal-font pull-left notransition" })
+                            <div class="monthly-select pull-left large-width">
+                                <select id="yearlyMonth" class="selectpicker small-width schedule" data-width="160px" data-size="5"></select>
+                            </div>
+                            <div class="monthly-select pull-left"><input type="text" class="pull-left" id="yearlyDay"></div>
+                        </div>
+                    </div>
+                    <div class="col-sm-12 col-xs-12 no-padding text">
+                        <div class="col-sm-2 col-xs-2"></div>
+                        <div class="col-sm-10 col-xs-10">
+                            @Html.RadioButton("yearly", " ", new { @class = "css-radio", @id = "yearlyDOW" })
+                            @Html.Label("yearlyDOW", "[[[The]]]", new { @class = "pointer normal-font pull-left notransition" })
+                            <div id="yearlyDOWWeek_container" class="no-margin i-search-fields pull-left bs-month-width">
+                                <div class="monthly-select small-width bs-width">
+                                    <select id="yearlyDOWWeek" data-width="110px" class="selectpicker pull-left schedule" data-size="5"></select>
+                                </div>
+                            </div>
+                            <div id="yearlyDOWDay_container" class="no-margin i-search-fields pull-left">
+                                <div class="monthly-select large-width">
+                                    <select id="yearlyDOWDay" data-width="160px" class="selectpicker pull-left schedule" data-size="5"></select>
+                                </div>
+                            </div>
+                            <div id="yearlyDOWMonth_container" class="no-margin i-search-fields  pull-left">
+                                <label class="pointer normal-font pull-left button-left" for="yearlyDOW">[[[of]]]</label>
+                                <div class="monthly-select pull-left large-width">
+                                    <select data-width="160px" id="yearlyDOWMonth" class="selectpicker pull-left schedule" data-size="5"></select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-12 col-xs-12 no-padding cls-leftmargin text">
+                    <div class="col-sm-2 col-xs-2 starts-label"><label class="clslab">[[[Starts on]]]</label></div>
+                    <div class="col-sm-3 col-xs-3">
+                        <div class="cls-float"><input type="text" class="form-control" style="width:100%;" name="" id="StartDate"></div>
+                    </div>
+                    <div class="col-sm-7 col-xs-7" id="systemTime">([[[Your time will be]]]:<label id="time"></label> - <label id="zone"></label>)</div>
+                    <input type="hidden" id="hourDifference" />
+                    <input type="hidden" id="minuteDifference" />
+                    <input type="hidden" id="timeZoneCalc" />
+                    <div class="col-sm-12 col-xs-12 validate-error" id="startDateErrorContainer">
+                        <div class="col-sm-2 col-xs-2"></div>
+                        <div class="col-sm-8 col-xs-8 no-margin" id="startDateValidator"></div>
+                    </div>
+                </div>
+                <div id="timeZone" class="col-sm-12 col-xs-12 text">([[[Application Time Zone]]]: @GlobalAppSettings.SystemSettings.TimeZone)</div>
+                <div class="col-sm-12 col-xs-12 no-padding cls-leftmargin">
+                    <div class="col-sm-2 col-xs-2 ends-label"><label class="clslab text">[[[Ends]]]</label></div>
+                    <div id="scheduleEndType" class="col-sm-10 col-xs-10 no-padding no-margin">
+                        <div class="clsnever text">
+                            @Html.RadioButton("EndType", "never", new { @class = "css-radio", @id = "noEndDate", @checked = "checked" })
+                            @Html.Label("noEndDate", "[[[Never]]]", new { @class = "pointer normal-font pull-left notransition" })
+                        </div>
+                        <div class="clsend text">
+                            @Html.RadioButton("EndType", "endAfter", new { @class = "css-radio", @id = "endAfter" })
+                            @Html.Label("endAfter", "[[[After]]]", new { @class = "pointer normal-font pull-left notransition" })
+                            <div class="pull-left leftmargin top-margin"><input type="text" id="occurenceCount" class="form-control pull-left"></div>
+                            <label for="endAfter" class="pointer normal-font button-left pull-left">[[[Occurrences]]]</label>
+                        </div>
+                        <div class="clsend text">
+                            @Html.RadioButton("EndType", "endBy", new { @class = "css-radio", @id = "endBy" })
+                            @Html.Label("endBy", "[[[On]]]", new { @class = "pointer normal-font pull-left notransition" })
+                            <div class="monthly-select pull-left"><input type="text" class="form-control full-width pull-left" name="" id="EndDate"></div>
+                        </div>
+                    </div>
+                    <div class="col-sm-12 col-xs-12 validate-error text" id="endDateErrorContainer">
+                        <div class="col-sm-2 col-xs-2"></div>
+                        <div class="col-sm-8 col-xs-8 no-margin" id="endDateValidator"></div>
+                    </div>
+                </div>
+                <div class="col-sm-12 col-xs-12 no-padding cls-leftmargin text">
+                    <div class="col-sm-2 col-xs-2"></div>
+                    <div class="col-sm-10 col-xs-10 no-padding no-margin">
+                        <div class="col-sm-10 col-xs-10" style="display:none;"><input type="checkbox" checked="checked" id="enableSchedule"><label class="clslab pointer clspadleft" for="enableSchedule">[[[Enabled]]]</label></div>
+                    </div>
+                </div>
+            </div>
+            <div class="button-container dialog-footer" id="next_Container">
+                <div class="pull-right">
+                    <input id="schedule_Submit_Cancel" title="[[[Cancel]]]" type="button" value="Cancel" class="btn secondary-button pull-right button-right scheduleCancel">
+                    <input id="schedule_Submit" title="[[[Submit]]]" type="button" value="[[[Submit]]]" class="btn primary-button pull-right button-right">
+                </div>
+            </div>
+            <input type="hidden" id="origin" value="@Request["origin"]" />
+        </div>
+    </div>
+</body>
+</html>

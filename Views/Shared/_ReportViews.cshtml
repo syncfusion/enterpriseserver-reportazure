@@ -1,0 +1,142 @@
+﻿@{
+    var isUserAuthenticated = "false";
+    if (HttpContext.Current.Request.IsAuthenticated && HttpContext.Current.User != null && HttpContext.Current.User.Identity != null && HttpContext.Current.User.Identity.IsAuthenticated)
+    {
+        isUserAuthenticated = "true";
+    }
+    else
+    {
+        isUserAuthenticated = "false";
+    }
+}
+<script>
+    $(document).ready(function () {
+        if ((@ViewBag.IsPublic == true && @isUserAuthenticated == true)) {
+            $("#save-view, #reset-view").attr("disabled", false);
+            $("[data-toggle=tooltip]").tooltip("enable");
+        }
+        else if((@ViewBag.IsPublic == true && @isUserAuthenticated == false)) {
+            $("#save-view, #reset-view").attr("disabled", true);
+            $("[data-toggle=tooltip]").tooltip("disable");
+        }
+    });
+</script>
+<div class="list-group server-report-view" id="report-view-toogle" style="display: block">
+    <div id="header-pane">
+        <span class="view-heading" id="view-heading" style="display: none">
+            [[[CURRENT VIEW]]]
+        </span>
+        <div id="expand-collapse" data-toggle="tooltip" data-placement="left" data-original-title="[[[Report Views]]]">
+        </div>
+    </div>
+
+    <nav class="list-group" style="display: none" id="report-views">
+        <div id="entire-label-section">
+            <div style="display: none" id="save-section" class="save-section">
+                <div class="input-group">
+                    <div id="filter-name-input">
+                        <input type="text" class="form-control" placeholder="[[[Unsaved View]]]" aria-describedby="basic-addon1" id="filter_name">
+                    </div>
+                    <span class="input-group-addon su su-tick cursor-pointer save-filter" id="save-filter" data-toggle="tooltip" data-original-title="[[[Save View]]]"></span>
+                    <span class="input-group-addon su su-close cursor-pointer" id="clear-txt" data-toggle="tooltip" data-original-title="[[[Cancel]]]"></span>
+                </div>
+            </div>
+            <div id="save-lable-section" class="" style="display: none">
+                <label class="cursor-default txt-overflow">[[[Unsaved View]]]</label>
+                <div class="saved-views" id="new-save" style="display: none">
+                    <div class="su">
+                        <button class="su-save cursor-pointer" data-toggle="tooltip" data-original-title="[[[Save]]]" id="save-view"></button>
+                    </div>
+                    <div class="su ">
+                        <button class="su-reset clear cursor-pointer" id="reset-view" data-toggle="tooltip" data-original-title="[[[Reset]]]"></button>
+                    </div>
+                </div>
+                <div class="saved-views" id="saved-filter-update" style="display: none">
+                    <div class="su">
+                        <span class="su-saveas cursor-pointer" data-toggle="tooltip" data-original-title="[[[Save As]]]" id="save-as-view" ></span>
+                    </div>
+                    <div class="su">
+                        <span class="su-save cursor-pointer" data-toggle="tooltip" data-original-title="[[[Update]]]" id="update-view" viewid="@ViewBag.ViewId"></span>
+                    </div>
+                    <div class="su" id="">
+                        <span class="su-reset clear cursor-pointer" data-toggle="tooltip" data-original-title="[[[Reset]]]"></span>
+                    </div>
+                </div>
+                <div class="saved-views" id="saved-filter-Saveas" style="display: none">
+                    <div class="su">
+                        <span class="su-saveas cursor-pointer" data-toggle="tooltip" data-original-title="[[[Save As]]]" id="save-as-view"></span>
+                    </div>
+                    <div class="su" id="">
+                        <span class="su-reset clear cursor-pointer" data-toggle="tooltip" data-original-title="[[[Reset]]]"></span>
+                    </div>
+                </div>
+            </div>
+            <div style="display: none" id="save-as-section" class="save-section">
+                <input type="text" class="form-control" placeholder="[[[Untitled View]]]" aria-describedby="basic-addon1" id="filter_name">
+                <span class="input-group-addon su su-tick cursor-pointer save-filter" id="save-filter" data-toggle="tooltip" data-original-title="[[[Save View]]]"></span>
+                <span class="input-group-addon su su-close cursor-pointer clear" id="clear-txt" data-toggle="tooltip" data-original-title="[[[Clear]]]"></span>
+            </div>
+            <div id="current-view" style="display: none">
+            </div>
+        </div>
+        <div id="nofilters" style="float: left">
+            <div class="cursor-default" style="display: block">
+                <label class="cursor-default txt-overflow">[[[No filters applied.]]]</label>
+                <br style="clear: both">
+            </div>
+        </div>
+        <div id="unsaved-filter-title" style="display: block;">
+            <label class="cursor-default applied-filters">[[[Applied Filters:]]]</label>
+        </div>
+        <div id="unsaved-filter" style="display: block;max-height: 250px">
+            <div id="unsaved-filter-parameter" style="float: left">
+            </div>
+        </div>
+        <div id="saved-filter" style="display: block;">
+        </div>
+    </nav>
+</div>
+
+
+<div id="delete-div" style="display: none">
+    <div class="modal-content" id="popup-container">
+        <div id="PopupContainerDelete">
+            <div class="modal-header">
+                <div class="col-xs-6 col-md-6 col-sm-6 col-lg-6 no-margin no-padding">
+                    <div class="col-xs-11 col-sm-11 col-md-11 no-margin no-padding">
+                        <span class="su su-delete Head-icon"></span>
+                        <span class="PopupTitle">[[[Delete View]]]</span>
+                    </div>
+                </div>
+                <div class="col-xs-6 col-md-6 col-sm-6 col-lg-6 no-margin no-padding">
+                    <a href="javascript:void(0);" title="[[[Close]]]" class="popup-close pull-right" onclick="onDeleteItemDialogClose()"><span class="su su-close"></span></a>
+                </div>
+            </div>
+            <div class="modal-body col-lg-12 delete-dialog-body">
+                <div class="col-xs-12">
+                    <div class="deleteItem">
+                        <span id="delete-content"><span>[[[Are you sure you want to delete the view ]]] — </span><span id="delete_item_name" class="delete-item-body highlight-name delete_item_name"></span> ?</span>
+                        <span style="white-space: nowrap; display: none" class="centerAlign no-padding" id="delete-confirmation">[[[View has been deleted successfully]]]</span>
+                        <span style="white-space: nowrap; float: left; display: none" class="centerAlign no-padding " id="delete-error">[[[Try again latter]]]</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xs-12 modal-footer">
+                <div class="col-xs-12 no-padding padding-top validationArea">
+                    <input type="button" class="critical-action-button margin-right" value="[[[Yes]]]" id="delete_item" tabindex="1" autofocus />
+                    <input type="button" id="CancelDelete" class="secondary-button popup-close" value="[[[No]]]" onclick="onDeleteItemDialogClose()" tabindex="2" />
+                </div>
+                <div class="col-xs-12 no-padding centerAlign successArea" style="display: none">
+                    <input title="" type="button" id="CancelDelete" class="secondary-button popup-close" value="[[[OK]]]" onclick="onDeleteItemDialogClose()" tabindex="3" autofocus />
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="messageBox">
+    <div class="message-header"></div>
+    <div class="message-box-close"></div>
+    <div class="message-content text-center"></div>
+    <div class="message-box-btn-holder"></div>
+</div>

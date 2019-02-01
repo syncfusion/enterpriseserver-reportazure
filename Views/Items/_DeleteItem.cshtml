@@ -1,0 +1,92 @@
+﻿@{
+    Layout = null;
+    var itemType = (ItemType)Model.Value;
+    var itemTypeName = itemType.ToString().ToLower() == "datasource" ? "[[[Data Source]]]" : itemType.ToString();
+}
+<script>
+    $(document).ready(function () {
+        $('[data-toggle="tooltip"]').tooltip();
+    });
+</script>
+@if (Model.Success)
+{
+
+    <div class="modal-content" id="popup-container">
+        <div class="modal-header">
+            <div class="col-xs-6 col-md-6 col-sm-6 col-lg-6 no-padding">
+                <div class="col-xs-11 col-sm-11 col-md-11 no-padding">
+                    <span class="su su-delete Head-icon"></span>
+                    @if (itemTypeName.ToLower() == "category" && ViewBag.SampleCategory == true)
+                    {
+                        <span class="PopupTitle">[[[Delete Sample Reports]]]</span>
+                    }
+                    else
+                    {
+                    <span class="PopupTitle">[[[Delete]]] @(itemTypeName)</span>
+                    }
+                </div>
+            </div>
+            <div class="col-xs-6 col-md-6 col-sm-6 col-lg-6 no-padding">
+                <a href="javascript:void(0);" title="[[[Close]]]" data-toggle="tooltip" data-placement="left" class="popup-close pull-right"><span class="su su-close"></span></a>
+            </div>
+        </div>
+        <div class="modal-body delete-dialog-body">
+            <div class="col-xs-12">
+                @if (itemTypeName.ToLower() == "category" && ViewBag.SampleCategory == true)
+                {
+                    <div class="delete-item"><span style="white-space:nowrap;float:left">[[[Are you sure you want to delete this category?]]]</span></div>
+                    <span id="delete-item-name" class="hide">@ViewData["ItemName"]</span>
+                    <span style="white-space:nowrap;float:left;padding-top:15px">[[[Modified sample reports will not be deleted.]]]</span>
+                }
+                else
+                { <div class="delete-item" id="delete"><span style="white-space:nowrap;float:left">[[[Are you sure you want to delete]]] @(itemTypeName)—&nbsp;</span><span id="delete-item-name" class="delete-item-body highlight-name">@ViewData["ItemName"]</span> ?</div>
+            }
+            </div>
+        </div>
+        <div class="col-xs-12 modal-footer">
+            <div class="col-xs-4"></div>
+            <div class="col-xs-8 no-padding padding-top validation-area">
+                <input type="button" class="critical-action-button margin-right" value="[[[Yes]]]" id="delete-item" data-item-id="@ViewData["ItemId"]" data-itemtype="@(Model.Value)" tabindex="1" autofocus />
+                <input type="button" id="cancel" class="secondary-button popup-close" value="[[[No]]]" onclick="onDeleteItemDialogClose()" tabindex="2" />
+            </div>
+            <div class="col-xs-8 padding-top success-area" style="display:none">
+                <input title="" type="button" id="Cancel" class="secondary-button popup-close" value="[[[OK]]]" onclick="onDeleteItemDialogClose()" tabindex="3" autofocus />
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <div class="modal-content" id="popup-container">
+        <div class="modal-header">
+            <div class="col-xs-11 col-sm-11 col-md-11 no-padding">
+                <span class="su su-delete"></span>
+                <span class="modal-title">[[[Delete]]] @(itemTypeName)</span>
+            </div>
+            <div class="col-xs-1 col-sm-1 col-md-1 no-padding">
+                <a href="javascript:void(0);" title="[[[Close]]]" data-toggle="tooltip" data-placement="left" class="popup-close pull-right"><span class="su su-close"></span></a>
+            </div>
+        </div>
+        <div class="modal-body text-center delete-dialog-body">
+                @switch ((ItemType)Model.Value)
+                {
+                    case ItemType.Category:
+                        <div class="delete-item"><span>[[[Cannot delete]]]&nbsp;</span><span class="delete-item-body highlight-name">@ViewData["ItemName"]</span><span>&nbsp;[[[as the Category contains reports.]]]</span></div>
+                        break;
+                    case ItemType.Report:
+                    <div class="delete-item"><span>[[[Cannot delete]]]&nbsp;</span><span class="delete-item-body highlight-name">@ViewData["ItemName"]</span><span>&nbsp;[[[as the Report has schedules.]]]</span></div>
+                        break;
+                    case ItemType.Datasource:
+                    <div class="delete-item"><span>&nbsp;</span><span class="delete-item-body highlight-name">@ViewData["ItemName"]</span><span>&nbsp;[[[cannot be deleted as the DataSource is being used by reports or datasets.]]]</span></div>
+                        break;
+                    case ItemType.Dataset:
+                    <div class="delete-item"><span>&nbsp;</span><span class="delete-item-body highlight-name">@ViewData["ItemName"]</span><span>&nbsp;[[[cannot be deleted as the Dataset is being used by reports.]]]</span></div>
+                        break;
+                }
+        </div>
+        <div class="modal-footer text-center">
+            <input title="" type="button" id="Cancel" class="secondary-button popup-close" value="[[[OK]]]" onclick="onDeleteItemDialogClose()" tabindex="1" autofocus />
+        </div>
+    </div>
+}
+

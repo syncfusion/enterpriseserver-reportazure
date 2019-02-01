@@ -1,0 +1,1087 @@
+@import (reference) "Mixins.less";
+body {
+    #server-app-container {
+        overflow: auto !important;
+    }
+}
+.schedule-dialog {
+    #schedule-dialog {
+        padding-top: 15px;
+    }
+
+    .parameter-popup-body {
+        .report-parameter-header {
+            margin-top: 0px;
+        }
+
+        .e-datewidget {
+            padding-left: 10px;
+            width: auto;
+        }
+
+        .parameter-label {
+            margin-top: 9px;
+        }
+
+        .parameter-boolean, .parameter-numeric-box {
+            padding-left: 25px;
+
+            .labels {
+                padding-right: 10px;
+            }
+        }
+    }
+
+    #windowCaption {
+        font-size: @app-text-size;
+        padding-top: 3px !important;
+        z-index: 999;
+    }
+
+    .material-checkbox {
+        .material-checkbox-controls();
+
+        &:checked + input + label::before {
+            bottom: 8px !important;
+            left: 1px;
+        }
+    }
+
+    .parameter-popup-body {
+        .report-parameter-header {
+            margin-top: 0px;
+        }
+
+        .e-datewidget {
+            padding-left: 10px;
+            width: auto;
+        }
+
+        .parameter-label {
+            margin-top: 9px;
+        }
+
+        .parameter-boolean, .parameter-numeric-box {
+            padding-left: 25px;
+
+            .labels {
+                padding-right: 10px;
+            }
+        }
+    }
+
+    .modal();
+
+    .dropdown-menu {
+        margin-left: 9px;
+        min-width: 95% !important;
+    }
+
+    .placeholder {
+        background: none;
+        color: @placeholder-color;
+        margin: -23px 9px;
+        position: absolute;
+    }
+
+    .modal-body {
+        height: 475px !important;
+
+        .dropdown-alignment {
+            max-height: 202px !important;
+
+            ul {
+                max-height: 150px !important;
+                overflow-y: auto !important;
+            }
+        }
+
+        #time-intervals-div {
+            display: none;
+        }
+
+        // Available values in report parameter
+         #parameters-panel {
+            .dropdown-menu {
+                margin-left: auto;
+                right: 0;
+                ul{
+                    li{
+                        width: 229px;
+                    }
+                }
+            }
+            .page-indent{
+                margin-top: 8px;
+            }
+            .adjust{
+                margin-left: auto; 
+                right: 0px;
+            }
+            .boolean{
+                left: -15px;
+                div{
+                    color: @footer-bg-color;
+                    label{
+                        color: @delete-icon-color;
+                        margin-left: 5px;
+                    }
+                }
+            }
+        }
+    }
+}
+
+ .category-dropdown, .report-dropdown {
+    left: -10px;
+    top: -15px;
+    max-width: 275px;
+    .dropdown-menu {
+        min-width: 218px !important;
+        max-width: 220px !important;
+        ul.dropdown-menu { 
+            width: 100%;
+            li a span {
+                text-overflow: ellipsis;
+                overflow: hidden;
+                width: 100%;
+            }
+        }
+    }
+    button span {
+        text-overflow: ellipsis;
+        }
+    #category-message, #report-message {
+        margin-left: 244px;
+        position: absolute;
+        top: 13px;
+        white-space: nowrap;
+    }
+
+    .btn-group  .dropdown-menu .no-results{
+        margin: 0px !important;
+        padding: 5px 8px 5px 7px !important;
+    }
+}
+  
+.schedule-listing {       
+    #schedules-grid-container {
+        margin-top: 10px;
+        #search-area{
+             input{            
+                position:relative;
+            }
+        }
+        .dropdown-menu {
+            z-index: 997 !important;
+            margin-left: -6px;
+            margin-top: 3px;
+        }
+        
+        //Schedule status icon styles
+        .active:before, .inactive:before, .completed:before {
+            float: left;
+            margin: 2px 5px 0 0;
+        }
+
+        .active:before {
+            color: @active-schedule-icon-color;
+        }
+
+        .inactive:before {
+            color:@inactive-schedule-icon-color;
+        }
+
+        .completed:before {
+            color: @completed-schedule-icon-color;
+        }
+    }
+
+    .schedule-grid {
+        margin-top: 55px;
+        table {            
+            .e-columnheader > th:nth-last-of-type(-n+2) {
+               cursor: default;
+             }
+        }
+    }  
+    .su-edit{
+        color: @primary-text-color;
+    }  
+    .menu-text, .su-play, .su-disable {
+        color: @primary-text-color;
+    }
+    .option-icon {
+        top: 0 !important;
+    } 
+    .edit-schedule, .disable-schedule, .enable-schedule, .enable-parameter {
+        color: @primary-color;
+    }
+
+    .edit-schedule, .disable-schedule, .enable-schedule, .enable-parameter, .remove-schedule, span.onDemand.su.su-play-folder {
+        cursor: pointer;
+    } 
+    .e-rowcell .dropdown {
+        position: absolute;
+
+        .dropdown-menu {
+            left: -142px;
+            margin: 0px;
+            padding: 5px 0px;
+
+            a {
+                padding: 5px 10px;
+
+                .su {
+                    padding: 2px 10px 0 5px;
+                }
+            }
+        }
+    }
+}
+
+.highlight-name {
+    color: @success-text-color;
+    font-style: italic;
+    margin-right: 10px;
+}
+.bootstrap-select.btn-group .dropdown-menu li a {
+    white-space: nowrap;
+}
+
+
+//DELETE SCHEDULES STYLE
+#delete-popup-container{
+    .header-menu {
+        margin-top: 0.5em !important;
+
+        a{
+        color: @sub-text-color;
+        &:hover{
+            color:@primary-color;
+        }
+    }
+    }
+
+    .header-pad-top {
+        padding-top: 5px !important;
+    }
+
+    .text-left{
+        text-align:left;
+        padding-left:10px;
+    }
+
+    .delete-schedule-content {
+        font-size: @app-text-size;
+        padding: 15px 15px 30px 15px;
+        word-wrap: break-word;
+    }
+
+    #delete-item {
+        margin-right: 10px;
+    }
+    .left-margin{
+        margin-left: 40px!important;
+    }
+}
+
+//SCHEDULE EDIT DIALOG BOX
+.schedule-dialog { 
+    .hide-option {
+        cursor: default;
+        display: none;
+        font-size: 0;
+        height: 0;
+    } 
+     ul .disabled {
+        display: none;
+        font-size: 0;
+        height: 0;
+    }
+    .title{
+        a{
+            color:@sub-text-color;
+            &:hover{
+                 color:@primary-color;
+            }
+        }       
+    }
+       
+    .form-control{
+        height:@textbox-lg-height;
+        font-size: @app-text-size;
+        line-height: 0.5;
+    }   
+   
+    .cls-leftmargin {
+        margin-left: 5px;        
+    }
+     #system-time {
+            margin-left: -22px;
+            margin-top: 15px;
+        }
+
+    .e-select {
+        border-left: 1px solid @admin-pages-border-color !important;
+    }    
+
+    .cls-schname {
+        width: 220px;
+        margin-top: -7px;
+        margin-bottom: 12px;
+    }   
+    .top-margin {
+        margin-top: -7px!important;
+    }
+    .cls-bottom-margin{
+        margin-bottom: 5px;
+    }
+    .button-left {
+        margin-left: 10px;
+    }
+
+    #schedule-back {
+        margin:0px !important;
+    }
+    .nav-top{
+        margin-top:-4px!important;
+    }
+    #schedule-name-error-container {
+        margin-left: 18px !important;
+    }
+    #schedule-name-validator{
+        margin-left: -54px;
+        margin-top: 0px;
+    }
+    .validate-error {
+        display: none;
+        color: @validation-text-color;
+    }    
+
+    #recurrence-type-container {
+        width: 250px; 
+        padding-left: 5px; 
+        .btn-group{
+            div ul{                
+                    width:218px!important;                
+            }
+        }     
+    }
+    .normal-font{
+        font-weight: normal;
+    }
+
+    .pointer, #scheduleGrid_search a {
+        cursor: pointer;
+    }
+
+    .clspadleft {
+        padding-left: 80px;
+    }
+
+    .monthly-select {
+        padding-left: 10px;
+        margin-top: -5px;
+    }
+
+    .clspad {
+        padding-left: 11px;
+    }
+
+    .cls-day {
+        padding: 0px 10px 0px 10px;
+        margin-top: -5px;
+    }    
+   
+    /*Overriding bootstrap style dropdown button for selecting users*/
+
+    .bootstrap-select.btn-group.show-tick .dropdown-menu li.selected a span.check-mark{
+        right: 30px!important;
+    }
+    .bs-deselect-all, .bs-select-all {
+                        display: none;
+                    }     
+    .bs-deselect-all-custom, .bs-select-all-custom {
+        font-size: @app-text-size;
+        color: @primary-btn-bg;
+
+        &:hover {
+            text-decoration: underline;
+        }
+    }
+    .bs-select-all-custom .bs-select-custom-tick {
+        display: none;
+    }
+    .bs-deselect-all-custom .bs-select-custom-tick {
+        display: inline;
+        float: right;
+        margin-right: 20px;
+    }
+                    
+    .bs-actionsbox:hover, .bs-select-all-custom :hover {
+        cursor: pointer;
+    }   
+
+    #user-search-container , #group-search-container, .parameter-popup-body{                                  
+    .dropdown-menu {                        
+        overflow-x: hidden;
+                    li {
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                        white-space: nowrap;
+                        width: 219px;
+
+                        a {
+                            background: none;
+
+                            .text {
+                                color: @primary-text-color;
+                                float: left;
+                                font-size: @app-text-size;
+                                overflow: hidden;
+                                text-overflow: ellipsis;
+                                white-space: nowrap;
+                                width: 183px;
+
+                                &:focus, &:active {
+                                    color: @secondary-btn-bg;
+                                }
+                            }
+
+                            .check-mark {
+                                font-size: @app-text-size;
+                                left: 210px;
+
+                                &:focus, &:active {
+                                    color: @secondary-btn-bg;
+                                }
+                            }
+
+                            &:hover {
+                                background: none;
+                            }
+                        }
+
+                        &:hover {
+                            background-color: @admin-pages-border-color;
+                        }
+
+                        &:focus, &:active {
+                            background-color: @primary-btn-bg;
+                        }
+                    }
+
+                    .check-mark {
+                        margin: 0 !important;
+                    }
+                    .selected{
+                        background-color:@primary-btn-bg;
+                        .text,.check-mark{
+                            color:@secondary-btn-bg;
+                        }
+                        &:hover{
+                            background-color:@primary-btn-bg;
+                        }
+                    }
+                }
+    }
+
+    /*styles added in scheduler.js*/
+    .day-dropdown-width{
+         width: 140px!important;
+    }
+    .dropdown-height{
+        min-height: 125px!important;
+    }    
+    
+    #occurence-count{
+         width: 40px;
+    }
+    .small-width{
+        width: 110px;
+    }
+    .mar-top{
+        margin-top:2px;
+    }
+    .bs-width{       
+        div{
+            .dropdown-menu.open{
+                margin-left: 10px;
+                min-width: 92% !important;
+                ul{
+                    width:99px!important;
+                }
+            }
+        }
+    }
+    .bs-month-width{
+         div{
+            .dropdown-menu.open{
+                margin-left: 10px;
+                min-width: 90% !important;
+                ul{
+                    width:90px!important;
+                }
+            }
+        }
+    }
+    .large-width{
+        width: 160px;
+    }
+    .full-width{
+        width: 100%;
+    }
+    #time-zone {
+        padding-left: 160px;
+    }
+
+    .clsend {
+        padding-left: 20px;
+        padding-top: 9px;
+    }
+
+    .clsnever {
+        padding-left: 15px;
+        padding-top: 9px;
+    }
+
+    .e-datetime-wrap {
+        width: 185px !important;
+    }
+
+    .starts-label {
+        margin-top: 16px;
+    }
+
+    .end-label {
+        margin-top: 8px;
+    }
+
+    .col-sm-1, .col-sm-2, .col-sm-3, .col-sm-4, .col-sm-5, .col-sm-6, .col-sm-7, .col-sm-8, .col-sm-9, .col-sm-10, .col-sm-11, .col-sm-12 {
+        margin-top: 7px;
+    }
+    .align-center{
+        margin-top:3px!important;
+    }    
+
+    .modal-footer {
+        bottom: 0px;
+        left: -1px;
+        position: fixed;
+        #next-container,#submit-container {
+            padding:0px;
+        }
+        #next-container #schedule-back {
+            display: none;
+        }
+    }
+
+    #selected-users {
+        width: 800px !important;
+    }
+
+    #user-search-container, #group-search-container {
+        .bootstrap-select {
+            width: 250px !important;
+        }
+    }
+    .bottom-margin{
+        margin-bottom: 10px;
+    }
+    #email-form {     
+
+        .inner-addon {
+            #external-email {
+                border-radius: 4px;
+                padding-right: 30px;
+            }
+
+            #external-submit {
+                cursor: pointer;
+                padding-top: 9px;
+                pointer-events: all;
+            }                  
+        }
+        .inactive-box {
+                border-color: @validation-text-color;
+                box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.075) inset;
+            }
+
+        #external-email-validation{
+            color: @validation-text-color;
+            left: 15px;
+            position: absolute;           
+            width: 215px;
+        }            
+      
+    }
+   
+    #subscribers-panel {
+            display: none;
+        .bs-deselect-all, .bs-select-all {
+                display: none;
+        }
+    }
+
+    #selected-users-container,  #schedule-end-type, .no-topmargin{
+        margin-top: 0;
+    }     
+    .leftmargin{
+        margin-left: 10px;
+    }
+    .selected-recipients {
+        background-color: @admin-pages-border-color;
+        border: 1px solid @admin-container-bg;
+        border-radius: 5px;
+        height: 190px;
+        height:310px; 
+        margin-left: 10px;
+        overflow: auto;
+        width: 96%;
+        width:600px;
+
+        .SelectedShareItems {
+            background-color: @admin-page-bg;
+            border-radius: 5px;
+            float: left;
+            height: 28px;
+            margin-left: 10px;
+            margin-top: 10px;
+            padding: 5px 12px;
+            width: auto;
+
+            .instant-cancel {
+                cursor: pointer;
+                float: right;
+                font-size: @app-text-size - 2;
+                margin-left: 5px;
+                margin-right: -6px;
+                margin-top: 2px;
+
+                span.su-close {
+                    font-size:@app-text-size - 2;
+                }
+            }
+        }
+    }
+
+    #submit-container{
+        display: none;
+    }
+    #selected-users-info{
+        display: block;
+        padding-left: 10px !important;
+    }
+    .has-feedback {
+        width: 265px;
+
+        .form-control {
+            padding: 0 8px;
+        }
+    }
+
+    #selected-users-validation {
+        clear: right;
+        color: @validation-text-color;
+        float: left;
+        font-size: @app-text-size;
+        height: 20px;
+        padding-left: 10px;
+        padding-top: 5px;
+        visibility: hidden;
+        width: 100%;
+    }  
+
+    .button-right {
+        margin-bottom: 0;
+    }
+   
+    .export-header {
+        margin-top: 30px;
+    }
+    .e-timewidget .e-select{
+        display: none!important;
+    }
+    .format-align{
+        margin-left: -45px;
+    }
+    .format-align-header{
+        margin-left: -20px;
+    }
+
+    .send-mail-align{
+        margin-left: -5px;
+    }
+
+    .enable-save-block{
+        margin-left: -5px;
+    }
+ 
+        .label-align-center{
+            margin-top: 15px;
+        }
+        .export-tag{
+            margin-left: -20px;
+            margin-top: 15px;
+            #exportpath-help-message{
+                margin-left: 20px;
+                width: 265px;
+                padding-left: 5px;
+                word-break: break-word;
+            }
+        }
+        .reportcount-tag{
+            margin-left: -20px;
+            margin-top: 15px;
+            #reportcount-help-message{
+                margin-left: 20px;
+                width: 265px;
+                padding-left: 5px;
+                word-break: break-word;
+            }
+        }
+    
+    .sendmail-label, .file-label{
+        font-weight: 600;
+    }
+    
+}
+
+.remove-schedule {
+    color: @validation-text-color;
+}
+
+#selected-users .su-close:before {
+    font-size:@app-text-size - 3;
+}
+
+#popup-container_wrapper {
+    display: none;
+}
+
+.e-overlay {
+    color: @admin-container-bg;
+}
+
+.e-datepicker table td.e-hidedate {
+    background: none !important;
+    opacity: 0.35;
+    visibility: visible;
+}
+
+#popup-container_wrapper {
+
+    #popup-container {
+        width: 873px;
+        height: auto !important;
+        padding: 0 !important;
+
+        #scheduler-popup-iframe {
+            width: 100%;
+            border: 0;
+            height: 585px;
+            float:left;
+            top: 350px;
+        }
+    }
+}
+
+#editpopup-container_wrapper {
+
+    #editpopup-container {
+        width: 873px;
+        height: auto !important;
+        padding: 0 !important;
+
+        #editscheduler-popup-iframe {
+            width: 100%;
+            border: 0;
+            height: 585px;
+            float: left;
+            top: 350px;
+        }
+    }
+}
+
+/*Overriding Grid styles*/
+.e-grid .e-gridcontent tr td.e-templatecell a {
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space:nowrap;
+}
+.e-grid .e-gridcontent tr td .option-icon{
+    margin-left:-10px;
+}
+.item-report {
+    span a{
+    margin-top: 4px;
+    }
+}
+
+
+/*Remove scrolling in message box*/
+#messageBox_wrapper {
+     height: 200px!important;
+    #messageBox {
+        height: 200px!important;
+        .e-dialog-scroller .e-scroller .e-js .e-widget {
+            display: none !important;
+        }      
+
+    }
+}
+.message-content-top{
+    margin-top: 20px!important;
+}
+//overriden modal styles
+.modal{
+    display: block;
+
+    .modal-dialog {
+        width: auto;
+    }
+}
+
+.notransition:before, .notransition:after {
+ /*CSS animations*/
+ animation: none !important;
+ -moz-animation: none !important;
+ -ms-animation: none !important;
+ -o-animation: none !important;
+ -webkit-animation: none !important;
+ }
+
+
+
+/* Resolution > 1400px */
+.lg-schedule-flexible {
+    .modal(@app-large-text-size,@textbox-lg-height);
+    .modal {
+            .modal-header{
+                font-size:@app-large-text-size + 2;
+            }
+            .modal-content {
+                .modal-body {               
+                        font-size: @app-large-text-size;
+                        #system-time,#time-zone{
+                            font-size:@app-text-size;
+                        }
+                        .bs-deselect-all-custom, .bs-select-all-custom {
+                            font-size: @app-large-text-size;
+                        }
+                        .material-checkbox {
+                            .material-checkbox-controls();
+                            &:checked+input+label::before{
+                                bottom: 10px !important;                               
+                            }
+                        } 
+                        #user-search-container,#group-search-container{
+                            .dropdown-menu {
+                                li {
+                                    a {
+                                        .text, .check-mark {
+                                            font-size: @app-large-text-size;
+                                        }
+
+                                        &:hover, &:focus, &:active {
+                                            .text, .check-mark {
+                                                font-size: @app-large-text-size;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        } 
+                }
+            }        
+        }
+      .selected-recipients {
+           .SelectedShareItems{
+               .instant-cancel span.su-close{
+                   font-size: @app-text-size + 0.5;
+               }
+           }
+      }
+      #selected-users .su-close:before {
+        font-size:@app-text-size - 2;
+      }
+  }
+
+@media screen and (min-width: 1400px) {
+    #delete-popup-container{
+         .header-menu{           
+            .popup-title,.head-icon,.su-close{
+                font-size:@app-large-text-size + 2;
+            }
+        }
+        .dialog-body{
+            .delete-schedule-content{
+                font-size:@app-large-text-size;
+            }            
+        }
+    }   
+}
+
+@media screen and (max-width: 1040px) {
+    #server-app-container{
+        #content-area{
+            padding: 42px 0px 0px;
+        }
+    } 
+}
+       
+
+
+@media screen and (max-height: 549px){
+    .schedule-dialog {  
+        .modal-body{
+            height: 350px !important;
+        }
+    }
+}
+
+//Schedule Export File Settings
+
+#schedule-settings-body {
+
+    .admin-page-body {
+        border-top: none;
+    }
+
+    .normal-font {
+        font-weight: normal;
+    }
+
+    .cls-padleft {
+        padding-left: 20px;
+    }
+
+    .cls-padleft10 {
+        padding-left: 10px;
+    }
+
+    .cls-padright {
+        padding-left: 20px;
+    }
+
+    .cls-margin {
+        margin: 0px 20px 0px 20px;
+    }
+
+    .cls-margin-bot {
+        margin-bottom: 20px;
+    }
+
+    .cls-margin-top {
+        margin-top: 15px;
+    }
+
+    .cls-margin-top8 {
+        margin-top: 8px;
+    }
+
+    .textbox-pad {
+        margin-top: -5px;
+        padding: 0 10px 0 10px;
+    }
+
+    .material-checkbox {
+        .material-checkbox-controls();
+
+        &:checked + input + label::before {
+            bottom: 10px !important;
+            left: 2px;
+        }
+    }
+
+    .material-checkbox + input + label {
+        padding-top: 6px !important;
+    }
+
+    .app-textbox-label {
+        font-weight: normal;
+        line-height: 28px;
+        margin: 0;
+        text-align: right;
+    }
+
+    .password-label-align {
+        line-height: 33px;
+    }
+
+    .passwordcondition-label-align {
+        line-height: 45px;
+    }
+
+    .pwd-condition-btn, .remove-condition-btn {
+        cursor: pointer;
+        padding: 10px;
+    }
+
+    .pointer-events {
+        display: none;
+    }
+
+    .line-height {
+        line-height: 32px;
+    }
+
+    #default-password-info {
+        padding: 5px;
+        float: left;
+        margin: 5px;
+    }
+
+    #password-condition-section {
+        padding-left: 0px;
+        .bootstrap-select {
+            width: 110px !important;
+        }
+    }
+
+    #error-filedkey-info {
+        display: inline-block !important;
+        color: @validation-text-color;
+        width: auto;
+    }
+}
+.reportparameter-tag
+{
+    #report-parameter-info{
+        float: right;
+        margin-top: -18px;
+        margin-right: 75%;
+    }
+
+    #reportparameter-help-message{
+        margin-left: 90px;
+        margin-top: -5px;
+        padding: 5px;
+        min-width:92% !important;
+    }
+}
+
+//schedule parameter message
+//schedule parameter message
+.parameter-tool-tip
+{
+    float:right;
+    margin-top:6px;
+    margin-right: 300px;
+}
+#parameter
+{
+   font-size: 14px;
+    margin-left: 545px !important;
+    width: 200px;
+    padding: 5px;
+    margin-top: -7px;
+    min-width: initial !important;
+}
+
+// style for tooltip in schedule listing page
+.tooltip-inner {
+    max-width: none;
+    white-space: nowrap;
+}

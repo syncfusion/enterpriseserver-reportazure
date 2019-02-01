@@ -1,0 +1,113 @@
+﻿<html>
+<head>
+    <meta http-equiv='Content-Type' content='text/html; charset=utf-8'>
+    <meta name='viewport' content='width=device-width'>
+</head>
+<body style='min-width: 100%; color: #222222; line-height: 19px;font-size: 14px;width: 100% !important;background: rgb(244,244,244);padding: 10px 0 0;'>
+    <center style='width: 100%; min-width: 580px;'>
+        <table>
+            <tbody>
+                <tr>
+                    <td style='word-break: break-word;hyphens: auto;color: #222222;'>
+                        <table style='text-align: left;'>
+                            <tbody>
+                                <tr>
+                                    <td style='word-break: break-word; hyphens: auto;padding-bottom: 10px; width: 584px;color: #222222; background: #3399FF; margin: 0;'>
+                                        <table>
+                                            <tbody>
+                                                <tr>
+                                                    <td>
+                                                        <p style='color: #ffffff; margin-bottom: 0px; margin-top: 15px; margin-left: 535px; font-size: 10px;'>
+                                                            @{
+                                                                var formatedHyperlink = "<a href='" + @Model.BaseUrl + "//" + @Model.Language + "/accounts/login' style='color: #ffffff; font-size: 10px; text-decoration: none;font-family: Segoe UI, Helvetica, sans-serif;'>LOGIN</a>";
+                                                            }
+                                                            @formatedHyperlink
+                                                        </p>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td style='font-weight: 600;'>
+                                                        <p style='font-size: 16px;font-family: Segoe UI, Helvetica, sans-serif; margin-left: 38px;margin-top: 14px;color: #ffffff;'>
+                                                            @Model.OrganizationName
+                                                        </p>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td style='padding-top: 11px;'>
+                                                        <table style='width: 50px;color: #ffffff;border-top-color: #ffffff;height: 1px;margin-top: -1px;border-top-style: solid;border-top-width: 1px;margin-left: 38px;'>
+                                                            <tr>
+                                                                <td></td>
+                                                            </tr>
+                                                        </table>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td style='font-weight: lighter; padding-top: 30px;'>
+                                                        <p style='font-size: 30px;color: #ffffff; margin-top: 11px; margin-left: 38px;font-family: Segoe UI, Helvetica, sans-serif; margin-bottom: 25px;'>Mentioned you in the comment</p>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table><table>
+                            <tbody>
+                                <tr>
+                                    <td style='word-break: break-word;hyphens: auto;color: #222222;width: 584px; border-collapse: collapse !important;background: white;'>
+                                        <table style='text-align: left;'>
+                                            <tr>
+                                                <td style='font-weight: 600;'>
+                                                    <p style='margin-top: 28px;margin-left: 38px;font-family: Segoe UI, Helvetica, sans-serif; color: #353535;font-size: 12px;'>
+                                                        Hello
+                                                        @Model.DisplayName
+                                                        ,
+                                                    </p>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <table style='font-size: 14px;'>
+                                                        <tr>
+                                                            <td>
+                                                                <p style='vertical-align: bottom; margin-top: 12px; color: #353535;font-family: Segoe UI, Helvetica, sans-serif; margin-left: 38px; margin-bottom: 12px; font-size: 12px;'>
+                                                                    @Model.MailHeaderContent
+                                                                </p>
+                                                            </td>
+                                                        </tr>
+                                                    </table><table style='border-spacing: 0px;border-collapse: collapse; width: 300px; margin-left: 38px;border: 1px solid #d8d8d8;'>
+                                                        <tr>
+                                                            <td style='width: 290px; height: 25px;font-size: 12px; word-break: break-word; border: 1px solid #d8d8d8;'>
+                                                                <p style='color: #353535; font-size: 12px;font-family: Segoe UI, Helvetica, sans-serif; width: 280px;word-break: break-word;'>
+                                                                    @Model.NewComment
+                                                                </p>
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+                                                </td>
+                                            </tr>
+                                        </table><table style='text-align: left;'>
+                                            <tr>
+                                                <td>
+                                                    <p style='margin-top: 17px;margin-bottom:0px;margin-left: 38px;color: #353535;font-size: 12px;font-family: Segoe UI, Helvetica, sans-serif;'>Regards,</p>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <p style='margin-bottom: 30px;font-family: Segoe UI, Helvetica, sans-serif; margin-left: 38px;color: #353535;font-size: 12px;'>
+                                                        @Model.OrganizationName
+                                                    </p>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </center>
+</body>
+</html>

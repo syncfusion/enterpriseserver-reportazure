@@ -1,0 +1,93 @@
+﻿
+@using Newtonsoft.Json;
+
+@model List<Permission>
+@{
+    ViewBag.Title = GlobalAppSettings.SystemSettings.OrganizationName + " - [[[My Permissions]]]";
+    var jsondata = JsonConvert.SerializeObject(Model);
+    var gridName = ViewBag.gridName;
+}
+
+
+<script type="text/x-jsrender" id="itemNameHeader">
+    <div class="item-name">[[[Scope]]]</div>
+</script>
+
+<script type="text/x-jsrender" id="itemName">
+    <div class="item-name" data-placement="top">
+    {{if ItemType=="@((int)PermissionEntity.SpecificReports)" && ItemName!="-" }}
+    <span><a href="{{:~urlEncode(CategoryName, ItemName)}}" target="_blank">{{:ItemName}}</a></span>
+    {{else ItemType=="@((int)PermissionEntity.AllReports)" && ItemName!="-" }}
+    <span><a href="@Url.Action("Reports", "Reports")?categoryName={{:ItemName}}" target="_blank">{{:ItemName}}</a></span>
+    {{else ItemType=="@((int)PermissionEntity.SpecificDataSource)"}}
+    <span>{{:ItemName}}</span>
+    {{else (ItemType=="@((int)ItemType.Datasource)"||ItemType=="@((int)ItemType.Dataset)"||ItemType=="@((int)ItemType.File)"||ItemType=="@((int)ItemType.ItemView)") && ItemName!="-"}}
+    <span><a href="@UrlHelper.GenerateUrl("ItemDownload", "Download", "FileRender", null, RouteTable.Routes, HttpContext.Current.Request.RequestContext, false)/{{:ItemTypeDescription}}/{{:ItemName}}" target="_blank">{{:ItemName}}</a></span>
+    {{else}}
+    <span>{{:ItemName}}</span>
+    {{/if}}
+    </div>
+</script>
+
+<script type="text/javascript">
+    function onQueryCellInfo(args) {
+        if(args.data[args.column.field] !="-"){
+            $(args.cell).attr({
+                "data-toggle": "tooltip",
+                "data-container": "body",
+                "title": args.data[args.column.field],
+            });
+        }
+    }
+
+    function refreshTooltipAndPositionForGrid(args) {
+        $("[data-toggle=tooltip]").tooltip();
+    }
+    $.views.helpers({
+        urlEncode: function (category, item) {
+            return encodeURI("@Url.Action("Index", "FileRender")/" + category + "/" + item);
+        }
+    });
+    $(document).ready(function () {
+        $("#PermissionGrid").ejGrid({
+            dataSource:@Html.Raw(jsondata),
+            allowPaging: true,
+            pageSettings: { pageSize: "20" },
+            allowFiltering: true,
+            allowSorting: true,
+            allowSearching: true,
+            allowSelection: false,
+            enableAltRow: false,
+            filterSettings: {
+                filterType: "excel"
+            },
+            allowGrouping: true,
+            groupSettings: {
+                showDropArea:false,
+                showUngroupButton:false,
+                showGroupedColumn: false,
+                groupedColumns: ["ItemTypeDescription"]
+            },
+            columns:[
+                {field:"PermissionAccessDescription", headerText:"[[[Access Mode]]]", width: 130 },
+                {field:"PermissionEntityDescription", headerText:"[[[Entity]]]", width: 80 },
+                {field:"ItemName",
+                    headerText:"[[[Scope]]]",
+                    template: true,
+                    headerTemplateID: "#itemNameHeader",
+                    templateID:"#itemName",
+                    type: "string",
+                    width: 240
+                },
+                {field:"GroupName", headerText:"[[[Inherited from Group]]]", width: 120 },
+                {field:"ItemTypeDescription", headerText:"[[[Resources]]]", allowSorting:false, allowFiltering:false }
+            ],
+            queryCellInfo: "onQueryCellInfo",
+            dataBound: "refreshTooltipAndPositionForGrid",
+            actionComplete: "refreshTooltipAndPositionForGrid"
+        });
+    });
+</script>
+
+<div id="PermissionGrid"></div>
+

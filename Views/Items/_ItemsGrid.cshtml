@@ -1,0 +1,372 @@
+﻿@{
+    var gridName = ViewBag.gridName;
+    var canCreateReport = ViewBag.model != null ? ViewBag.model[ItemType.Report] : false;
+    var userId = (HttpContext.Current.User as ServerPrincipal).UserId;
+}
+<script>
+    var copyIframeUrl = "@Url.Action("copyviewitem", "items")";
+    var moveIframeUrl = "@Url.Action("moveviewitem", "items")";
+    var versionIframeUrl = "@Url.Action("itemversion", "items")";
+    var deleteConfirmationUrl = "@Url.Action("deleteconfirmation", "items")";
+    var deleteItemUrl = "@Url.Action("deleteitem", "items")";
+    var schedulerIframeUrl = "@Url.Action("GetSchedulerDialog", "scheduler")";
+    var addCategoryIframeUrl = "@Url.Action("addcategory", "category")";
+    var addDatasourceIframeUrl = "@Url.Action("adddatasource", "datasources")";
+    var makePublicUrl = "@Url.Action("makeitempublic", "items")";
+    var removePublicUrl = "@Url.Action("RemovePublic", "items")";
+    var addReportIframeUrl = "@Url.Action("addreport", "reports")";
+    var addFileIframeUrl = "@Url.Action("addfile", "files")";
+    var roolBaseUrl = "@Url.Content("~/")";
+    var designerUrl = "@Url.Action(GlobalAppSettings.SystemSettings.InstallationFolder+ "reportdesigner.exe", "reportdesigner")";
+    var favoriteItemUrl = "@Url.Action("MakeFavorite", "items")";
+    var permissionIframeUrl = "@Url.Action("ItemPermissionView", "items")";
+    var getViewsByItemIdUrl = "@Url.Action("GetViewsByItemId","Items")";
+    var EditFilePopupUrl = "@Url.Action("getfiledetails", "files")";
+    var getDatasetDetailsUrl = "@Url.Action("EditDatasetView", "Datasets")";
+    var reportDesignerUrl =  "@Url.Action("ReportDesigner", "Reports")";
+    var datasetDesignerUrl = "@Url.Action("DatasetDesigner", "Reports")";
+
+    if (roolBaseUrl == "/")
+        roolBaseUrl = "";
+    var baseUrl = "@GlobalAppSettings.SystemSettings.BaseUrl" + "/" + "@GlobalAppSettings.SystemSettings.Language" + "/reports/view/";
+    var i_am_ie9 = false;
+</script>
+<!--[if LT IE  10]>
+        <script>
+            i_am_ie9 = true;
+        </script>
+    <![endif]-->
+<div id="items" class="item-grid">
+</div>
+<script type="text/x-jsrender" id="favoriteHeader">
+    <div class=""></div>
+</script>
+<script type="text/x-jsrender" id="itemNameHeader">
+    <div class="item-name">[[[Name]]]</div>
+</script>
+<script type="text/x-jsrender" id="descriptionHeader">
+    <div class="item-header">[[[Description]]]</div>
+</script>
+<script type="text/x-jsrender" id="categoryHeader">
+    <div class="item-header">[[[Category]]]</div>
+</script>
+<script type="text/x-jsrender" id="ownerHeader">
+    <div class="item-header">[[[Owner]]]</div>
+</script>
+<script type="text/x-jsrender" id="lastModifiedHeader">
+    <div class="item-header">[[[Last Modified]]]</div>
+</script>
+<script type="text/x-jsrender" id="Description">
+    <div class="item-description grid-content" title="{{:~renderDoubleQuotes(Description)}}" data-toggle="tooltip" data-placement="top">
+        <span>
+            {{:Description}}
+        </span>
+    </div>
+</script>
+
+<script type="text/x-jsrender" id="Category">
+    <span title="{{:CategoryName}}" data-toggle="tooltip" data-placement="top">
+        {{:CategoryName}}
+    </span>
+</script>
+
+<script type="text/x-jsrender" id="CreatedByDisplayName">
+    <span title="{{:CreatedByDisplayName}}" data-toggle="tooltip" data-placement="top">
+        {{:CreatedByDisplayName}}
+    </span>
+</script>
+
+<script type="text/x-jsrender" id="modifiedDate">
+    <div title="{{:ModifiedDate}}" data-toggle="tooltip" data-placement="top">
+        {{:ModifiedDate}}
+    </div>
+</script>
+
+<script type="text/x-jsrender" id="favoriteItem">
+    {{if ItemType=="3"}}
+    {{if IsFavorite== true}}
+    <div class="su su-favorite favorite favoriteItem" title="{{:Favorite}}" data-toggle="tooltip" data-placement="top" data-itemid="{{:Id}}" data-value="False" data-original-title="Remove from favorites">
+    </div>
+    {{else}}
+    <div class="su su-dis-favorite favoriteItem" title="{{:Favorite}}" data-toggle="tooltip" data-placement="top" data-itemid="{{:Id}}" data-value="True" data-original-title="Mark as favorite">
+    </div>
+    {{/if}}
+    {{/if}}
+</script>
+
+<script type="text/x-jsrender" id="itemName">
+    {{if ItemType=="3"}}
+    <div class="item-name noLeftMargin grid-content" title="{{:Name}}" data-toggle="tooltip" data-placement="top">
+        {{if ItemType=="3"}}
+        <span><a href="{{:~urlEncode(CategoryName, Name)}}" target="_blank">{{:Name}}</a></span>
+        {{else}}
+        <span><a href="@UrlHelper.GenerateUrl("ItemDownload", "Download", "FileRender", null, RouteTable.Routes, HttpContext.Current.Request.RequestContext, false)/{{:ItemTypeString}}/{{:Name}}" target="_blank">{{:Name}}</a></span>
+        {{/if}}
+    </div>
+   {{else}}
+    <div class="item-name grid-content" title="{{:Name}}" data-toggle="tooltip" data-placement="top">
+        {{if ItemType=="3"}}
+        <span><a href="{{:~urlEncode(CategoryName, Name)}}" target="_blank">{{:Name}}</a></span>
+        {{else}}
+        <span><a href="@UrlHelper.GenerateUrl("ItemDownload", "Download", "FileRender", null, RouteTable.Routes, HttpContext.Current.Request.RequestContext, false)/{{:ItemTypeString}}/{{:Name}}" target="_blank">{{:Name}}</a></span>
+        {{/if}}
+    </div>
+    {{/if}}
+</script>
+
+<script type="text/x-jsrender" id="options">
+    <div class="dropdown">
+        <span class="dropdown-toggle option-icon" title="[[[Actions]]]" data-toggle="dropdown">
+            <span class="su su-options"></span>
+        </span>
+        <ul class="dropdown-menu" role="menu">            
+            {{if ~checkMobile()}}
+            {{if ItemType=="@((int)ItemType.Datasource)"}}
+            {{/if}}            
+            {{/if}}
+            {{if ~checkMobile()}}
+                {{if ItemType=="@((int)ItemType.Dataset)"}}
+            @if (canCreateReport)
+            {
+                <li class="option-click">
+                    <a href="javascript:void(0)" id="dataset-create-report" title="" data-itemname="{{:Name}}" data-item-id="{{:Id}}" data-action="Create">
+                        <i class="su su-report"></i>
+                        <span>[[[Create Reports]]]</span>
+                    </a>
+                </li>
+                <li role="separator" class="divider"></li>
+            }
+
+            {{if CanWrite}}
+            <li id="itemgrid-dropdown" class="dropdown-submenu no-padding option-click ">
+                <a href="javascript:void(0)" title="" id="edit-report-designer" data-item-description="{{:Description}}" data-name="{{:Name}}">
+                    <i class="su su-edit"></i>
+                    <span>[[[Edit]]]</span>
+                    @*<span class="caret"></span>*@
+                </a>
+                @*<ul class="dropdown-menu dataset-designer-page-views">
+                    <li>
+                        <a class="designer option-click" title="" id="launcher" data-itemid="{{:Id}}">
+                            <span id="designerArgument" style="display:none">{{:DesignerArgument}}</span>
+                            <span>[[[Client Designer]]]</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="javascript:void(0)" title="" id="edit-report-designer" data-item-description="{{:Description}}" data-name="{{:Name}}">
+                            <span>[[[Web Designer]]]</span>
+                        </a>
+                    </li>
+                </ul>*@
+            </li>
+            <li role="separator" class="divider"></li>
+            {{/if}}
+            
+            {{/if}}
+            {{/if}}
+
+            {{if CanDownload}}
+            <li>
+                {{if ItemType=="@((int)ItemType.Report)"}}
+                <a href="@UrlHelper.GenerateUrl("ReportDownload", "Download", "FileRender", null, RouteTable.Routes, HttpContext.Current.Request.RequestContext, false)/{{:CategoryName}}/{{:Name}}" title="">
+                    <i class="su su-download"></i>
+                    <span> [[[Download Report]]]</span>
+                    </a>
+                    {{else}}
+                <a href="@UrlHelper.GenerateUrl("ItemDownload", "Download", "FileRender", null, RouteTable.Routes, HttpContext.Current.Request.RequestContext, false)/{{:ItemTypeString}}/{{:Name}}" title="">
+                    <i class="su su-download"></i>
+                    <span> [[[Download]]]</span>
+                </a>
+                {{/if}}
+            </li>
+            {{/if}}
+                       
+            {{if ~checkMobile()}}
+            {{if CreatedById==@((HttpContext.Current.User as ServerPrincipal).UserId) || @(Convert.ToBoolean(HttpContext.Current.Session["IsAdmin"]).ToString().ToLower()) == true}}
+            <li role="separator" class="divider"></li>
+            <li>
+                <a href="javascript:void(0);" class="item-permissions" title="" data-itemname="{{:Name}}" data-itemid="{{:Id}}">
+                    <i class="su su-manage-permission"></i>
+                    <span>[[[Manage Permissions]]]</span>
+                </a>
+            </li>
+            {{/if}}
+            {{/if}}
+                     
+            {{if CanDownload || CreatedById==@(userId) || @(Convert.ToBoolean(HttpContext.Current.Session["IsAdmin"]).ToString().ToLower()) == true}}
+            <li role="separator" class="divider"></li>
+            {{/if}}
+            {{if ~checkMobile()}}
+            <li>
+                <a href="javascript:void(0);" class="version-button" title="" data-itemname="{{:Name}}" data-itemid="{{:Id}}">
+                    <i class="su su-versions"></i>
+                    <span>[[[Version history]]]</span>
+                </a>
+            </li>            
+            {{/if}}
+            {{if ~checkMobile()}}
+            {{if CanWrite || CanDelete || ItemType=="@((int)ItemType.Report)"}}
+            {{/if}}
+            {{/if}}
+            {{if CanWrite}}
+            {{if ~checkMobile()}}
+            <li role="separator" class="divider"></li>
+            <li class="hidden-xs hidden-sm">
+                <a href="javascript:void(0);" title="" class="item-edit" data-item-id="{{:Id}}">
+                    <i class="su su-edit"></i>
+                    <span>[[[Update]]]</span>
+                </a>
+            </li>            
+            {{/if}}
+            {{/if}}
+            {{if ~checkMobile()}}
+            {{if CanDelete}}
+            <li>
+                <a href="javascript:void(0);" title="" class="item-delete" data-itemtype="{{:ItemType}}" data-item-id="{{:Id}}" data-name="{{:Name}}">
+                    <i class="su su-delete"></i>
+                    <span>[[[Delete]]]</span>
+                </a>
+            </li>
+            {{/if}}
+            {{/if}}
+        </ul>
+    </div>
+</script>
+
+<div id="ItemAction" title="[[[Item Actions]]]" class="no-padding"></div>
+<div><iframe id="hiddeniframe" src="" style="display:none;"></iframe></div>
+<input type="hidden" id="applauncherinputhidden" style="width:0;margin:0;border:0;height:0; display:inherit" />
+
+<form action="@Url.Action("ReportDesigner", "Reports")" id="edit-report-designer-form" method="POST" target="_blank">    
+    <input id="dataset-description" name="description" type="hidden" value="">
+    <input id="dataset-name" name="datasetName" type="hidden" value="">
+    <input id="edit-value" name="isEdit" type="hidden" value="">
+</form>
+
+<script type="text/javascript" language="javascript">
+    var addDatasetUrl = "@Url.Action("AddDataset", "Datasets")";
+    var gridName = $('#item-grid-container').attr("data-grid-name");
+    var toolbarItems = [{ templateID: "#OpenTemplate" }, { templateID: "#OpenwithReportDesignerTemplate" }, { templateID: "#DownloadTemplate" }, { templateID: "#Separator1" }, { templateID: "#CanEditTemplate" }, { templateID: "#CanDeleteTemplate" }, { templateID: "#Separator2" }, { templateID: "#MoveTemplate" }, { templateID: "#CopyTemplate" }, { templateID: "#CloneTemplate" }, { templateID: "#Separator3" }, { templateID: "#ScheduleTemplate" }, { templateID: "#Separator4" }, { templateID: "#VersionTemplate" }];
+    var categoryName = "@HttpContext.Current.Request.QueryString["categoryName"]";
+    var filters = { filterType: "menu" };
+    if (gridName == "reports" && categoryName != "") {
+        var filters = { filterType: "menu", "filteredColumns": [{ field: "CategoryName", operator: "equal", value: categoryName }] };
+    }
+
+    GridLocalization();
+
+    $(document).ready(function () {
+        ej.support.enableLocalizedSort = true;
+        $("#items").ejGrid({
+            dataSource: ej.DataManager({ url: "@Url.Action("GetItems",gridName)", adaptor: "UrlAdaptor" }),
+            gridLines: ej.Grid.GridLines.None,
+            allowPaging: true,
+            pageSettings: { pageSize: 20 },
+            allowSorting: true,
+            enableAltRow: false,
+            allowSearching: true,
+            allowFiltering: true,
+            allowSelection: true,
+            filterSettings: filters,
+            actionBegin: "fnActionBegin",
+            actionComplete: "fnActionComplete",
+            rowSelecting: function (args) {
+                if (args.target.hasClass("favoriteItem")) {
+                    args.cancel = true;
+                }
+            },
+            rowDataBound: function () {
+                var height = $(".e-gridcontent").height();
+                if (height != null) {
+                    rowBound(height);
+                }
+            },
+            dataBound: function (args) {
+                if (location.pathname.toLowerCase() === "/" || location.pathname.split("/")[location.pathname.split("/").length - 1].toLowerCase() === "reports") {
+                    refreshScroller();
+                }
+                $('[data-toggle="tooltip"]').tooltip();
+            },
+            enableRowHover: true,
+            columns: [
+                
+                {
+                    headerText: "[[[Name]]]",
+                    template: true,
+                    headerTemplateID: "#itemNameHeader",
+                    templateID: "#itemName",
+                    field: "Name",
+                    cssClass: gridName == "reports" ? "align-name" : "",
+                    width: ("@DeviceDetection.IsMobile.ToString().ToLower()" == "false" && (window.innerWidth > 1200)) ? 55 : 80,
+                    type: "string",
+                    allowFiltering: true
+                },
+                {
+                    headerText: "[[[Description]]]",
+                    width: 120,
+                    template: true,
+                    headerTemplateID: "#descriptionHeader",
+                    field: "Description",
+                    templateID: "#Description",
+                    type: "string",
+                    allowFiltering: true,
+                    visible: ("@DeviceDetection.IsMobile.ToString().ToLower()" == "false" && (window.innerWidth > 1040))
+                },
+                {
+                    headerText: "[[[Category]]]",
+                    width: 70,
+                    headerTemplateID: "#categoryHeader",
+                    field: "CategoryName",
+                    visible: gridName == "reports",
+                    allowFiltering: true,
+                    template: true,
+                    templateID: "#Category",
+                    type: "string",
+                    visible: (("@DeviceDetection.IsMobile.ToString().ToLower()" == "false") && (window.innerWidth > 1040) && (gridName == "reports")),
+                },
+                {
+                    headerText: "[[[Owner]]]",
+                    width: (window.innerWidth > 1200) ? 80 : 60,
+                    headerTemplateID: "#ownerHeader",
+                    field: "CreatedByDisplayName",
+                    visible: ("@DeviceDetection.IsMobile.ToString().ToLower()" == "false" && (window.innerWidth > 1200)),
+                    allowFiltering: true,
+                    template: true,
+                    templateID: "#CreatedByDisplayName",
+                    type: "string"
+                },
+                {
+                    headerText: "[[[Last Modified]]]",
+                    width: 70,
+                    field: "ModifiedDate",
+                    visible: ("@DeviceDetection.IsMobile.ToString().ToLower()" == "false" && (window.innerWidth > 1200)),
+                    template: true,
+                    headerTemplateID: "#lastModifiedHeader",
+                    templateID: "#modifiedDate",
+                    allowFiltering: false
+                },
+                {
+                    template: true,
+                    templateID: "#options",
+                    width: (window.innerWidth > 1200) ? 15 : 25,
+                    allowFiltering: false,
+                    allowSorting: false
+                }
+            ]
+        });
+
+        $.views.helpers({
+            urlEncode: function (category, item) {
+                return encodeURI("@Url.Action("Index", "FileRender")" + "/" + category + "/" + item);
+            },
+            checkMobile: function () {
+                return ("@DeviceDetection.IsMobile.ToString().ToLower()" == "false" && (window.innerWidth > 1040));
+            },
+            checkTablet: function() {
+                return window.innerWidth > 900;
+            },
+            renderDoubleQuotes: function(inputString) {
+                return inputString.replace(new RegExp("\"", 'g'), '&quot;');
+            }
+        });
+    });
+</script>
