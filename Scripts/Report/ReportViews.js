@@ -788,14 +788,19 @@ function ViewReportClick(args) {
 
 function appliedParametersForUI(args) {
     var values = "";
-    if (args.dataType == "DateTime") {
-        values = args.value;
-    }
-    else if (((args.labels === null || args.labels === "undefined" || args.labels === ""))) {
-        values = args.label;
-    }
-    else {
+
+    if (viewReportClick) {
         values = args.labels;
+    } else {
+        if (args.DataType == "DateTime") {
+            values = args.value;
+        }
+        else if (((args.Labels === null || args.Labels === "undefined" || args.Labels === ""))) {
+            values = args.Label;
+        }
+        else {
+            values = args.Labels;
+        }
     }
     return values;
 }
@@ -811,7 +816,7 @@ function unsavedFilters(args) {
                 if (index >= 1) {
                     filtered_li += "<hr/>";
                 }
-                var paramName = args[index].Prompt.trim();
+                var paramName = args[index].name == undefined ? args[index].Name : args[index].name;
                 filtered_li += "<li class='unsaved-filter'><div class='param-name'>[[[" +
                     paramName +
                     "]]]</div><div class='param-value'rel='tooltip' data-placement='left' data-original-title='[[[" + args[index].Value + "]]]'>[[[" +
@@ -868,7 +873,13 @@ function QueryStringFormation(args, isFilterUpdate) {
     jQuery.each(args,
         function (index, item) {
             if ($.isNumeric(index)) {
-                var value = args[index].isMultiValue ? args[index].Values : (args[index].Value != undefined ? args[index].Value : args[index].Values);
+                
+                if (args[index].IsMultiValue == undefined) {
+                    var value = args[index].values;
+                } else {
+                    var value = args[index].IsMultiValue ? args[index].Values : (args[index].Value != undefined ? args[index].Value : args[index].Values);
+                }
+
                 var parameterValue = "";
                 if ($.isArray(value)) {
                     if (value.length > 1) {
@@ -884,10 +895,11 @@ function QueryStringFormation(args, isFilterUpdate) {
                 if (parameterValue == "") {
                     parameterValue ="\"" + value + "\"";
                 }
-                var nullable = args[index].Nullable;
-                queryString += "{\"name\":\"" + args[index].Name + "\",\"values\":[" + parameterValue + "],\"nullable\":" + nullable + "},";
+                var nullable = args[index].IsNullable == undefined ? args[index].nullable : args[index].IsNullable;
+                var name = args[index].name == undefined ? args[index].Name : args[index].name;
+                queryString += "{\"name\":\"" + name + "\",\"values\":[" + parameterValue + "],\"nullable\":" + nullable + "},";
                 if (isFilterUpdate) {
-                    parameterArray.push(args[index].Name);
+                    parameterArray.push(name);
                     valueArray.push(value);
                 }
             }
