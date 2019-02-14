@@ -1,4 +1,0 @@
-ALTER TABLE SyncRS_Item ADD IsWebDesignerCompatible smallint NOT NULL DEFAULT 0
-;
-ALTER TABLE SyncDS_Group ALTER COLUMN Color DROP NOT NULL
-; 
