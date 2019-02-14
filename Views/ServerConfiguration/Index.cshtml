@@ -1,0 +1,418 @@
+﻿@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html class="report-server">
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0">
+    <title>[[[Welcome to ]]]@GlobalAppSettings.SystemSettings.OrganizationName</title>
+    @{var nativeNameTitleCase = Context.GetPrincipalAppLanguageForRequest().GetNativeNameTitleCase();}
+    <link rel="icon" href="@Url.Content("~/Content/Images/Application/Startup/Favicon.png")" />
+    @Styles.Render("~/styles/system-configuration")
+    @Scripts.Render("~/scripts/system-configuration")
+    <script src="~/signalr/hubs"></script>
+
+
+    <script>
+        var setSystemSettingsUrl = "@Url.Action("SetSystemSettings", "ServerConfiguration")";
+        var connectDatabaseUrl = "@Url.Action("ConnectDatabase", "ServerConfiguration")";
+        var generateDatabaseUrl = "@Url.Action("GenerateDatabase", "ServerConfiguration")";
+        var connectOracleDatabaseUrl = "@Url.Action("ConnectOracleDatabase", "ServerConfiguration")";
+        var generateOracleDatabaseUrl = "@Url.Action("GenerateOracleDatabase", "ServerConfiguration")";
+        var generateMySqlDatabaseUrl = "@Url.Action("GenerateMySqlDatabase", "ServerConfiguration")";
+        var generatePostgreSqlDatabaseUrl = "@Url.Action("GeneratePostgreSqlDatabase", "ServerConfiguration")";
+        var getAllDatabaseUrl = "@Url.Action("GetAllDatabase", "ServerConfiguration")";
+        var generateSQLTablesUrl = "@Url.Action("GenerateTablesInDB", "ServerConfiguration")";
+        var checkTableExistsUrl = "@Url.Action("CheckTableAlreadyExists", "ServerConfiguration")";
+        var connectionType = "@ViewBag.ConnectionType";
+        var storageType = "@ViewBag.StorageType";
+        var isAzureApplication = ("@ViewBag.IsAzureApplication".toLowerCase() === "true");
+        $(function () {
+            // Declare a proxy to reference the hub.
+            var statusTracker = $.connection.signalrHub;
+            // Create a function that the hub can call to broadcast messages.
+            statusTracker.client.statusMessage = function (message) {
+                // Html encode display name and message.
+                $(".configuration-status").html(message);
+            };
+            $.connection.hub.start().done();
+        });
+        $(document).ready(function () {
+            $("#duplicate-table-list").ejDialog({
+                width: "450px",
+                showOnInit: false,
+                allowDraggable: true,
+                enableResize: false,
+                height: "230px",
+                showHeader: false,
+                enableModal: true
+            });
+            $(document).click(function (e) {
+                if (e.target.id != "info-icon") {
+                    $('#prefix-message').css("display", "none");
+                }
+                if (e.target.id != "info-icon-postgressql") {
+                    $('#prefix-message-postgresql').css("display", "none");
+                }
+                if (e.target.id !== "information-icon") {
+                    $("#help-message").hide();
+                }
+            });
+        });
+    </script>
+</head>
+<body>
+    <div class="system-startUp-settings-bg">
+        <div class="startup-page-conatiner" id="startup-page-conatiner">
+            <div id="system-settings-general">
+                <div class="system-settings-startup-logo">
+                    <img src="@Url.Content("~/Content/Images/Application/Login_Logo.png")" />
+                </div>
+                <div class="title">[[[Welcome to ]]]@GlobalAppSettings.SystemSettings.OrganizationName</div>
+                <div class="system-settings-page-container" id="system-settings-db-selection-container">
+                    <div class="system-settings-db-selection-field">
+                        <span class="content content-value">
+                            [[[This application requires a database to proceed further. Please choose a database.]]]
+                            @if (ViewBag.IsAzureApplication != true)
+                            {
+                                <br /><span>[[[(For testing purpose, select Embedded SQL CE.)]]]</span>
+                            }
+                        </span>
+
+                        <div class="database-types">
+                            <div class="center-align">
+                                <div id="database-type-dropdown" class="system-settings-startup-page-fields database-dropdown-margin">
+                                    <select id="database-type" class="selectpicker system-settings-startup-page-fields db-fields">
+                                        @if (ViewBag.IsAzureApplication != true)
+                                        {
+                                            <option class="no-margin-dropdown-ul" value="MSSQLCE">[[[Embedded SQL CE]]]</option>
+                                        }
+                                        <option class="no-margin-dropdown-ul" value="MSSQL">[[[SQL Server]]]</option>
+                                        @if (ViewBag.IsAzureApplication != true)
+                                        {
+                                            <option class="no-margin-dropdown-ul" value="ORACLE">[[[Oracle]]]</option>
+                                            <option class="no-margin-dropdown-ul" value="MYSQL">[[[MySQL]]]</option>
+                                        }
+                                        <option class="no-margin-dropdown-ul" value="PostgreSQL">[[[PostgreSQL]]]</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="connection-validation" class="txt-holder">
+                            <div class="validation-errors"></div>
+                            <span id="information-icon" class="su su-info cursor-type" style="display: none" title=""></span>
+                            <div class="col-xs-2 dropdown-menu" id="help-message" style="display: none">
+                                [[[This issue may also have occured due to incorrect application pool settings in IIS. Click]]] <a href="https://help.syncfusion.com/report-platform/report-server/installation-and-deployment#application-pool" target="_blank">[[[here]]]</a> [[[to learn about configuring application pool settings.]]]
+                            </div>
+                        </div>
+                        <form id="db-content-holder" class="col-md-12 no-padding display-none content-display text-wrap show-sql-content" autocomplete="off">
+                            <div class="txt-holder center-align input-alignment">
+                                <input type="text" id="txt-servername" name="servername" class="form-control system-settings-startup-page-fields db-fields" placeholder="[[[Server name]]]" />
+                                <span class="startup-validation validation-txt-errors"></span>
+                            </div>
+                            <div class="txt-holder center-align">
+                                <div id="auth-type-dropdown">
+                                    <select id="check-windows" class="selectpicker db-fields  full-width">
+                                        <option value="sql">[[[SQL Authentication]]]</option>
+                                        <option value="windows">[[[Windows Authentication]]]</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="txt-holder center-align">
+                                <input type="text" id="txt-login" name="username" class="form-control system-settings-startup-page-fields db-fields" placeholder="[[[Username]]]" />
+                                <span class="startup-validation validation-txt-errors"></span>
+                            </div>
+                            <div class="txt-holder center-align">
+                                <input type="text" class="display-none">
+                                <input type="password" class="fake-password" name="fake_passwordfield_to_turnoff_autocomplete">
+                                <input type="password" id="txt-password-db" name="password" class="form-control system-settings-startup-page-fields db-fields" placeholder="[[[Password]]]" autocomplete="off" />
+                                <span id="password-field" class="startup-validation validation-txt-errors"></span>
+                                <div class="su su-eye display-none show-hide-password"></div>
+                            </div>
+                            <div class="txt-holder center-align">
+                                <div class="new-db">
+                                    <input type="radio" id="new-db" class="css-radio" name="databaseType" value="0" checked='checked' />
+                                    <label for="new-db"><span class="text">[[[New Database]]]</span></label>
+                                </div>
+                                <div class="existing-db">
+                                    <input type="radio" id="existing-db" class="css-radio" name="databaseType" value="1" />
+                                    <label for="existing-db"><span class="text">[[[Existing Database]]]</span></label>
+                                </div>
+                            </div>
+                            <div class="txt-holder database-name center-align">
+                                <input type="text" id="txt-dbname" name="dbname" class="form-control system-settings-startup-page-fields dbname-fields db-fields" placeholder="[[[Database name]]]" />
+                                <span class="startup-validation validation-txt-errors"></span>
+                                <div class="show-hide-password"></div>
+                            </div>
+
+                            <div class="sql-server-existing-db center-align">
+                                <div class="txt-holder databse-dropdown text-wrap database-dropdown-margin center-align">
+                                    <select id="database-name" name="databaseName" class="selectpicker system-settings-startup-page-fields db-fields">
+                                        <option value="" class="display-none">[[[Select a database]]]</option>
+                                    </select>
+                                    <img id="waiting-icon" class="display-none" src="@Url.Content("~/Content/images/waitingpopup.gif")" width="25" height="25" />
+                                    <span id="database-error" class="startup-validation validation-txt-errors"></span>
+                                </div>
+                                <div class="table-prefix center-align text-holder">
+                                    <input type="text" id="table-prefix" value="SyncRS_" name="tablePrefix" class="form-control system-settings-startup-page-fields db-fields" placeholder="[[[Table name prefix]]]" maxlength="7" />
+                                    <span class="startup-validation validation-txt-errors"></span>
+                                    <div class="character-limits">*[[[7 characters maximum]]]</div>
+                                    <div class="info-area">
+                                        <span id="info-icon" class="su su-info" title=""></span>
+                                        <div class="col-xs-2 dropdown-menu display-none" id="prefix-message">
+                                            [[[All the tables will have this prefix. (Default: SyncRS_)]]]
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+
+                        <input type="hidden" name="Dsn_count" id="dsn-count" value="@ViewBag.DsnList.Count" />
+                        <form id="oracle-content-holder" class="col-md-12 no-padding display-none content-display text-wrap show-oracle-content" autocomplete="off">
+
+                            <div class="txt-holder center-align">
+                                <div id="oracle-odbc-dropdown" class="system-settings-startup-page-fields">
+                                    <select id="oracle-dsn" name="oracleDsn" class="selectpicker system-settings-startup-page-fields db-fields">
+                                        <option value="" class="display-none">[[[Select Oracle ODBC DSN]]]</option>
+                                        @for (var dsn = 0; dsn < ViewBag.DsnList.Count; dsn++)
+                                        {
+                                            <option value="@ViewBag.DsnList[dsn]">@ViewBag.DsnList[dsn]</option>
+                                        }
+                                    </select>
+                                    <span id="oracle-dsn-validate" class="startup-validation validation-txt-errors"></span>
+                                    <div class="dsn-info">
+                                        <span id="info-icon-dsn-oracle" class="su su-info" title=""></span>
+                                        <div class="col-xs-2 dropdown-menu display-none" id="dsn-message-oracle">
+                                            [[[Click]]]<a href='http://help.syncfusion.com/report-platform/report-server/how-to/create-dsn-for-oracle' target="_blank"> [[[here]]]</a> [[[to learn how to create a DSN for Oracle database.]]]
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="txt-holder center-align">
+                                <input type="text" id="admin-username" name="adminUserName" class="form-control system-settings-startup-page-fields db-fields" placeholder="[[[Admin Username]]]" />
+                                <span class="startup-validation validation-txt-errors"></span>
+                            </div>
+                            <div class="txt-holder center-align">
+                                <input type="text" class="display-none">
+                                <input type="password" class="fake-password" name="fake_passwordfield_to_turnoff_autocomplete">
+                                <input type="password" id="admin-password" name="adminPassword" class="form-control system-settings-startup-page-fields db-fields" placeholder="[[[Admin Password]]]" autocomplete="off" />
+                                <span id="admin-password-field" class="startup-validation validation-txt-errors password-field"></span>
+                                <div class="su su-eye display-none show-hide-password"></div>
+                            </div>
+                            <div class="txt-holder center-align">
+                                <div class="new-db">
+                                    <input type="radio" id="new-db-oracle" class="css-radio" name="OracledatabaseType" value="0" checked='checked' />
+                                    <label for="new-db-oracle"><span class="text">[[[New Database]]]</span></label>
+                                </div>
+                                <div class="existing-db">
+                                    <input type="radio" id="existing-db-oracle" class="css-radio" name="OracledatabaseType" value="1" />
+                                    <label for="existing-db-oracle"><span class="text">[[[Existing Database]]]</span></label>
+                                </div>
+                            </div>
+                            <div class="oracle-existing-db center-align">
+                                <div class="txt-holder database-dropdown-oracle text-wrap database-dropdown-margin center-align">
+                                    <select id="database-name-oracle" name="databaseName" class="selectpicker system-settings-startup-page-fields db-fields">
+                                        <option value="" class="display-none">[[[Select a database]]]</option>
+                                    </select>
+                                    <img id="waiting-icon-oracle" class="display-none" src="@Url.Content("~/Content/images/waitingpopup.gif")" width="25" height="25" />
+                                    <span id="database-error-oracle" class="startup-validation validation-txt-errors"></span>
+                                </div>
+                                <div class="txt-holder client-password center-align">
+                                    <input type="text" class="display-none">
+                                    <input type="password" id="database-password" name="clientPassword" class="form-control system-settings-startup-page-fields db-fields" placeholder="[[[Database Password]]]" autocomplete="off" />
+                                    <span id="client-password-field" class="startup-validation validation-txt-errors password-field"></span>
+                                    <div class="su su-eye display-none show-hide-password"></div>
+                                </div>
+                                <div class="table-prefix center-align text-holder">
+                                    <input type="text" id="table-prefix-oracle" value="SyncRS_" name="tablePrefix" class="form-control system-settings-startup-page-fields db-fields" placeholder="[[[Table name prefix]]]" maxlength="7" />
+                                    <span class="startup-validation validation-txt-errors"></span>
+                                    <div class="character-limits">*[[[7 characters maximum]]]</div>
+                                    <div class="info-area">
+                                        <span id="info-icon-oracle" class="su su-info" title=""></span>
+                                        <div class="col-xs-2 dropdown-menu display-none" id="prefix-message-oracle">
+                                            [[[All the tables will have this prefix. (Default: SyncRS_)]]]
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="oracle-new-db center-align">
+                                <div class="txt-holder oracle-db-name center-align">
+                                    <input type="text" id="client-username" name="clientUserName" class="form-control system-settings-startup-page-fields db-fields" placeholder="[[[Database Name/Username]]]" maxlength="30" />
+                                    <span class="startup-validation validation-txt-errors"></span>
+                                </div>
+                                <div class="txt-holder oracle-role-name center-align">
+                                    <input type="text" id="role-name" name="roleName" class="form-control system-settings-startup-page-fields db-fields" placeholder="[[[Role Name]]]" disabled="disabled" />
+                                    <span class="startup-validation validation-txt-errors"></span>
+                                </div>
+                                <div class="txt-holder client-password center-align">
+                                    <input type="text" class="display-none">
+                                    <input type="password" id="client-password" name="clientPassword" class="form-control system-settings-startup-page-fields db-fields" placeholder="[[[Database Password]]]" autocomplete="off" />
+                                    <span id="client-password-field" class="startup-validation validation-txt-errors password-field"></span>
+                                    <div class="su su-eye show-hide-password"></div>
+                                </div>
+                                <div class="txt-holder client-confirm-password center-align">
+                                    <input type="text" class="display-none">
+                                    <input type="password" id="client-confirm-password" class="form-control system-settings-startup-page-fields db-fields" placeholder="[[[Confirm password]]]" name="confirmClientPassword" autocomplete="off" />
+                                    <span class="startup-validation validation-txt-errors password-field" id="confirm-password-field"></span>
+                                    <span class="su su-eye show-hide-password"></span>
+                                </div>
+                            </div>
+
+                        </form>
+                        <form id="mysql-content-holder" class="col-md-12 no-padding display-none text-wrap content-display show-mysql-content" autocomplete="off">
+                            <div class="txt-holder center-align">
+                                <div id="mysql-odbc-dropdown" class="system-settings-startup-page-fields">
+                                    <select id="mysql-odbc-dsn" name="mySqlDsn" class="selectpicker system-settings-startup-page-fields db-fields">
+                                        <option value="" class="display-none">[[[Select MySQL ODBC DSN]]]</option>
+                                        @for (var dsn = 0; dsn < ViewBag.DsnList.Count; dsn++)
+                                        {
+                                            <option value="@ViewBag.DsnList[dsn]">@ViewBag.DsnList[dsn]</option>
+                                        }
+                                    </select>
+                                </div>
+                                <span id="dsn-validate" class="startup-validation validation-txt-errors"></span>
+                                <div class="dsn-info">
+                                    <span id="info-icon-dsn" class="su su-info" title=""></span>
+                                    <div class="col-xs-2 dropdown-menu display-none" id="dsn-messgage">
+                                        [[[Click]]]<a href='http://help.syncfusion.com/report-platform/report-server/how-to/create-dsn-for-mysql' target="_blank"> [[[here]]]</a> [[[to learn how to create a DSN for MySQL database.]]]
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="txt-holder center-align">
+                                <input type="text" id="mysql-username" name="mySqlUserName" class="form-control system-settings-startup-page-fields db-fields" placeholder="[[[Username]]]" />
+                                <span class="startup-validation validation-txt-errors"></span>
+                            </div>
+                            <div class="txt-holder center-align">
+                                <input type="text" class="display-none">
+                                <input type="password" class="fake-password" name="fake_passwordfield_to_turnoff_autocomplete">
+                                <input type="password" id="mysql-password" name="mysqlPassword" class="form-control system-settings-startup-page-fields db-fields" placeholder="[[[Password]]]" autocomplete="off" />
+                                <span class="startup-validation validation-txt-errors"></span>
+                                <div class="su su-eye display-none show-hide-password"></div>
+                            </div>
+                            <div class="txt-holder center-align">
+                                <div class="new-db">
+                                    <input type="radio" id="new-db-mysql" class="css-radio" name="MySqldatabaseType" value="0" checked='checked' />
+                                    <label for="new-db-mysql"><span class="text">[[[New Database]]]</span></label>
+                                </div>
+                                <div class="existing-db">
+                                    <input type="radio" id="existing-db-mysql" class="css-radio" name="MySqldatabaseType" value="1" />
+                                    <label for="existing-db-mysql"><span class="text">[[[Existing Database]]]</span></label>
+                                </div>
+                            </div>
+                            <div class="txt-holder mysql-create-db center-align">
+                                <input type="text" id="mysql-database-name" name="mySqlDataBaseName" class="form-control system-settings-startup-page-fields db-fields" placeholder="[[[Database Name]]]" />
+                                <span class="startup-validation validation-txt-errors"></span>
+                            </div>
+                            <div class="mysql-existing-db center-align">
+                                <div class="txt-holder database-dropdown-mysql database-dropdown-margin text-wrap center-align">
+                                    <select id="database-name-mysql" name="databaseName" class="selectpicker system-settings-startup-page-fields db-fields">
+                                        <option value="" class="display-none">[[[Select a database]]]</option>
+                                    </select>
+                                    <img id="waiting-iconmysql" class="display-none" src="@Url.Content("~/Content/images/waitingpopup.gif")" width="25" height="25" />
+                                    <span id="database-error-mysql" class="startup-validation validation-txt-errors"></span>
+                                </div>
+                                <div class="table-prefix center-align text-holder">
+                                    <input type="text" id="table-prefix-mysql" value="SyncRS_" name="tablePrefix" class="form-control system-settings-startup-page-fields db-fields" placeholder="[[[Table name prefix]]]" maxlength="7" />
+                                    <span class="startup-validation validation-txt-errors"></span>
+                                    <div class="character-limits">*[[[7 characters maximum]]]</div>
+                                    <div class="info-area">
+                                        <span id="info-icon-mysql" class="su su-info" title=""></span>
+                                        <div class="col-xs-2 dropdown-menu display-none" id="prefix-message-mysql">
+                                            [[[All the tables will have this prefix. (Default: SyncRS_)]]]
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+
+                        <form id="postgresql-content-holder" class="col-md-12 no-padding display-none content-display text-wrap show-postgresql-content" autocomplete="off">
+                            <div class="txt-holder center-align input-alignment">
+                                <input type="text" id="postgresql-servername" name="servername" class="form-control system-settings-startup-page-fields db-fields" placeholder="[[[Server name]]]" />
+                                <span class="startup-validation validation-txt-errors"></span>
+                            </div>
+                            <div class="txt-holder center-align">
+                                <input type="text" id="postgresql-port" name="port" class="form-control system-settings-startup-page-fields db-fields" placeholder="[[[Port number]]]" />
+                                <span class="startup-validation validation-txt-errors"></span>
+                            </div>
+                            <div class="txt-holder center-align">
+                                <input type="text" id="postgresql-login" name="username" class="form-control system-settings-startup-page-fields db-fields" placeholder="[[[Username]]]" />
+                                <span class="startup-validation validation-txt-errors"></span>
+                            </div>
+                            <div class="txt-holder center-align">
+                                <input type="text" class="display-none">
+                                <input type="password" class="fake-password" name="fake_passwordfield_to_turnoff_autocomplete">
+                                <input type="password" id="postgresql-password-db" name="password" class="form-control system-settings-startup-page-fields db-fields" placeholder="[[[Password]]]" autocomplete="off" />
+                                <span id="password-field" class="startup-validation validation-txt-errors"></span>
+                                <div class="su su-eye display-none show-hide-password"></div>
+                            </div>
+                            <div class="txt-holder center-align">
+                                <div class="new-db">
+                                    <input type="radio" id="new-db-postgresql" class="css-radio" name="PostgreSqlDatabaseType" value="0" checked='checked' />
+                                    <label for="new-db-postgresql"><span class="text">[[[New Database]]]</span></label>
+                                </div>
+                                <div class="existing-db">
+                                    <input type="radio" id="existing-db-postgresql" class="css-radio" name="PostgreSqlDatabaseType" value="1" />
+                                    <label for="existing-db-postgresql"><span class="text">[[[Existing Database]]]</span></label>
+                                </div>
+                            </div>
+                            <div class="txt-holder database-name-postgresql center-align">
+                                <input type="text" id="postgresql-dbname" name="dbname" class="form-control system-settings-startup-page-fields dbname-fields db-fields" placeholder="[[[Database name]]]" />
+                                <span class="startup-validation validation-txt-errors"></span>
+                                <div class="show-hide-password"></div>
+                            </div>
+                            <div class="postgresql-existing-db center-align">
+                                <div class="txt-holder database-dropdown-postgresql text-wrap database-dropdown-margin center-align">
+                                    <select id="database-name-postgresql" name="database-name-postgresql" class="selectpicker system-settings-startup-page-fields db-fields">
+                                        <option value="" class="display-none">[[[Select a database]]]</option>
+                                    </select>
+                                    <img id="waiting-icon-postgressql" class="display-none" src="@Url.Content("~/Content/images/waitingpopup.gif")" width="25" height="25" />
+                                    <span id="database-error-postgresql" class="startup-validation validation-txt-errors"></span>
+                                </div>
+                                <div class="table-prefix center-align text-holder">
+                                    <input type="text" id="table-prefix-postgresql" value="SyncRS_" name="tablePrefix" class="form-control system-settings-startup-page-fields db-fields" placeholder="[[[Table name prefix]]]" maxlength="7" />
+                                    <span class="startup-validation validation-txt-errors"></span>
+                                    <div class="character-limits">*[[[7 characters maximum]]]</div>
+                                    <div class="info-area">
+                                        <span id="info-icon-postgressql" class="su su-info" title=""></span>
+                                        <div class="col-xs-2 dropdown-menu display-none" id="prefix-message-postgresql">
+                                            [[[All the tables will have this prefix. (Default: SyncRS_)]]]
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+
+                        <div class="txt-holder btn-holder center-align button-alignment">
+                            <button type="button" id="oracle-config-submit" class="proceed-button display-none content-display show-oracle-content">[[[Proceed]]]</button>
+                            <button type="button" id="oracle-existing-db-submit" class="proceed-button display-none content-display">[[[Proceed]]]</button>
+                            <button type="button" id="mysql-config-submit" class="proceed-button display-none content-display show-mysql-content">[[[Proceed]]]</button>
+                            <button type="button" id="db-config-submit" class="proceed-button display-none content-display show-sql-content">[[[Proceed]]]</button>
+                            <button type="button" id="sql-existing-db-submit" class="proceed-button display-none content-display">[[[Proceed]]]</button>
+                            <button type="button" id="mysql-existing-db-submit" class="proceed-button display-none content-display">[[[Proceed]]]</button>
+                            <button type="button" id="move-to-next" class="proceed-button content-display show-sqlce-content">[[[Proceed]]]</button>
+                            <button type="button" id="postgresql-config-submit" class="proceed-button display-none content-display show-postgresql-content">[[[Proceed]]]</button>
+                            <button type="button" id="postgresql-existing-db-submit" class="proceed-button display-none content-display">[[[Proceed]]]</button>
+                        </div>
+                    </div>
+                </div>
+                @Html.Partial("_FileStorage")
+                @Html.Partial("_IncludeSampleResource")
+                @Html.Partial("_UserAccount")
+                <div id="duplicate-table-list" class="display-none">
+                    <div class="message-header">
+                        <span class='su su-login-error'></span>
+                        <span data-toggle='tooltip' data-placement='bottom' data-container='body' title='Duplicate Table(s)'>[[[Duplicate Table(s)]]]</span>
+                        <span class="su su-close pull-right popup-close" onclick="CloseDuplicateListBox()"></span>
+                    </div>
+                    <div class="message-content"></div>
+                    <div class="message-box-btn-holder text-center">
+                        <input type='button' class='secondary-button' value='[[[OK]]]' onclick="CloseDuplicateListBox()" />
+                    </div>
+                </div>
+            </div>
+            @Html.Partial("../Shared/_StartupFooter")
+        </div>
+    </div>
+</body>
+</html>

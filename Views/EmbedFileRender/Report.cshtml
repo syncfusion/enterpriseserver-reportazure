@@ -1,0 +1,778 @@
+﻿
+<!DOCTYPE html>
+@{
+    Layout = null;
+    ItemDetail itemDetail = new ItemDetail();
+    itemDetail = ViewBag.itemDetail;
+    var isPublic = (GlobalAppSettings.SystemSettings.IsMarkItemsPublic && ViewBag.IsPublic == "true") ? "true" : "false";
+    var isAuthenticated = "false";
+    var enableComment = "true";
+    var enableView = "true";
+    var externalLogin = Request["externallogin"];
+    var hasSSO = Request["hassso"];
+    var itemLocation = ViewBag.ItemLocation as string;
+    itemLocation = itemLocation.Replace("\\", "\\\\");
+    var baseUrl = GlobalAppSettings.SystemSettings.BaseUrl;
+    var userId = 0;
+    var userName = "";
+    var isMarkItemsPublic = GlobalAppSettings.SystemSettings.IsMarkItemsPublic;
+    var publicreport = ViewBag.IsPublic;
+    var language = Context.GetPrincipalAppLanguageForRequest().GetCultureInfo();
+}
+<html style="height: 100%">
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width" />
+
+    <link href="@Url.Content("~/Content/Styles/EssentialJS/reportviewer/bootstrap-theme/ej.reportviewer.min.css")" rel="stylesheet" type="text/css" />
+
+    @Styles.Render(DeviceDetection.IsMobile ? "~/styles/file-render-report-mobile" : "~/styles/file-render-report")
+    @Scripts.Render(DeviceDetection.IsMobile ? "~/scripts/report-render-mobile" : "~/scripts/report-render")
+
+    <script src="~/Scripts/Localization/ReportViewer/ej.localetexts.@string.Concat(language,".js")"></script>
+
+    <script>
+        var filterParameters = JSON.parse('@Html.Raw(ViewBag.FilterParameters)');
+        var itemViewShareIframeUrl = "@Url.Action("shareItemView", "items")";
+        var getViewParameterUrl = "@Url.Action("GetReportViewParameter", "ReportViews")";
+        var addViewUrl = "@Url.Action("onfiltersave", "ReportViews")";
+        var deleteViewUrl = "@Url.Action("DeleteView", "ReportViews")";
+        var updateViewUrl = "@Url.Action("UpdateView", "ReportViews")";
+        var getSavedViewUrl = "@Url.Action("GetViews", "ReportViews")";
+        var embeddedLoginUrl = "@Url.Action("EmbeddedLogin", "Accounts")";
+        var itemViewShareIframeUrl = "@Url.Action("shareItemView", "items")";
+        var viewToken = "@ViewBag.AccessToken";
+        var externalLogin = "@externalLogin";
+        var sso = "@hasSSO";
+        var isAuthenticated = "@isAuthenticated.ToLower()";
+        var isPublic = "@isPublic.ToLower()";
+        var publicReportAuthentication = "@HttpContext.Current.Request.IsAuthenticated";
+    </script>
+    <style>
+        .e-reportviewer * {
+            -webkit-box-sizing: content-box !important;
+            -moz-box-sizing: content-box !important;
+            box-sizing: content-box !important;
+        }
+    </style>
+    @if (DeviceDetection.IsMobile && !HttpContext.Current.Request.IsAuthenticated)
+    {
+        <style>
+            #sync_report_viewer {
+                margin-bottom: 0 !important;
+                height: 100%;
+            }
+
+            .e-reportviewer-viewer {
+                width: 100%;
+                height: 100%;
+            }
+        </style>
+    }
+    <title>@ViewBag.ItemName - [[[View Report]]] - @GlobalAppSettings.SystemSettings.OrganizationName</title>
+    @if (GlobalAppSettings.SystemSettings.StorageType == (int)StorageType.AzureBlob)
+    {
+        <link rel="icon" href="@GlobalAppSettings.AzureBlob.AzureBlobStorageUri/@GlobalAppSettings.AzureBlob.AzureBlobStorageContainerName/@GlobalAppSettings.GetStorageMode()/Content/Images/Application/@GlobalAppSettings.SystemSettings.FavIcon" onerror="if (this.href != '~/Content/Images/Application/Favicon.png') this.href = '~/Content/Images/Application/Favicon.png';" />
+    }
+    else
+    {
+        <link rel="icon" href="@Url.Content("~/Content/Images/Application/" +GlobalAppSettings.SystemSettings.FavIcon)" onerror="if (this.href != '@Url.Content("~/Content/Images/Application/Favicon.png")') this.href = '@Url.Content("~/Content/Images/Application/Favicon.png")';" />
+    }
+   @{    
+       if (HttpContext.Current.Request.QueryString["hascomments"] != null && HttpContext.Current.Request.QueryString["hascomments"].ToLower() == "true")
+       {
+           enableComment = "true";
+       }
+       else
+       {
+           enableComment = "false";
+       }
+
+       if (HttpContext.Current.Request.QueryString["hasviews"] != null && HttpContext.Current.Request.QueryString["hasviews"].ToLower() == "true")
+       {
+           enableView = "true";
+       }
+       else
+       {
+           enableView = "false";
+       }
+       if (!HttpContext.Current.Request.IsAuthenticated && isPublic == "true")
+       {
+           enableComment = "false";
+           enableView = "false";
+           isAuthenticated = "false";
+       }
+       else if (HttpContext.Current.Request.IsAuthenticated)
+       {
+           userId = (HttpContext.Current.User as ServerPrincipal).UserId;
+           userName = (HttpContext.Current.User as ServerPrincipal).UserName;
+           isAuthenticated = "true";
+       }
+       else
+       {
+           isAuthenticated = "false";
+       }
+    }
+
+    @{
+        if (enableComment == "true")
+        {
+            <script src="~/signalr/hubs"></script>
+            @Scripts.Render("~/scripts/signalr-bundle")
+            <script>
+                $(function () {
+                    // Reference the auto-generated proxy for the hub.
+                    var userActivity = $.connection.signalrHub;
+
+                    userActivity.client.connection = function () {
+                    };
+
+                    SJ.iwc.SignalR.start();
+                });
+            </script>
+        }
+    }
+</head>
+<body style="overflow: hidden; position: static; margin: 0; padding: 0; width: 100%; height: 100%">
+    <div id="sync_report_viewer" style="height: 100%; width: 100%; padding-right: 26px" class="sync_report"></div>
+    <input id="is_mobile" type="hidden" value="@DeviceDetection.IsMobile.ToString().ToLower()">
+    @if (DeviceDetection.IsMobile && HttpContext.Current.Request.IsAuthenticated)
+    {
+        <nav id="server-mobile-navbar" class="navbar navbar-inverse">
+            <div class="container-fluid">
+                <ul class="nav navbar-nav col-xs-12 no-padding no-margin">
+                    @if (HttpContext.Current.Request.IsAuthenticated && HttpContext.Current.User != null && HttpContext.Current.User.Identity != null && HttpContext.Current.User.Identity.IsAuthenticated)
+                    {
+                        if (enableComment == "true" && enableView == "true")
+                        {
+                            <li class="col-xs-4">
+                                <a href="javascript:void(0)" class="su su-report active"></a>
+                            </li>
+                            <li class="col-xs-4">
+                                @if (ViewBag.IsReportCommented == "true")
+                                {
+                                    <a href="javascript:void(0)" class="su su-with-comment server-comment"></a>
+                                }
+                                else
+                                {
+                                    <a href="javascript:void(0)" class="su su-without-comment server-comment"></a>
+                                }
+                            </li>
+                            <li class="col-xs-4">
+                                <a href="javascript:void(0)" class="su su-filter server-item-view"></a>
+                            </li>
+                        }
+                        else if (enableComment == "false" && enableView == "true")
+                        {
+                            <li class="col-xs-6">
+                                <a href="javascript:void(0)" class="su su-report active"></a>
+                            </li>
+                            <li class="col-xs-6">
+                                <a href="javascript:void(0)" class="su su-filter server-item-view"></a>
+                            </li>
+
+                        }
+                        else if (enableComment == "true" && enableView == "false")
+                        {
+                            <li class="col-xs-6">
+                                <a href="javascript:void(0)" class="su su-report active"></a>
+                            </li>
+                            <li class="col-xs-6">
+                                @if (ViewBag.IsReportCommented == "true")
+                                {
+                                    <a href="javascript:void(0)" class="su su-with-comment server-comment"></a>
+                                }
+                                else
+                                {
+                                    <a href="javascript:void(0)" class="su su-without-comment server-comment"></a>
+                                }
+                            </li>
+
+                        }
+                        else if (enableComment == "false" && enableView == "false")
+                        {
+                            <li class="col-xs-12">
+                                <a href="javascript:void(0)" class="su su-report active"></a>
+                            </li>
+                        }
+                    }
+
+                </ul>
+            </div>
+        </nav>
+    }
+    
+    @Html.Partial("_ReportViews") 
+    @Html.Partial("../Error/EmbedReportError")
+   
+    
+    <input id="comment_Type" type="hidden" data-item-type="report">
+    <input id="report_Comment" type="hidden" data-item-id="@ViewBag.ItemId.Split('/')[0]">
+    <input id="dashboard_Comment" type="hidden" data-item-id="@Guid.Empty">
+    <div id="commentModuleContainer" class="displayNone" style="background-image: url('@Url.Content("~/Content/Images/waitingpopup.gif")'); background-color: #fff; background-repeat: no-repeat; background-position: 50% 50%;">
+        <iframe id="commentModuleContainer_iframe" class="comment-popup-frame" src="@Url.Action("CommentPartialView", "Comments")?itemId=@ViewBag.ItemId.Split('/')[0]" style="height: 100%; width: 100%;"></iframe>
+    </div>
+    <iframe id="delete_popup_iframe" class="comment-popup-frame displayNone" src="@Url.Action("CommentDeletePartialView", "Comments")" allowtransparency="true" style="position: absolute;"></iframe>
+    
+   
+    <div id="viewShare_popup" class="col-md-12 DisplayNone">
+        <div id="sharepopup_wrapper_WaitingPopup" class="e-waitpopup-sharepopup">
+            <span class="e-image" style="top: 161px;"></span>
+        </div>
+        <iframe id="viewShare_popup_iframe" class="EditIframe"></iframe>
+    </div>
+    <div class="ViewShare_popup_shadow"></div>
+
+    <div id="commentImage_popup" class="col-md-12 no-padding hidden">
+        <div class="col-lg-12 no-padding" id="PopupContainer">
+            <div class="col-md-12 header-menu header-popup">
+                <div class="col-xs-12 no-padding" style="float:right">
+                    <a href="javascript:void(0);" onclick="CommentImageDialogClose()" class="PopupClose"><span class="su su-close"></span></a>
+                </div>
+            </div>
+            <div class="col-xs-12 no-padding">
+                <img id="commentImage_popup_image" src="" style="width: 100%;">
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+@if (!HttpContext.Current.Request.IsAuthenticated)
+{
+    <script>
+        $(document).ready(function () {                    
+            if (externalLogin != null && externalLogin.toLowerCase() == "windowsad" && sso != null && sso.toLowerCase() == "true") {
+                $.ajax({
+                    type: "GET",
+                    url: "@baseUrl"+"/windowsauthentication/account/login",
+                    data: { },
+                    cache: false,
+                    contentType: "application/json; charset=utf-8",
+                    statusCode: {
+                        200: function(result) {
+                            if (result.responseText.toLowerCase() == "true") {
+                                window.location.href = window.location.href;
+                            } else {
+                                $(".error-message").css("display", "block");
+                            }
+                        },
+                    },
+                    dataType: "json",
+                    success: function(result) {  },
+                    error :  function(result) {
+                        if(result.responseText.toLowerCase() == "true"){
+                        ReportViewer(viewToken);
+                        }
+                        else{
+                            if (isPublic == "true") {
+                                enableComment = "false";
+                                enableView = "false";
+                                ReportViewer(viewToken);
+                            } 
+                            else {
+                                window.location.href = "@baseUrl"+"/login";
+                            }
+                        }
+                    }
+                });
+            }
+        });
+
+        var enableComment = "@enableComment";
+        var enableView = "@enableView";
+        $(document).ready(function () {
+            window.addEventListener('message', receiveMessage, false);
+            function receiveMessage(event) {                
+                if(event.data){
+                    var messageData = JSON.parse(event.data);
+                    if(messageData["access_token"] != ""){
+                        var embeddedToken = messageData["access_token"];
+                        var itemLoc = "@Html.Raw(itemLocation)";
+                        $.ajax({
+                            type: "POST",
+                            url: embeddedLoginUrl,
+                            data: {
+                                token: embeddedToken,
+                                itemPath: itemLoc
+                            },
+                            success: function(obj) {
+                                if(obj.data != null && obj.data.Status == true){
+                                    userId = obj.data.UserId;
+                                    userName = obj.data.UserName;
+                                    isAuthenticated = "true";
+                                    document.getElementById('commentModuleContainer_iframe').contentWindow.location.reload(true)
+                                    let params = (new URL(document.location)).searchParams;
+                                    let hasviews = params.get("hasviews");
+                                    if(hasviews.toLowerCase() == "true"){
+                                        enableView = "true";
+                                    }
+                                    $("#save-view, #reset-view").attr("disabled", false);
+                                    $("[data-toggle=tooltip]").tooltip("enable");
+                                    
+                                    let hascomments = params.get("hascomments");
+                                    if(hascomments.toLowerCase() == "true"){
+                                        enableComment = "true";
+                                        commentSection();
+                                    }                                    
+                                    if($("#sync_report_viewer").data("ejReportViewer") != null){
+                                        if (enableView.toString().toLowerCase() == "true") {
+                                            $("#new-save,#saved-filter-update,#saved-filter-Saveas,#save-filter,#filter_name").removeClass("pointer-events");
+                                            $("#new-save,#saved-filter-update,#saved-filter-Saveas,#save-filter,#filter_name").css("opacity", 1);
+                                            $("#report-view-toogle").css("opacity", 1);
+                                        } else {
+                                            $("#new-save,#saved-filter-update,#saved-filter-Saveas,#save-filter,#filter_name").addClass("pointer-events");
+                                            $("#new-save,#saved-filter-update,#saved-filter-Saveas,#save-filter,#filter_name").css("opacity", 0);
+                                            $("#report-view-toogle").css("opacity", 0);
+                                        }
+                                    }
+                                    else{
+
+                                        reportToken = "bearer " + embeddedToken;
+                                        ReportViewer(reportToken);
+                                    }
+                                }
+                                else{
+                                    if ("@isPublic" == "true" && isAuthenticated.toLowerCase() == "false") {
+                                        ReportViewer(viewToken);
+                                    } 
+                                    else{
+                                        if(obj.data.Status == false && obj.data.IsAuthorizedItem && "@isMarkItemsPublic"=="True" &&"@publicreport"=="false")
+                                        {
+                                            if($("#serverauthentication").css("display")== "block")
+                                            {
+                                                $("#serverauthentication").css("display","none")
+                                                $("#sync_report_viewer").css("display","none");
+                                                $("#report-view-toogle").css("display","none");
+                                                
+                                                $("#authorizationError").css("display","block");
+                                            }
+
+                                        }
+
+                                        else if(obj.data.Status == false && obj.data.IsAuthorizedItem && "@isMarkItemsPublic"=="False" &&"@publicreport"=="false")
+                                        {
+                                            if($("#serverauthentication").css("display")== "block")
+                                            {
+                                                $("#serverauthentication").css("display","none")
+                                                $("#sync_report_viewer").css("display","none");
+                                                $("#report-view-toogle").css("display","none");
+                                                
+                                                $("#authorizationError").css("display","block");
+                                            }
+
+                                        }
+                                        else if(obj.data.Status == false && obj.data.IsAuthorizedItem && "@isMarkItemsPublic"=="False" &&"@publicreport"=="true")
+                                        {
+                                            if( $("#renderReportError").css("display")=="block")
+                                            {
+                                                $("#renderReportError").css("display","none")
+                                                $("#sync_report_viewer").css("display","none");
+                                                $("#report-view-toogle").css("display","none");
+                                                $("#renderError").css("display","block");
+                                            }
+                                        }
+                                    }
+                                }
+                             }
+                        });
+                    }
+                    else{
+                        reportToken = viewToken;
+                    }
+                }
+            }
+            if("@isMarkItemsPublic"=="False" &&"@publicreport"=="false")
+            {
+
+                $("#sync_report_viewer").css("display","none");
+                $("#report-view-toogle").css("display","none");
+                $("#serverauthentication").css("display","block");
+
+            }
+            else if("@isMarkItemsPublic"=="True" &&"@publicreport"=="false")
+            {
+                $("#sync_report_viewer").css("display","none");
+                $("#report-view-toogle").css("display","none");
+                $("#serverauthentication").css("display","block");
+
+            }
+            else if("@isMarkItemsPublic"=="False" &&"@publicreport"=="true")
+            {
+                $("#sync_report_viewer").css("display","none");
+                $("#report-view-toogle").css("display","none");
+                $("#renderReportError").css("display","block");
+            }
+        });
+    </script>
+}
+else
+{
+    <script>
+        var externalLogin = "@externalLogin";
+        $(document).ready(function () {
+            if(externalLogin != ""){
+                ReportViewer(viewToken);
+            }
+        });
+    </script>
+}
+<script type="text/javascript">
+    var enableComment = "@enableComment";
+    var enableView = "@enableView";
+
+    $(document).ready(function () {
+        if (externalLogin != null && externalLogin.toLowerCase() == "azuread" && sso != null && sso.toLowerCase() == "true")
+        {
+            isAuthenticated = "@isAuthenticated";
+            if (isAuthenticated.toLowerCase() == "true"){
+                ReportViewer(viewToken);
+            }
+            else{
+                if ("@isPublic" == "true") {
+                    enableComment = "false";
+                    enableView = "false";
+                    ReportViewer(viewToken);
+                } else {
+                    window.location.href = "@baseUrl"+"/login";
+                }
+            }
+        }
+        if(sso.toLowerCase() == "false"){
+            isAuthenticated = "@isAuthenticated";
+            if (isAuthenticated.toLowerCase() == "true" && viewToken != "") {
+                userId = "@userId";
+                userName = "@userName";
+                ReportViewer(viewToken);
+            } else {
+                if (@isPublic == true && isAuthenticated.toLowerCase() == "false"){
+                    enableComment = "false";
+                    enableView = "false";
+                    ReportViewer(viewToken);
+                }
+            }
+        }
+    });
+
+    var userId = '@userId';
+    var userName = '@userName';
+    var viewId = "@ViewBag.ViewId";
+    var item_Id = "@ViewBag.ItemId.Split('/')[0]";
+    var enableComment = '@enableComment';
+    var isReportCommented = '@ViewBag.IsReportCommented';
+
+    var pageurl = "@HttpContext.Current.Request.Url.LocalPath";
+    var baseUrl = "@GlobalAppSettings.SystemSettings.BaseUrl";
+
+    function commentSection() {
+        var $ulContainer = $("#sync_report_viewer_toolbarContainer ");
+        $divouter = ej.buildTag("ul.e-reportviewer-toolbarul e-ul e-horizontal ",
+            "",
+            { 'float': 'right' },
+            {});
+        var $lifil = ej.buildTag("li.e-reportviewer-toolbarli e-tooltxt",
+            "",
+            { 'display': 'inline-block', },
+            { 'id': 'sync_report_viewer_toolbar_fil' });
+        var $spanfil = ej.buildTag("span.su-filter e-reportviewer-icon",
+            "",
+            {},
+            { 'id': 'sync_report_viewer_toolicon_fil' });
+        var $lifav = ej.buildTag("li.e-reportviewer-toolbarli e-tooltxt",
+            "",
+            { 'display': 'inline-block', },
+            { 'id': 'sync_report_viewer_toolbar_fav' });
+        var $spanfav = ej.buildTag("span.su-dis-favorite e-reportviewer-icon",
+            "",
+            {},
+            { 'id': 'sync_report_viewer_toolicon_fav' });
+        var $licom = ej.buildTag("li.e-reportviewer-toolbarli e-tooltxt",
+            "",
+            { 'display': 'inline-block', },
+            { 'id': 'sync_report_viewer_toolbar_com', 'title': '[[[Comments]]]' });
+        if ("@Html.Raw(ViewBag.IsReportCommented)" == "true") {
+            var $spancom = ej.buildTag("span.su-with-comment e-reportviewer-icon",
+                "",
+                {},
+                { 'id': 'sync_report_viewer_toolicon_com' });
+        } else {
+            var $spancom = ej.buildTag("span.su-without-comment e-reportviewer-icon",
+                "",
+                {},
+                { 'id': 'sync_report_viewer_toolicon_com' });
+        }
+
+        $divouter.append($licom);
+        $licom.append($spancom);
+        $ulContainer.append($divouter);
+
+        $lifil.hover(function () {
+            $lifil.addClass("e-hover");
+        },
+            function () {
+                $lifil.removeClass("e-hover");
+            });
+
+        $lifav.hover(function () {
+            $lifav.addClass("e-hover");
+        },
+            function () {
+                $lifav.removeClass("e-hover");
+            });
+
+        $licom.hover(function () {
+            $licom.addClass("e-hover");
+        },
+            function () {
+                $licom.removeClass("e-hover");
+            });
+
+        $licom.click(function (e) {
+            openReportComment();
+        });
+
+    }
+
+    $(document).ready(function () {
+            var waitingpopup = $("#report-view-toogle").ejWaitingPopup();
+        if ($("#is_mobile").val() == "true") {
+            $("#sync_report_viewer").css("padding-right", "");
+        }
+            if("@isAuthenticated" == "true"){
+                ReportViewer(viewToken);
+            }
+                reportviewerObj = $("#sync_report_viewer").data("ejReportViewer");
+                window.onresize = SavedViewHeight;
+        });
+
+    //adding token and itemid in ajax request headers for rendering reports in viewer
+    function OnAjaxRequest(args) {
+        args.headers.push({ Key: 'Authorization', Value: token }, { Key: 'ReportId', Value: item_Id });
+    }
+    //adding token and itemid in "form request headers" for export reports in viewer
+    function OnExportClick(args) {
+        if ($("#reportserverapireportid").length) {
+            $("#reportserverapitoken").val(token);
+            $("#reportserverapireportid").val(item_Id);
+        }
+        else {
+            var authorizationToken = document.createElement("input");
+            $(authorizationToken).attr({ "type": "hidden", "id": "reportserverapitoken", "name": "Authorization", "value": token });
+            $(args.exportAction).append(authorizationToken);
+            var reportId = document.createElement("input");
+            $(reportId).attr({ "type": "hidden", "id": "reportserverapireportid", "name": "ReportId", "value": item_Id });
+            $(args.exportAction).append(reportId);
+        }
+    }
+
+
+    function ReportViewer(reportToken) {
+        token = viewToken=="" ? reportToken : viewToken;
+        var enableComment = '@enableComment';
+        var enableView = '@enableView';
+        if (viewId != null && viewId != "") {
+            loadReportView();
+        } else {
+            $("#sync_report_viewer")
+                .ejReportViewer(
+                {
+                    reportServiceUrl: "@baseUrl" + "/api/reports",
+                    reportCacheID: "@ViewBag.ReportId",
+                    processingMode: ej.ReportViewer.ProcessingMode.Remote,
+                    reportPath: "@ViewBag.ItemId",
+                    reportServerUrl: "@baseUrl" + "/api/reports",
+                    ajaxBeforeLoad: "OnAjaxRequest",
+                    reportExport: "OnExportClick",
+                    exportSettings: { wordFormat: ej.ReportViewer.WordFormats.Word2013, pptFormat: ej.ReportViewer.PPTFormats.PowerPoint2013, excelFormat: ej.ReportViewer.ExcelFormats.Excel2013 },
+                    reportLoaded: "openComments",
+                    viewReportClick: "ViewReportClick",
+                    renderingComplete: 'filterView',
+                    isResponsive: true,
+                    reportPrint: "onReportPrint",
+                    locale: '@language',
+                    parameters: filterParameters
+                });
+            if ($("#sync_report_viewer_toolicon_com").length < 1) {
+               if ("@enableComment" == "true") {
+                    commentSection();
+                }
+            }
+            if (enableView.toString().toLowerCase() == "true") {
+                $("#new-save,#saved-filter-update,#saved-filter-Saveas,#save-filter,#filter_name").removeClass("pointer-events");
+                $("#new-save,#saved-filter-update,#saved-filter-Saveas,#save-filter,#filter_name").css("opacity", 1);
+            } else {
+                $("#new-save,#saved-filter-update,#saved-filter-Saveas,#save-filter,#filter_name").addClass("pointer-events");
+                $("#new-save,#saved-filter-update,#saved-filter-Saveas,#save-filter,#filter_name").css("opacity", 0);
+            }
+            if(enableView.toLowerCase() == "false"){
+                $("#report-view-toogle").css("opacity", 0);
+            }
+            else{
+                $("#report-view-toogle").css("opacity", 1);
+            }
+        }
+    }
+
+    function loadReportView() {
+        var parameter = "";
+        var viewName = "";
+        var canUpdate = false;
+        var link = "";
+        $.ajax({
+            type: "POST",
+            url: getViewParameterUrl,
+            data: { ViewId: viewId, UserId: userId, UserName: userName, itemid: item_Id },
+            success: function (data) {
+                var viewDetails;
+                if (data.viewDetails != null && data.viewDetails != '') {
+                    if (data.isPublic) {
+                        viewDetails = data.viewDetails;
+                        viewName = viewDetails.ViewName;
+                        parameter = viewDetails.QueryString;
+                        canUpdate = viewDetails.CanEdit;
+                    } else {
+                        viewDetails = data.viewDetails;
+                        viewName = viewDetails.ViewName;
+                        parameter = viewDetails.QueryString;
+                        canUpdate = viewDetails.CanEdit;
+                    }
+                }
+                else {
+                    window.location.href = ((window.location.origin + window.location.pathname));
+                }
+
+                if (parameter != null && parameter != '') {
+                    var encodeParams = encodeURIComponent(parameter);
+                    parameter = JSON.parse('[' + decodeURIComponent(encodeParams) + ']');
+                } else {
+                    window.location.href = ((window.location.origin + window.location.pathname));
+                }
+                $("#sync_report_viewer")
+                    .ejReportViewer({
+                        reportServiceUrl: "@baseUrl" + "/api/reports",
+                        reportCacheID: "@ViewBag.ReportId",
+                        processingMode: ej.ReportViewer.ProcessingMode.Remote,
+                        reportPath: "@ViewBag.ItemId",
+                        reportServerUrl: "@baseUrl" + "/api/reports",
+                        ajaxBeforeLoad: "OnAjaxRequest",
+                        reportExport: "OnExportClick",
+                        exportSettings: { wordFormat: ej.ReportViewer.WordFormats.Word2013, pptFormat: ej.ReportViewer.PPTFormats.PowerPoint2013, excelFormat: ej.ReportViewer.ExcelFormats.Excel2013 },
+                        reportLoaded: "openComments",
+                        viewReportClick: "ViewReportClick",
+                        renderingComplete: 'filterView',
+                        isResponsive: true,
+                        reportPrint: "onReportPrint",
+                        locale: '@language',
+                        parameters:
+                            parameter
+                    });
+                $("#current-view").show();
+                $("#current-view").html("");
+                if (canUpdate) {
+                    $("#saved-filter-update").show();
+                    $("#update-view").addClass("pointer-events");
+                    $("#update-view").css("opacity", 0.5);
+                } else {
+                    $("#saved-filter-Saveas").show();
+                }
+                if (enableView.toString().toLowerCase() == "true") {
+                    $("#new-save,#saved-filter-update,#saved-filter-Saveas,#save-filter,#filter_name").removeClass("pointer-events");
+                    $("#new-save,#saved-filter-update,#saved-filter-Saveas,#save-filter,#filter_name").css("opacity", 1);
+                } else {
+                    $("#new-save,#saved-filter-update,#saved-filter-Saveas,#save-filter,#filter_name").addClass("pointer-events");
+                    $("#new-save,#saved-filter-update,#saved-filter-Saveas,#save-filter,#filter_name").css("opacity", 0.5);
+                }
+                if(enableView.toLowerCase() == "false"){
+                    $("#report-view-toogle").css("opacity", 0);
+                }
+                else{
+                    $("#report-view-toogle").css("opacity", 1);
+                }
+                $("#nofilters").css("display", "none");
+                $("#save-lable-section label").html("");
+                link = '<a class="saved-view-link txt-overflow" href="/' +
+                    pageurl +
+                    '?viewid=' +
+                    viewId +
+                    '" target="_blank" data-toggle="tooltip" data-original-title="' + viewName + '">' +
+                    viewName +
+                    '</a>';
+                $("#save-lable-section label").append(link);
+                $("#save-lable-section").show();
+                $("#new-save").hide();
+                $("#unsaved-filter,#unsaved-filter-title").show();
+                $('.saved-view[viewid="' + viewId + '"').css("background-color", "#f9f9f9");
+                if ($("#sync_report_viewer_toolicon_com").length < 1) {
+                    commentSection();
+                }
+            },
+            error: function () {
+                window.location.href = ((window.location.origin + window.location.pathname));
+            }
+        });
+
+    }
+    function CommentImageDialogClose() {
+        $("#commentImage_popup").ejDialog("close");
+        $("#commentImage_popup_image").attr('src', "");
+    }
+    function loadPopup() {
+        $("#sync_report_viewer").ejWaitingPopup();
+        $("#sync_report_viewer").ejWaitingPopup("show");
+        window.location.href = window.location.origin;
+    }
+    function mobileViewAvailable()
+    {
+        if ($("#is_mobile").val() == "true" && "@isAuthenticated" == "true") {
+
+            var reportComment = isReportCommented.toLowerCase() == "true"
+                ? '<a href="javascript:void(0)" class="su su-with-comment server-comment"></a>'
+                : '<a href="javascript:void(0)" class="su su-without-comment server-comment"></a>';
+            if ('@enableComment' == "true" && '@enableView' == "true") {
+                var enableCommentSave =
+                    '<li class="col-xs-6"><a href="javascript:void(0)" class="su su-report active"></a></li><li class="col-xs-6">' + reportComment + '</li>';
+                if (!($(".e-reportviewer-viewer").hasClass("e-reportviewer-parameter"))) {
+                    var elementCommentSave = $("#server-mobile-navbar").children().find(".navbar-nav");
+                    elementCommentSave.html("");
+                    elementCommentSave.append(enableCommentSave);
+                } else {
+                    var missingCommentSave =
+                        '<li class="col-xs-4"><a href="javascript:void(0)" class="su su-report active"></a></li><li class="col-xs-4">' + reportComment + '</li><li class="col-xs-4"><a href="javascript:void(0)" class="su su-filter server-item-view"></a></li>';
+                    var elementMissingCommentSave = $("#server-mobile-navbar").children().find(".navbar-nav");
+                    elementMissingCommentSave.html("");
+                    elementMissingCommentSave.append(missingCommentSave);
+                }
+            }
+
+            if ('@enableComment' == "false" && '@enableView' == "true") {
+                var enableSave =
+                    '<li class="col-xs-12"><a href="javascript:void(0)" class="su su-report active"></a></li>';
+                if (!($(".e-reportviewer-viewer").hasClass("e-reportviewer-parameter"))) {
+                    $("#server-mobile-navbar").children().find(".navbar-nav").remove();
+                    $("#server-mobile-navbar").remove();
+                } else {
+                    var missingSave =
+                        '<li class="col-xs-6"><a href="javascript:void(0)" class="su su-report active"></a></li><li class="col-xs-6"><a href="javascript:void(0)" class="su su-filter server-item-view"></a></li>';
+                    var elementMissingSave = $("#server-mobile-navbar").children().find(".navbar-nav");
+                    elementMissingSave.html("");
+                    elementMissingSave.append(missingSave);
+                }
+            }
+
+            if ('@enableComment' == "true" && '@enableView' == "false") {
+                var enableComments =
+                    '<li class="col-xs-6"><a href="javascript:void(0)" class="su su-report active"></a></li><li class="col-xs-6">' + reportComment + '</li>';
+                var elementEnableComment = $("#server-mobile-navbar").children().find(".navbar-nav");
+                elementEnableComment.html("");
+                elementEnableComment.append(enableComments);
+            }
+
+            if ('@enableComment' == "false" && '@enableView' == "false") {
+                $("#server-mobile-navbar").children().find(".navbar-nav").remove();
+                $("#server-mobile-navbar").remove();
+            }
+        }
+    }
+    function onReportPrint(args) {
+        args.isStyleLoad = false;
+    }
+</script>

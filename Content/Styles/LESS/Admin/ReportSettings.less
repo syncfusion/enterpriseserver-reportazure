@@ -1,0 +1,183 @@
+﻿@import (reference) "../Mixins.less";
+
+#report-settings-container {
+    .dashboard-header {
+        .header-text {
+            font-size: @app-text-size;
+        }
+    }
+
+    #report-settings-body {
+           padding-bottom:5px;
+       }
+    
+    .admin-page-body {
+        border-top: none;
+    }
+
+    .normal-font {
+        font-weight: normal;
+    }
+
+    .cls-padleft {
+        padding-left: 20px;
+    }
+
+    .cls-padleft10 {
+        padding-left: 10px;
+    }
+
+    .cls-padright {
+        padding-left: 20px;
+    }
+
+    .cls-margin {
+        margin: 0px 20px 0px 20px;
+    }
+
+    .cls-margin-bot {
+        margin-bottom: 20px;
+    }
+
+    .cls-margin-top {
+        margin-top: 15px;
+    }
+
+    .cls-margin-top8 {
+        margin-top: 8px;
+    }
+
+    .textbox-pad {
+        margin-top: -5px;
+        padding: 0 10px 0 10px;
+    }
+
+    .material-checkbox {
+        .material-checkbox-controls();
+
+        &:checked + input + label::before {
+            bottom: 10px !important;
+            left: 2px;
+        }
+    }
+
+    .material-checkbox + input + label {
+        padding-top: 6px !important;
+    }
+
+    #report-settings-tab-nav {
+        border-color: @admin-body-border-color;
+
+        li:first-child {
+            margin-left: 20px;
+        }
+
+        li a {
+            color: @primary-text-color;
+        }
+
+        li.active {
+            a {
+                color: @primary-color;
+            }
+        }
+    }
+
+    #make-public-setting-tab {
+    .dropdown-toggle {
+        cursor: pointer;
+        margin-left:11px;
+    }
+
+    .dropdown-menu {
+        font-size: @app-large-text-size;
+        margin-left:@app-large-text-size;
+        width: 200px;
+        padding: 5px;
+    }
+
+    .tool-tip{
+        float: none;
+        padding: 0px;
+        display: inline;
+    }
+    }
+
+    .app-textbox-label {
+        margin-left:20px;
+    }
+
+    .pwd-condition-btn, .remove-condition-btn {
+        cursor: pointer;
+        padding: 10px;
+}
+
+    .pointer-events {
+        display: none;
+    }
+
+    .line-height {
+        line-height: 32px;
+    }
+
+    #default-password-info {
+        padding: 5px;
+        float: left;
+        margin: 5px;
+    }
+
+    #password-condition-section {
+        padding-left: 0px;
+        .bootstrap-select {
+            width: 100px !important;
+        }
+    }
+
+    #error-filedkey-info {
+        display: inline-block !important;
+        color: @validation-text-color;
+    }
+}
+
+@media screen and (min-width: 1041px) and (max-width: 1399px) {
+     .dropdown-menu {
+             font-size: @app-text-size !important;
+         }
+}
+
+//userbased filter settings
+
+#userbasedfilter-settings-body {
+    padding-bottom: 5px;
+       #info-dropdown-toggle {
+        cursor: pointer;
+    }
+
+    #info-dropdown{
+        font-size: @app-large-text-size;
+        width: 300px;
+        padding: 5px;
+        margin-left:18px;
+    }
+
+    .userbased-tool-tip{
+            float: right;
+    display: inline;
+    position: absolute;
+    top: 6px;
+    }
+}
+
+.bootstrap-select {
+    .btn {
+        font-size: @app-text-size;
+    }
+}
+
+@media screen and (min-width: 1400px) {
+    .bootstrap-select {
+        .btn {
+            font-size: @app-large-text-size;
+        }
+    }
+}

@@ -1,0 +1,1067 @@
+﻿@import (reference) "Mixins.less";
+@import (reference) "Themes/Default.less";
+
+.selected-recipients {
+    background-color: @recipients-bg-color;
+    border: 1px solid @recipients-border-color;
+    border-radius: 5px;
+    height: 190px;
+    margin-left: 16px;
+    overflow: auto;
+    width: 96%;
+
+    .SelectedShareItems {
+        background-color: @share-items-bg-color;
+        border-radius: 5px;
+        float: left;
+        height: 28px;
+        margin-left: 10px;
+        margin-top: 10px;
+        padding: 5px 12px;
+        width: auto;
+
+        .instant-cancel {
+			cursor: pointer;
+			float: right;
+			margin-left: 5px;
+			margin-right: -6px;
+			margin-top: 4px;
+			font-size: 10px;
+            span.su-close{
+                font-size: 10px;
+            }
+        }
+    }
+}
+.e-waitpopup-sharepopup
+{
+    display: block;
+    height: 600px;
+    left: 0;
+    position: absolute;
+    top: 0;
+    width: 650px;
+    z-index: 10004;
+    background-color: @waitpopup-bg-color;
+    opacity:0.85;
+    .e-image
+    {
+        background-color: white;
+        background-image: url("../essentialJs/images/waitingpopup.gif");
+        background-position: center center;
+        background-repeat: no-repeat;
+        border-radius: 15px;
+        display: block;
+        height: 70px;
+        margin: 0 auto;
+        position: relative;
+        text-align: center;
+        width: 70px;
+    }
+}
+#MasterContainer
+{
+    height: 600px;
+    padding: 0.938em 1.3em !important;
+    width: 100%;
+}
+.IsPublic
+{
+    float: right;
+    padding-right: 10px;
+    padding-top: 6px;
+}
+.shareTitle
+{
+    font-size:16px;
+    border-top: 1px solid @share-title-border-color;
+    padding-top: 10px;
+}
+.margin-right 
+{
+    margin-right: 10px;
+}
+ #messageBox_wrapper {
+     .e-scrollbar{
+                display: none !important;
+            }
+     }
+div.InstantSearch
+{
+    max-width: 230px;
+    span.details
+        {
+        display: block;
+    float: left;
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    }
+    div.instant-cancel
+        {
+        float: left;
+    }
+}
+.button-right{
+	margin-bottom:0;
+}
+
+#SelectedUsers .su-close:before{
+	font-size:10px;
+}
+#PopupContainer_wrapper{
+	display:none;
+}
+.header-menu
+{
+	margin-top:0.5em !important;
+    padding-left: 0px;
+    padding-right: 0px;
+
+    .share-icon {
+        float:left;
+        padding-top: 2px;
+    }
+}
+.e-dialog.e-dialog-wrap{
+	border:0;
+}
+.e-overlay{
+	color:gray;
+}
+.e-datepicker table td.e-hidedate {
+        visibility: visible;
+        background: none !important;
+        opacity: 0.35;
+      }
+span.onDemand {
+    font-size: 25px;
+}
+#PopupContainer{
+	padding:0;
+    height:inherit;	
+
+    .PopupClose {
+        float:right;
+    }
+}
+.dialogBody{
+font-size:14px;
+    div.placeholder
+        {
+        position:absolute;
+        top:-2px;
+        padding-left:12px;
+        z-index:2;
+        height:30px;
+        color:@placeholder-color;
+        margin-top:5px;
+        line-height: 30px;
+    }
+}
+#schedule_delete_confirmation > div:first-child{
+    height:inherit;
+    float:left;
+}
+.dialogFooter{
+		width:100%;
+        bottom:0px;
+        background-color: @footer-bg-color;
+        height: 50px;
+        padding: 10px 18px;
+        text-align: right;
+        border-top: 1px solid @footer-border-color;
+}
+#scheduler-popup-iframe{
+    width: 100%;
+        border: 0;
+        height: 600px;
+        float:left;
+}
+#userSearch_container,#groupSearch_container{
+.bootstrap-select{
+    padding:0px;
+	width:250px !important;
+     .inner,.open {
+        max-height: 250px!important;
+    }
+}
+.dropdown-menu {
+            li {
+              &.active{
+                 a{
+                   color: @primary-text-color !important;
+                }
+             }
+          }
+       }
+    }
+div.schedule-grid,
+#scheduleGrid div.e-gridheader,
+#scheduleGrid div.e-pager, #scheduleGrid_toolbarItems {
+    background-color: white !important;
+}
+
+#scheduleGrid .e-rowcell {
+    line-height: 20px !important;
+    white-space: nowrap !important;
+    word-wrap: normal !important;
+}
+    .col-sm-1, .col-sm-2, .col-sm-3, .col-sm-4, .col-sm-5, .col-sm-6, .col-sm-7, .col-sm-8, .col-sm-9, .col-sm-10, .col-sm-11, .col-sm-12 {
+        margin-top: 10px;
+    }
+.monthly-select {
+    float: left;
+    padding-left: 10px;
+    margin-top: -5px;
+}
+
+.clspad {
+    float: left;
+    padding-left: 11px;
+}
+
+.clsmar {
+    float: left;
+    margin-top: 5px;
+}
+
+.clspadleft {
+    padding-left: 10px;
+}
+
+.cls-options {
+    display: none;
+    margin-left: 5px;
+}
+
+.export-header {
+    margin-top: 30px;
+}
+
+.button-container {
+    bottom: 0;
+    position: absolute;
+    left: 0;
+}
+
+.button-left {
+	margin-left:10px;
+}
+
+.bs-actionsbox:hover, .bs-select-all-custom :hover {
+    cursor: pointer;
+}
+.dropdown-menu .bs-searchbox input[type="text"]{
+	padding-left:5px !important;
+}
+.cls-schname {
+    width: 220px;
+    margin-top: -7px;
+}
+
+.cls-day {
+    float: left;
+    padding: 0px 10px 0px 10px;
+    margin-top: -5px;
+}
+
+.cls-leftmargin {
+    margin-left: 5px;
+    #systemTime{
+        margin-left:210px;
+        margin-top:-27px;
+    }
+    #time {
+        margin-left: 5px;
+    }
+}
+#timeZone {
+       padding-left: 160px;
+    }
+
+.cls-float {
+    float: left;
+}
+
+.clsend {
+    float: left;
+    padding-left: 10%;
+    padding-top: 9px;
+}
+
+.clsnever {
+    float: left;
+    padding-left: 15px;
+    padding-top: 9px;
+}
+
+.validate-error {
+    display: none;
+    color: @validation-text-color;
+}
+
+.remove-schedule {
+    color: red;
+}
+
+.edit-schedule, .disable-schedule, .enable-schedule {
+    color: blue;
+}
+
+.edit-schedule, .disable-schedule, .enable-schedule, .remove-schedule, span.onDemand.su.su-play-folder {
+    cursor: pointer;
+}
+
+div.e-scrollbar {
+    float: left;
+}
+
+#UserGrid,#GroupGrid,#itemGrid
+{
+    float:left;
+    max-height: 349px;
+    overflow-y: auto;
+    width:100%;
+}
+#groupSearchKey,#userSearchKey
+{
+    float: right;
+    border: 1px solid @search-key-border-color;
+    margin-right: 23px;
+    padding: 5px;
+    height: 28px;
+    border-radius: 4px 0 0 4px;
+    font-size: 12px;
+    outline:none;
+}
+#selectedUsersValidation{
+	visibility: hidden;
+	color:red;
+	font-size:12px;
+    padding-left: 15px;
+    padding-top: 5px;
+    height: 20px;
+    float: left;
+    clear: right;
+    width: 100%;
+}
+
+/*Schedule Listing page*/
+
+.pointer, #scheduleGrid_search a {
+    cursor: pointer;
+}
+
+#scheduleGrid_search {
+    float: right;
+}
+
+.loader-gif {
+    background-repeat: no-repeat;
+    background-size: contain;
+    height: 25px;
+    width: 25px;
+    display: inline-block;
+}
+
+#base_Div {
+    #base_content_Div {
+        #page_content_Div {
+            padding: 30px;
+
+            .heading {
+                height: 60px;
+                font-size: 30px;
+                color: @heading-color;
+            }
+        }
+    }
+}
+
+#schedulesGridContainer {
+    margin-left: 1px;
+    margin-top: 1px;
+	.dropdown-menu{
+		z-index:997 !important;
+	}
+    .active:before, .inactive:before, .completed:before {
+        float: left;
+        margin: 3px 5px 0 0;
+    }
+
+    .active:before {
+        color: green;
+    }
+
+    .inactive:before {
+        color: red;
+    }
+
+    .completed:before {
+        color: orange;
+    }
+}
+
+#scheduleSearch_global {
+    float: right;
+    margin-right: 20px;
+    position: relative;
+}
+#scheduleEndType{
+margin-top:0;
+}
+#scheduleSearch_global input {
+    padding: 2px 12px;
+}
+
+#ReportSchedulingManage {
+    border-bottom: 1px solid gray;
+
+    .folder-manage-tab {
+        font-weight: 500;
+        color: @folder-manage-tab-color;
+        font-size: 16px;
+        margin-left: 55px;
+        cursor: pointer;
+    }
+
+    .folder-tab-color {
+        color: @folder-tab-color;
+    }
+}
+
+#SubscribersPanel {
+    .bs-deselect-all, .bs-select-all {
+        display: none;
+    }
+}
+
+.e-datetime-wrap.e-widget {
+    .e-in-wrap.e-box.e-padding {
+        width: 185px;
+    }
+}
+
+.e-rowcell .dropdown {
+    position: absolute;
+
+    .dropdown-menu {
+        left: -120px;
+        padding: 0px;
+        margin: 0px;
+
+        a {
+            padding: 5px 10px;
+
+            .su {
+                padding: 2px 10px 0 5px;
+            }
+        }
+    }
+}
+
+label{
+    font-weight:normal;
+}
+.bootstrap-select.btn-group .dropdown-menu li a{
+	    white-space: nowrap;
+}
+
+#searchArea {
+    position: absolute;
+    right: 30px;
+    margin-top: 0px;
+
+    input[type="text"] {
+        -webkit-appearance: none;
+        width: 185px;
+        border: 1px solid @search-key-border-color;
+        border-radius: 4px 0px 0px 4px;
+        margin: 0;
+        height: 35px;
+        border-right: 0;
+        float: left;
+        padding-left: 5px;
+
+        &:focus {
+            outline: none;
+        }
+    }
+
+    .placeholder {
+        position: absolute;
+        top: 0;
+        padding-left: 5px;
+        height: 30px;
+        line-height: 30px;
+        color: @placeholder-color;
+    }
+
+    .su-search {
+        float: left;
+        width: 25px;
+        height: 28px;
+        border: 1px solid @search-key-border-color;
+        margin: 0;
+        padding-top: 8px;
+        padding-left: 4px;
+        border-left: 0;
+        border-radius: 0px 4px 4px 0px;
+        background-color: @search-bg-color;
+        cursor: pointer;
+    }
+}
+
+.option-icon {
+    padding: 4px 2px 2px;
+    top: -14px;
+}
+.e-select{
+	border-left: 1px solid @select-border-color !important;
+}
+.name-label{
+	margin-top: 3px;
+    padding: 6px 15px;
+}
+.type-label{
+	 padding: 6px 15px;
+}
+
+.starts-label{
+	margin-top:16px;
+}
+.end-label{
+	margin-top:8px;
+}
+/*End of Schedule Listing page*/
+
+#StartDate_wrapper, #EndDate_wrapper {
+    .form-control {
+        border-radius: 0px;
+    }
+}
+#schedulesGridContainer_WaitingPopup{
+	z-index:998 !important;
+}
+#page_content_Div_WaitingPopup{
+	z-index:998 !important;
+}
+
+#emailForm {
+    padding-left: 14px;
+    padding-bottom:10px;
+    position:relative;
+    .inner-addon{
+        #external_Email{
+            border-radius: 4px;
+            padding-right: 30px;
+        }
+        #external_Submit{
+            padding-top: 10px;
+            pointer-events: all;
+            cursor: pointer;
+        }
+
+        .inactive-box {
+            border-color: @inactive-border-box-color;
+            box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.075) inset;
+        }
+    }
+    #external_email_validation{
+        position: absolute;
+        top: 31px;
+        left: 15px;
+        color: @validation-text-color;
+    }
+}
+
+#SelectedUsersContainer{
+        margin-top:0px;
+    }
+
+.delete-schedule-content {
+    font-size: 17px;
+    padding: 15px 15px 20px 5px;
+    word-wrap:break-word;
+}
+.message-content
+{
+    word-wrap:break-word;
+}
+.permission-delete a.removeButton{
+    color: @remove-btn-color !important;
+    font-weight: 400;
+
+    .su-close {
+        padding-right:5px;
+    }
+}
+.e-hover .permission-delete a
+{
+    display:block;
+}
+#permission_delete_confirmation{
+        #PopupContainer {
+        height: 100%;
+            .header-menu, body .header-menu {
+            background: @dialog-header-bgcolor none repeat scroll 0 0;
+            float: left;
+            margin: 0;
+            padding: 10px;
+            width: 100%;
+            z-index: 9;
+        }
+            .dialogBody{
+                    font-size:14px;
+                    padding:0px;
+                    padding-top:25px;
+                    }
+            .dialogFooter {
+            bottom: 0;
+            position: absolute;
+            background: @footer-border-color none repeat scroll 0 0;
+            border-top: 1px solid @footer-border-top;
+            margin-top: 26px;
+            padding: 13px 0;
+        }
+            .PopupClose{
+                font-size:14px;
+            .su-close{
+                color: @sub-text-color;
+                &:hover{
+                    color:@primary-color;
+                }
+            }
+        }
+    }
+}
+
+
+@media  screen and (min-width:1400px) {
+#permission_delete_confirmation {
+    #PopupContainer {
+        .header-menu{
+            font-size:@app-large-text-size;
+            .PopupClose {
+                font-size:@app-large-text-size
+            }
+        }
+        .dialogBody{
+            font-size:@app-large-text-size;
+            }
+        }         
+    }
+}
+
+.sharebuttonContainer
+{
+    padding-top:10px;
+    padding-right:0px;
+    padding-left:0px;
+}
+.UserList,.GroupList
+{
+    color:black;
+    padding: 9px 34px;
+    float:left;
+    vertical-align:middle;
+}
+.searchTextBox
+{
+    margin-bottom: 15px;
+    .su-search,#clear-search, #clear-group-search {
+        float: left;
+        font-size:12px;
+        width: 25px;
+        height: 28px;
+        right:0;
+        position: absolute;
+        border: 1px solid @search-key-border-color;
+        margin: 0;
+        padding-top: 8px;
+        padding-left: 4px;
+        border-left: 0;
+        border-radius: 0px 4px 4px 0px;
+        background-color: @search-bg-color;
+        cursor: pointer;
+    }
+}
+.itemGrid
+{
+    float: left;
+    position: absolute;
+    top: 0;
+    visibility: hidden;
+    width:100%;
+}
+.itemGrid.active{
+    visibility:visible;
+}
+.schedulepopuptitle{
+    display: block;
+    float: left;
+    font-size: 16px;
+    overflow: hidden;
+    padding: 0;
+    padding-left: 10px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 94%;
+    width:auto;
+}
+#permission_delete_confirmation_wrapper #PopupContainer .dialogFooter {
+    margin-top: 33px;
+}
+
+@media (max-width: 800px) {
+    .schedule-dialog {
+        .header-menu {
+            .PopupTitle.SchedulePopupTitle {
+                max-width: 94%;
+                width:auto;
+            }
+        }
+    }
+
+    .clsend {
+        padding-left: 0;
+        width: 40%;
+		label{
+            padding-left:5px;
+        }
+    }
+
+    .clsnever {
+        width: 16.6667%;
+    }
+
+    #scheduleNameErrorContainer {
+        margin-left: 18px !important;
+    }
+
+    #SelectedUsers {
+        width: 475px !important;
+    }
+
+    #userSearch_container {
+        .bootstrap-select {
+            width: 300px !important;
+        }
+    }
+    #groupSearch_container {
+        .bootstrap-select {
+            width: 300px !important;
+            float:right;
+        }
+    }
+    #emailForm{
+        width: 200px !important;
+        #external_email_validation{
+            width:215px;
+        }
+    }
+}
+
+@media (max-width: 900px) {
+    #PopupContainer_wrapper, #scheduler_popup_iframe {
+        width: 700px !important;
+    }
+}
+
+#scheduleGrid_acString_suggestion {
+    .e-content {
+        height: 100% !important;
+    }
+    .e-vscrollbar {
+        display: none !important;
+    }
+}
+
+@media (max-width: 1040px) {
+    body{
+        #base_Div {
+            #base_content_Div {
+                #page_content_Div {
+                    top: 40px;
+
+                    #searchArea {
+                        #searchSchedules {
+                            width: 142px;
+                        }
+                    }
+                    .heading {
+                        font-size: 18px;
+                        height: 40px;
+                    }
+                }
+            }
+        }
+        #messageBox_wrapper {
+            width: 295px !important;
+
+            #messageBox {
+                 height: 155px !important;
+                width: 295px !important;
+            }
+            .e-scrollbar{
+                display: none !important;
+            }
+        }
+    }
+}
+
+@media (max-width: 640px) {
+    body{
+        #messageBox_wrapper {
+            left: 150px !important;
+        }
+    }
+}
+
+@media (max-width: 480px) {
+    body{
+        #messageBox_wrapper {
+            left: 83px !important;
+        }
+    }
+}
+
+@media (max-width: 360px) {
+    body{
+        #messageBox_wrapper {
+            left: 32px !important;
+        }
+    }
+}
+
+@media (max-width: 320px) {
+    body{
+        #messageBox_wrapper {
+            left: 12px !important;
+        }
+    }
+}
+
+@media (min-width: 401px) and (max-width: 1040px) {
+    #searchArea {
+        display: block;
+        margin-top: -5px;
+
+        #searchSchedules {
+            display: block !important;
+        }
+    }
+}
+
+@media (max-width: 400px) {
+    .schedule-listing {
+        padding: 0;
+        position: relative;
+        float: left;
+        width: 100%;
+
+        #searchArea {
+            box-shadow: none !important;
+            margin-top: -5px;
+            display: block;
+            width: 100%;
+            right: 0;
+
+            #searchSchedules {
+                box-shadow: none !important;
+                padding-top: 0;
+                height: 35px;
+                display: none;
+                width: 91% !important;
+            }
+
+            .search-schedule {
+                background-color: @search-schedule-bg-color;
+                border: medium none;
+                width: 9% !important;
+                position: absolute;
+                right: 0;
+                text-align: center;
+                padding-left: 0;
+            }
+
+            #clear-search {
+                padding-left: 0;
+                width: 9% !important;
+                position: absolute;
+                right: 0;
+            }
+
+            .add-background {
+                background-color: @add-background-border-color !important;
+                border-color: @add-background-border-color @add-background-border-color @add-background-border-color @share-items-bg-color !important;
+                border-radius: 0 4px 4px 0 !important;
+                border-style: solid solid solid none !important;
+                border-width: 1px 1px 1px 0 !important;
+            }
+        }
+    }
+}
+
+ #share-view-user-tab-nav,  #share-view-group-tab-nav {
+        border-color: @admin-body-border-color;
+        margin-bottom:15px;
+        li:first-child {
+            margin-left: 20px;
+        }
+        li a{
+            color:@primary-text-color;
+        }
+        li.active{
+            a{
+            color:@primary-color;
+            }
+        }
+    }
+
+ a.scheduleEditPopup{
+        color:@primary-text-color !important;
+    }
+ a.scheduleEditPopup:hover{
+        color:@poup-close-hover-color !important;
+    }
+
+ .e-grid {
+     .e-dlgBtns {
+         input {
+            width:47% !important;
+			min-width:47% !important;
+         }
+     }
+      .e-gridcontent {
+         .e-alt_row {
+          background:none;
+           }
+         } 
+ }
+
+ /*Hiding no suggestion and waiting popup in Filtering*/
+#GroupGrid_acString, #UserGrid_acString {
+    background-image: none !important;
+}
+
+#GroupGrid_acString_suggestion,#UserGrid_acString_suggestion {
+    display: none !important;
+}
+
+//hide pointer on hover option
+
+     .itemGrid  {
+        table {           
+            .e-columnheader > th:nth-last-of-type(-n+1) {
+                cursor: default;
+            }           
+        }
+     }
+
+ // Bootstrap Select
+
+ .schedule-dialog {
+    .bs-deselect-all, .bs-select-all {
+                        display: none;
+                    }
+
+                    .bs-deselect-all-custom, .bs-select-all-custom {
+                        font-size: @app-text-size;
+                        color: @primary-btn-bg;
+
+                        &:hover {
+                            text-decoration: underline;
+                        }
+                        }
+                     .bs-select-all-custom .bs-select-custom-tick{
+                         display:none;
+                     }
+                        .bs-deselect-all-custom .bs-select-custom-tick {
+                            display: inline;
+                            float: right;
+                            margin-right: 22px;
+                        }
+                  
+                     .bs-actionsbox:hover, .bs-select-all-custom :hover {
+                        cursor: pointer;
+                    }
+
+                    .btn-default {
+                        height: @textbox-height;
+                    }
+
+                    .bootstrap-select {
+                        float: left;
+                        width: 300px !important;
+
+                        .filter-option {
+                            font-size: @app-text-size;
+                            text-overflow: ellipsis;
+                            margin-top: -2px;
+                        }
+
+                    .dropdown-menu {
+
+                        li {
+                            overflow: hidden;
+                            text-overflow: ellipsis;
+                            white-space: nowrap;
+                            width: 275px;
+
+                            a {
+                                background: none;
+
+                                .text {
+                                    float: left;
+                                    font-size: @app-text-size;
+                                    overflow: hidden;
+                                    text-overflow: ellipsis;
+                                    white-space: nowrap;
+                                    width: 195px;
+
+                                    &:focus, &:active {
+                                        color: @secondary-btn-bg;
+                                    }
+                                }
+
+                                .check-mark {
+                                    font-size: @app-text-size;
+                                    left: 210px;
+
+                                    &:focus, &:active {
+                                        color: @secondary-btn-bg;
+                                    }
+                                }
+
+                                &:hover {
+                                    background: none;
+                                }
+                            }
+
+                            &:hover {
+                                background-color: @admin-pages-border-color;
+                            }
+
+                            &:focus, &:active {
+                                background-color: @primary-btn-bg;
+                            }
+                        }
+
+                        .check-mark {
+                            margin: 0 !important;
+                        }
+                        .selected{
+                            background-color:@primary-btn-bg;
+                            .text,.check-mark{
+                                color:@secondary-btn-bg;
+                            }
+                            &:hover{
+                                background-color:@primary-btn-bg;
+                            }
+                        }
+                    }
+                    }
+                }

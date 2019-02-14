@@ -1,0 +1,90 @@
+﻿@using Newtonsoft.Json;
+
+@model List<Permission>
+@{
+    ViewBag.Title = GlobalAppSettings.SystemSettings.OrganizationName + " - [[[View My Permissions]]]";
+    ViewBag.MessageBox = false;
+    var jsondata = JsonConvert.SerializeObject(Model);
+    var gridName = ViewBag.gridName;
+}
+
+<script type="text/x-jsrender" id="permission-grid-template">
+    <div class="item-name" data-placement="top">
+        {{if (PermissionEntity=="@((int)PermissionEntity.SpecificCategory)" || PermissionEntity=="@((int)PermissionEntity.SpecificDataSource)" || PermissionEntity=="@((int)PermissionEntity.SpecificDataset)" || PermissionEntity=="@((int)PermissionEntity.SpecificFile)" || PermissionEntity=="@((int)PermissionEntity.SpecificItemView)"||PermissionEntity=="@((int)PermissionEntity.SpecificReports)" || PermissionEntity=="@((int)PermissionEntity.SpecificSchedule)" )}}
+            <span>{{:PermissionAccessDescription}} [[[access for the]]] </span>
+            {{if ItemType=="@((int)PermissionEntity.SpecificReports)" && ItemName!="-" }}
+            <span>{{:ItemTypeDescription}} - <a href="{{:~urlEncode(CategoryName, ItemName)}}" target="_blank">{{:ItemName}}</a></span>
+            {{else ItemType=="@((int)PermissionEntity.AllReports)" && ItemName!="-" }}
+            <span>{{:ItemTypeDescription}} - <a href="@Url.Action("Reports", "Reports")?categoryName={{:ItemName}}" target="_blank">{{:ItemName}}</a></span>
+            {{else ItemType=="@((int)PermissionEntity.SpecificDataSource)"}}
+            <span>{{:ItemTypeDescription}} - {{:ItemName}}</span>
+            {{else ItemType=="@((int)ItemType.Schedule)"}}
+            <span>{{:ItemTypeDescription}} - {{:ItemName}}.</span>
+            {{else (ItemType=="@((int)ItemType.Datasource)"||ItemType=="@((int)ItemType.Dataset)"||ItemType=="@((int)ItemType.File)"||ItemType=="@((int)ItemType.ItemView)") && ItemName!="-"}}
+            <span>{{:ItemTypeDescription}} - <a href="@UrlHelper.GenerateUrl("ItemDownload", "Download", "FileRender", null, RouteTable.Routes, HttpContext.Current.Request.RequestContext, false)/{{:ItemTypeDescription}}/{{:ItemName}}" target="_blank">{{:ItemName}}</a>.</span>
+            {{else}}
+            <span>{{:ItemName}}</span>
+            {{/if}}
+        {{else}}
+        <span>{{:PermissionAccessDescription}} [[[access for]]] {{:PermissionEntityDescription}}.</span>
+        {{/if}}
+    </div>
+</script>
+
+<script>
+    $.views.helpers({
+        urlEncode: function(category, item) {
+            return encodeURI("@Url.Action("Index", "FileRender")/" + category + "/" + item);
+        },
+        widgetUrlEncode: function(item) {
+            return encodeURI("@Url.Action("widgets", "FileRender")/" + item);
+        }
+    });
+    function onDataBound(args) {
+        $(".e-gdiagonalnext").click();
+        $("[data-toggle=tooltip]").tooltip();
+    }
+
+    $(document)
+        .ready(function() {
+            $("#PermissionGrid")
+                .ejGrid({
+                    dataSource: @Html.Raw(jsondata),
+                    allowSearching: true,
+                    allowSelection: false,
+                    enableAltRow: false,
+                    allowGrouping: true,
+                    groupSettings: {
+                        showDropArea:false,
+                        showUngroupButton:false,
+                        showGroupedColumn: false,
+                        groupedColumns: ["ItemTypeDescription"]
+                    },
+                    columns:[
+                         {
+                             field:"ItemName",
+                             headerText:"Permissions",
+                             template: true,
+                             templateID:"#permission-grid-template",
+                             type: "string"
+                         },
+                        {
+                            field:"GroupName",
+                            headerText:"Inherited from Group",
+                            width: 140,
+                            visible: window.innerWidth > 768
+                        },
+                        {
+                            field:"ItemTypeDescription",
+                            headerText:"Resources",
+                            allowSorting:false,
+                            allowFiltering:false
+                        }
+                    ],
+                    dataBound: "onDataBound"
+                });
+        });
+</script>
+
+<input type="hidden" class="page-name" data-content="[[[MY PERMISSIONS]]]">
+<div id="PermissionGrid" class="permission-grid-mobile"></div>

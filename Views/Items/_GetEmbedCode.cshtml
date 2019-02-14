@@ -1,0 +1,107 @@
+﻿@{
+    Layout = null;
+}
+
+<!Doctype html>
+<head>
+    @Styles.Render("~/Styles/ItemEmbed")
+</head>
+<body>
+    <div id="get-embed-code" class="col-xs-12 no-padding dialog">
+        <div class="col-xs-12 dialog-header">
+            <div class="col-xs-6 no-padding">
+                <span class="su su-embed2 Head-icon"></span>
+                <span class="PopupTitle">[[[Get Embed code]]]</span>
+            </div>
+            <div class="col-xs-6 no-padding">
+                <a href="javascript:void(0);" title="[[[Close]]]" class="PopupClose" onclick="onGetEmbedDialogClose()"><span class="su su-close"></span></a>
+            </div>
+            <div class="report-name no-padding col-xs-12 link-item-name ellipsis"></div>
+        </div>
+        <div class="dialog-body col-xs-12 no-padding">
+            <div class="col-xs-12">
+                <div class="get-embed-body">
+                    <div class="col-sm-12 col-xs-12 no-padding"><span class="embed-link">[[[Embed code:]]]</span></div>
+                    <span class="update-comment small">[[[Embed code updated.]]]</span>
+                    <div class="col-sm-12 col-xs-12 no-padding">
+                        <input id="item-embed-link" class="form-control" />
+                        <div class="form-control su su-copy text focus focus-div" id="item-embed-link-copy" data-original-title="[[[Click to copy]]]"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-12 col-xs-12 enable-comment-div padding-top15">
+                <div class="col-sm-5 col-xs-5 resolution">
+                    <span class="enable-comment">[[[Enable Commenting]]]</span>
+                </div>
+                <div class="col-sm-6 col-xs-6 pull-left label-div no-padding">
+                    <span class="material-switch text-left">
+                        <input type="checkbox" name="Enabled" id="enable-comment" checked="checked" class="item-enabler" />
+                        <label class="label-primary" for="enable-comment"></label>
+                    </span>
+                </div>
+            </div>
+            <div class="col-sm-12 col-xs-12 enable-view-div padding-top15">
+                <div class="col-sm-5 col-xs-5 resolution">
+                    <span class="saved-views">[[[Show Saved Views]]]</span>
+                </div>
+                <div class="col-sm-6 col-xs-6 pull-left label-div no-padding">
+                    <span class="material-switch text-left">
+                        <input type="checkbox" name="Enabled" id="enable-view" checked="checked" class="item-enabler" />
+                        <label class="label-primary" for="enable-view"></label>
+                    </span>
+                </div>
+            </div>
+            <div class="col-sm-12 col-xs-12 enable-SSO-div padding-top15">
+                <span class="col-sm-12 col-xs-12 small padding-top15">
+                    [[[If your application shares the same authentication as that of the Report Server, use SSO and select the corresponding authentication provider.]]]
+                </span>
+                <div class="col-sm-5 col-xs-5 resolution padding-top15">
+                    <span class="use-SSO">[[[Use SSO]]]</span>
+                </div>
+                <div class="col-sm-6 col-xs-6 pull-left no-padding padding-top15">
+                    <span class="material-switch text-left">
+                        <input type="checkbox" name="Enabled" id="enable-SSO" class="item-enabler" />
+                        <label class="label-primary" for="enable-SSO"></label>
+                    </span>
+                </div>
+            </div>
+            <div class="col-sm-12 col-xs-12 SSO-dropdown padding-top15">
+                <div class="col-sm-5 col-xs-5 resolution authentication">
+                    <span class="authentication-provider">[[[Authentication Provider]]]</span>
+                </div>
+                <div class="col-sm-6 col-xs-6 options no-padding">
+                    <select class="col-sm-6 col-xs-6 selectpicker form-control" data-live-search="true" data-size="2">
+                        @if (GlobalAppSettings.SystemSettings.StorageType == (int)StorageType.AzureBlob || GlobalAppSettings.IsAzureApplication())
+                        {
+                            <option value="1" selected="selected">Azure Active Directory</option>
+                        }
+                        else
+                        {
+                            <option value="0" selected="selected">Windows Active Directory</option>
+                            <option value="1">Azure Active Directory</option>
+                        }
+                    </select>
+                </div>
+            </div>
+            <div class="col-sm-12 col-xs-12 documentation-content padding-top15">
+                <span class="col-sm-12 col-xs-12 small">
+                    [[[Click <a href="https://help.syncfusion.com/report-platform/report-server/administration/manage-reports/embed-server-reports"><u class="documentation-link">here</u></a> to learn how to use this embed code in another application using different authentication.]]]
+                </span>
+            </div>
+        </div>
+        <div class="col-xs-12 dialog-footer rightAlign no-right-padding no-left-padding">
+            <div class="pull-right"></div>
+            <div class="close-button validationArea" id="close">
+                <input title="" type="button" id="Cancel" class="btn secondary-button PopupClose" value="[[[Close]]]" onclick="onGetEmbedDialogClose()" tabindex="3" autofocus />
+            </div>
+        </div>
+    </div>
+</body>
+<script>
+    if (window.innerWidth < 450) {
+        $(".resolution").addClass("resolution-width");
+    }
+    else {
+        $(".resolution").removeClass("resolution-width");
+    }
+</script>
