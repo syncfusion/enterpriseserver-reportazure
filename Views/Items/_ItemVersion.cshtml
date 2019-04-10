@@ -1,0 +1,234 @@
+﻿@model ItemDetail
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html class="report-server">
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0">
+    <title>[[[Version history]]]</title>
+    @Styles.Render("~/styles/ItemVersion")
+    @Scripts.Render("~/scripts/ItemVersion")
+
+    <script>
+        var rollBackUrl = "@Url.Action("rollbackItem", "items")";
+    </script>
+</head>
+<body class="overflow-none versions-popup" id="version-container">
+    <div class="modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog col-lg-12 popup-header no-padding" role="document">
+            <div class="modal-content col-lg-12" id="popup-container" data-spy="scroll">
+                <div class="col-lg-12 modal-header">
+                    <div class="col-lg-11 col-xs-11 col-sm-11 col-md-11 no-padding">
+                        <span class="su su-open head-icon col-lg-1 col-xs-1 col-sm-1 col-md-1 header-icon"><i class="su su-open path1"></i></span>
+                        <span class="modal-title popup-title schedule-popup-title ellipsis col-lg-10 col-xs-10 col-sm-10 col-md-10 no-padding" title="@ViewBag.FullItemName">@ViewBag.FullItemName</span>
+                    </div>
+                    <div class="col-lg-1 col-xs-1 col-sm-1 col-md-1 no-padding">
+                        <a href="javascript:void(0);" title="[[[Close]]]" data-toggle="tooltip" data-placement="bottom" class="popup-close pull-right"><span class="su su-close"></span></a>
+                    </div>
+                </div>
+                <div class="modal-body col-lg-12">
+                    <ul class="nav nav-tabs" role="tablist">
+                        <li role="presentation" class="active versions-tab">
+                            <a id="version-tab" href="#" data-report-id="" data-created-by="" data-report-name="@ViewBag.FullItemName" class="folder-manage-tab folder-tab-color active-tab" data-purpose="View" role="tab" data-toggle="tab" aria-controls="versions">[[[Versions]]]</a>
+                        </li>
+                        <li role="presentation">
+                            <a id="item-log-tab" href="#" data-report-id="" data-created-by="" data-report-name="@ViewBag.FullItemName" class="folder-manage-tab section-gray-heading" data-isrightpane="false" role="tab" data-toggle="tab" aria-controls="file-logs">[[[File Logs]]]</a>
+                        </li>
+                    </ul>
+                    <input id="report-action" type="hidden" value="">
+                    <input id="cur-item-id" type="hidden" ng-model="CurrentItemId" value="">
+                    <span style="display: none;">
+                        <input id="current-folder" type="text" ng-model="CurrentFolderId" value="" />
+                    </span>
+                    <div class="total-move-container col-xs-12 version-container-padding">
+                        <div id="item-version-container" class="show col-xs-12 no-padding version-area" data-previous-parent-id="none" data-parent-id="home" data-type="self">
+                            <div class="col-xs-12 no-padding" style="display:block; padding-top:20px; float:left;">
+                                <div id="grid" class="grid">
+                                </div>
+                            </div>
+                        </div>
+                        <div id="item-log-container" class="hidden col-xs-12 no-padding version-area " data-previous-parent-id="none" data-parent-id="home" data-type="self">
+                            <div class="col-xs-12 no-padding" style="display:block; padding-top:20px; float:left; overflow:auto;">
+                                <div id="loggrid" class="grid">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <div class="col-xs-12 no-padding margin-top">
+                        <input type="button" id="close-button" class="secondary-button pull-right popup-close" value="[[[Close]]]" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script type="text/x-jsrender" id="version_comment">
+        <div class="grid-content" title="{{:Comment}}" data-toggle="tooltip">{{:Comment}}</div>
+    </script>
+    <script type="text/x-jsrender" id="user_name">
+        <div class="grid-content" title="{{:CreatedByName}}" data-toggle="tooltip">{{:CreatedByName}}</div>
+    </script>
+    <script type="text/x-jsrender" id="created_date">
+        <div class="grid-content" title="{{:CreatedDateString}}" data-toggle="tooltip">{{:CreatedDateString}}</div>
+    </script>
+    <script type="text/x-jsrender" id="Options">
+        <div class="dropdown">
+            <span class="dropdown-toggle option-icon" title="[[[Actions]]]" data-toggle="dropdown">
+                <span class="su su-options"></span>
+            </span>
+            <ul class="dropdown-menu" role="menu">                
+                {{if ItemTypeId == "@((int)ItemType.Report)"}}
+                <li>
+                    <a title="" href="@Url.Action("Index", "FileRender")/@Model.CategoryName/@Model.Name/{{:VersionNumber}}" target="_blank"><i class="su su-open"><i class="su-open path1"></i><i class="su-open path2"></i></i><span>[[[Open]]]</span></a>
+                </li>
+                {{/if}}
+                {{if @(ViewBag.CanDownload.ToString().ToLower()) == true}}
+                {{if ItemTypeId == "@((int)ItemType.Report)"}}
+                <li>
+                    <a title="" href="@UrlHelper.GenerateUrl("ReportDownload", "Download", "FileRender", null, RouteTable.Routes, HttpContext.Current.Request.RequestContext, false)/@ViewBag.CategoryName/@ViewBag.FullItemName/{{:VersionNumber}}" target="_blank"><i class="su su-download"></i><span>[[[Download]]]</span></a>
+                </li>
+                {{else}}
+                <li>
+                    <a title="" href="@UrlHelper.GenerateUrl("ItemDownload", "Download", "FileRender", null, RouteTable.Routes, HttpContext.Current.Request.RequestContext, false)/{{:ItemTypeString}}/@ViewBag.FullItemName/{{:VersionNumber}}" target="_blank"><i class="su su-download"></i><span>[[[Download]]]</span></a>
+                </li>
+                {{/if}}
+                {{/if}}
+                {{if !IsCurrentVersion && CanWrite}}
+                <li role="separator" class="divider"></li>
+                <li>
+                    <a data-itemid="{{:ItemId}}" title="[[[Restore]]]" data-toggle="tooltip" data-placement="bottom" data-item-version="{{:VersionNumber}}" class="item-roll-back" href="javascript:void(0);"><i class="su su-roll-back"></i><span>[[[Restore]]]</span></a>
+                </li>
+                {{/if}}
+            </ul>
+        </div>
+    </script>
+    <script type="text/x-jsrender" id="display_name">
+        <div class="grid-content" title="{{:DisplayName}}" data-toggle="tooltip">{{:DisplayName}}</div>
+    </script>
+    <script type="text/x-jsrender" id="events">
+        <div class="grid-content" title="{{:DisplayText}}" data-toggle="tooltip">{{:DisplayText}}</div>
+    </script>
+    <script type="text/x-jsrender" id="updated_date">
+        <div class="grid-content" title="{{:UpdatedDateString}}" data-toggle="tooltip">{{:UpdatedDateString}}</div>
+    </script>
+    <script type="text/javascript" language="javascript">
+        $(document).ready(function () {
+            window.parent.$('#version-window-container_wrapper').ejWaitingPopup("hide");
+            $('[data-toggle="tooltip"]').tooltip();
+            var itemId = '@Request["ItemId"]';
+            $("#grid").ejGrid({
+                dataSource: ej.DataManager({ url: "@Url.Action("VersionItems", "items")?ItemId=" + itemId, adaptor: "UrlAdaptor" }),
+                gridLines: ej.Grid.GridLines.None,
+                allowPaging: true,
+                pageSettings: { pageSize: 8 },
+                allowSorting: true,
+                allowSearching: true,
+                allowFiltering: false,
+                enableAltRow: false,
+                allowSelection: true,
+                enableRowHover: true,
+                locale: "en-us",
+                rowDataBound: function () {
+                    $('[data-toggle="tooltip"]').tooltip();
+                },
+                dataBound: function (args) {
+                    $('[data-toggle="tooltip"]').tooltip();
+                },
+                columns: [
+                    {
+                        headerText: "[[[Version]]]",
+                        field: "VersionNumber",
+                        width: 30
+                    },
+                    {
+                        template: true,
+                        templateID: "#user_name",
+                        headerText: "[[[User]]]",
+                        width: 50,
+                        field: "CreatedByName"
+                    },
+                    {
+                        template: true,
+                        templateID: "#version_comment",
+                        headerText: "[[[Comments]]]",
+                        width: 70,
+                        field: "Comment"
+                    },
+                    {
+                        headerText: "[[[Date]]]",
+                        width: 60,
+                        visible: false,
+                        field: "CreatedDate"
+                    },
+                    {
+                        template: true,
+                        templateID: "#created_date",
+                        headerText: "[[[Date]]]",
+                        width: 70,
+                        field: "CreatedDateString"
+                    },
+                    {
+                        template: true,
+                        templateID: "#Options",
+                        width: 15,
+                        allowSorting: false
+                    }
+                ]
+            });
+
+            $("#loggrid").ejGrid({
+                dataSource: ej.DataManager({ url: "@Url.Action("ItemLogs", "items")?ItemId=" + itemId, adaptor: "UrlAdaptor" }),
+                gridLines: ej.Grid.GridLines.None,
+                allowPaging: true,
+                pageSettings: { pageSize: 8 },
+                allowSorting: true,
+                allowSearching: false,
+                allowFiltering: false,
+                allowSelection: true,
+                enableRowHover: true,
+                locale: "en-us",
+                rowDataBound: function () {
+                    $('[data-toggle="tooltip"]').tooltip();
+                },
+                dataBound: function (args) {
+                    $('[data-toggle="tooltip"]').tooltip();
+                },
+                columns: [
+                    {
+                        template: true,
+                        templateID: "#events",
+                        headerText: "[[[Event]]]",
+                        field: "DisplayText",
+                        width: 50
+                    },
+                    {
+                        template: true,
+                        templateID: "#display_name",
+                        headerText: "[[[User]]]",
+                        width: 25,
+                        field: "DisplayName"
+                    },
+                    {
+                        headerText: "[[[Date]]]",
+                        width: 25,
+                        visible: false,
+                        field: "UpdatedDate"
+                    },
+                    {
+                        template: true,
+                        templateID: "#updated_date",
+                        headerText: "[[[Date]]]",
+                        width: 25,
+                        field: "UpdatedDateString"
+                    }
+                ]
+            });
+
+        });
+    </script>
+</body>
+</html>

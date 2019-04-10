@@ -1,0 +1,421 @@
+﻿@{
+    var gridName = ViewBag.gridName;
+    var categoryName = ViewBag.CategoryName;
+
+    var absolutePath = string.Empty;
+    var itemName = string.Empty;
+    var category = string.Empty;
+    var currentSection = string.Empty;
+    var sectionName = ViewBag.sectionName;
+    var culture = ViewBag.cultureinfo;
+    var reportUrl = Url.Action("reports", "reports");
+
+    if (!string.IsNullOrWhiteSpace(ViewBag.itemName))
+    {
+        absolutePath = reportUrl;
+        itemName = ViewBag.itemName;
+        category = ViewBag.category;
+        currentSection = ViewBag.sectionName;
+    }
+}
+<script>
+    var baseUrlForValidateReport = "@GlobalAppSettings.SystemSettings.BaseUrl";
+    var copyIframeUrl = "@Url.Action("copyviewitem", "items")";
+    var moveIframeUrl = "@Url.Action("moveviewitem", "items")";
+    var versionIframeUrl = "@Url.Action("itemversion", "items")";
+    var deleteConfirmationUrl = "@Url.Action("deleteconfirmation", "items")";
+    var deleteItemUrl = "@Url.Action("deleteitem", "items")";
+    var schedulerIframeUrl = "@Url.Action("GetSchedulerDialog", "scheduler")";
+    var addCategoryIframeUrl = "@Url.Action("addcategory", "category")";
+    var addDatasourceIframeUrl = "@Url.Action("adddatasource", "datasources")";
+    var makePublicUrl = "@Url.Action("makeitempublic", "items")";
+    var removePublicUrl = "@Url.Action("RemovePublic", "items")";
+    var rootBaseUrl = "@Url.Content("~/")";
+    var designerUrl =
+        "@Url.Action(GlobalAppSettings.SystemSettings.InstallationFolder + "reportdesigner.exe", "reportdesigner")";
+    var favoriteItemUrl = "@Url.Action("MakeFavorite", "items")";
+    var permissionIframeUrl = "@Url.Action("ItemPermissionView", "items")";
+    var getCategoryItem = "@Url.Action("RefreshCategoryList", "Reports")";
+    var getItemUrl = "@Url.Action("GetItems", "Reports")";
+    var getViewsByItemIdUrl = "@Url.Action("GetViewsByItemId","Items")";
+    var addFileIframeUrl = "@Url.Action("addfile", "files")";
+    var addDatasetUrl = "@Url.Action("AddDataset", "Datasets")";
+    var baseUrl = "@GlobalAppSettings.SystemSettings.BaseUrl" + "/" + "@GlobalAppSettings.SystemSettings.Language" + "/reports/view/";
+    var reportDesignerUrl = "@Url.Action("ReportDesigner", "Reports")";
+    var fileRenderUrl = "@Url.Action("Index", "FileRender").TrimStart('/')/";
+</script>
+
+<div id="items" class="item-grid">
+</div>
+
+<script type="text/x-jsrender" id="itemName">
+    {{if ItemType == "@((int)ItemType.Report)"}}
+        <a class="item-link col-lg-12 col-md-12 col-sm-12 col-xs-12 no-margin disabled" href="{{:~urlWithSection(CategoryName, Name)}}" data-culture="/@culture" role="tab" data-toggle="tooltip" data-placement="@(!DeviceDetection.IsMobile ? "right" : "auto top")" data-name="{{:Name}}" data-category-name="{{:CategoryName}}" data-html="true" data-container="body" title="[[[Name]]] : {{:Name}} <br> {{if Description}} [[[Description]]]: {{:~renderDoubleQuotes(Description)}} <br> {{/if}} [[[Category]]] : {{:CategoryName}} <br> [[[Added Date]]] : {{:CreatedDate}}">
+            <span class="col-lg-12 col-md-12 col-sm-12 col-xs-12 no-margin name-and-options" data-href="{{:~urlWithoutSection(CategoryName, Name)}}">
+                {{if ItemType=="@((int)ItemType.Report)"}}
+                {{if IsFavorite== true}}
+                <span class="su su-favorite favorite favorite-item col-lg-1 col-md-1 col-sm-1 col-xs-1 no-margin no-padding" data-itemid="{{:Id}}" data-value="False" data-original-title="Remove from favorites">
+                </span>
+                {{else}}
+                <span class="su su-dis-favorite favorite-item col-lg-1 col-md-1 col-sm-1 col-xs-1 no-margin no-padding" data-itemid="{{:Id}}" data-value="True" data-original-title="Mark as favorite">
+                </span>
+                {{/if}}
+                {{/if}}
+                <span class="item-name col-lg-9 col-md-9 col-sm-9 col-xs-9 no-margin no-padding" data-href="{{:~urlWithoutSection(CategoryName, Name)}}" data-container="body">{{:Name}}</span>
+                <i class="su su-open-link-newtab col-lg-1 col-md-1 col-sm-1 col-xs-1 no-margin no-padding" id="open-report" data-href="{{:~urlWithoutSection(CategoryName, Name)}}" data-toggle="tooltip" data-container="body" data-placement="bottom" title="[[[Open Report in new tab]]]"></i>
+                <span class="dropdown col-lg-1 col-md-1 col-sm-1 col-xs-1 no-margin no-padding options" id="context-menu">
+                    <span class="dropdown-toggle su su-options-menu options-area" data-toggle="dropdown">
+                </span>
+                    <ul class="dropdown-menu report-options" role="menu">
+                        {{if ~checkMobile()}}
+                            {{if ItemType=="@((int)ItemType.Report)"}}
+                            <li>
+                                <span class="open-item option-click" href="{{:~urlWithoutSection(CategoryName, Name)}}" title="" target="_blank">
+                                    <i class="su su-open"><i class="su su-open path1"></i></i>
+                                    <span>[[[Open]]]</span>
+                                </span>
+                            </li>
+                            {{/if}}
+                        {{/if}}
+
+                        {{if ~checkMobile()}} 
+                        {{if CanWrite}}                       
+                        <li class="dropdown-submenu no-padding option-click">                       
+                            <span class="edit-report-option">                                
+                                <i class="su su-report"> </i>
+                                <span>[[[Edit]]]</span>
+                                <span class="caret"></span>
+                            </span>
+                            <ul class="dropdown-menu designer-page-views">                                
+                                <li>                                    
+                                    <span class="designer option-click" title="" id="launcher" data-itemid="{{:Id}}">
+                                        <span id="designerArgument" style="display:none">{{:DesignerArgument}}</span>
+                                        <span>[[[Client Designer]]]</span>
+                                    </span>                                   
+                                </li>
+                                {{if IsWebDesignerCompatible}}
+                                <li>                        
+                                    <span class="web-designer option-click" title="" data-name="{{:Name}}" data-category-name="{{:CategoryName}}">
+                                        <span>[[[Web Designer]]]</span>
+                                    </span> 
+                                </li>
+                                {{/if}}
+                            </ul>
+                        </li>
+                        {{/if}}
+                        {{/if}}
+
+                       {{if ((ItemType=="@((int)ItemType.Report)") && (CreatedById==@((HttpContext.Current.User as ServerPrincipal).UserId)))}}
+                        <li>
+                            {{if !IsPublic}}
+                                <span title="" class="make-public option-click" data-itemtype="{{:ItemType}}" data-item-id="{{:Id}}" data-name="{{:Name}}" data-url="{{:~urlWithoutSection(CategoryName, Name)}}">
+                                    <i class="su su-public"></i>
+                                    <span>[[[Make Public]]]</span>
+                                </span>
+
+                            {{else}}
+                            
+                               {{if ItemType=="@((int)ItemType.Report)"}}
+                                <span title="" class="remove-public option-click" data-itemtype="{{:ItemType}}" data-item-id="{{:Id}}" data-name="{{:Name}}" data-url="{{:~urlWithoutSection(CategoryName, Name)}}">
+                                    <i class="su su-remove-public"><span class="su-remove-public path1"></span><span class="su-remove-public path2"></span><span class="su-remove-public path3"></span></i>
+                                    <span>[[[Make Private]]]</span>
+                                    </span>
+                                {{/if}} 
+                                    
+                            {{/if}}
+                        </li>
+                        {{/if}}
+
+                        {{if (ItemType=="@((int)ItemType.Report)")}}
+                        <li>
+                            <span title="" ispublic="{{:IsPublic}}" class="get-link option-click" data-itemtype="{{:ItemType}}" data-item-id="{{:Id}}" data-item-type="@(gridName)" data-name="{{:Name}}" data-url="{{:~urlWithoutSection(CategoryName, Name)}}">
+                                <i class="su su-link"></i>
+                                <span>[[[Get Link]]]</span>
+                            </span>
+                        </li>
+                        {{/if}}
+
+                        {{if (ItemType=="@((int)ItemType.Report)")}}
+                        <li>                           
+                            <span title="" ispublic="{{:IsPublic}}" class="embed-code option-click" data-itemtype="{{:ItemType}}" data-item-id="{{:Id}}" data-item-type="@(gridName)" data-name="{{:Name}}" data-url="{{:~urlWithoutSection(CategoryName, Name)}}">
+                                <i class="su su-embed2"></i>
+                                <span>[[[Get Embed code]]]</span>
+                            </span>                   
+                        </li>
+                        {{/if}}
+
+                        {{if CanDownload}}
+                        <li>
+                            {{if ItemType == "@((int)ItemType.Report)"}}
+                            <span class="download-item option-click" href="@UrlHelper.GenerateUrl("ReportDownload", "Download", "FileRender", null, RouteTable.Routes, HttpContext.Current.Request.RequestContext, false)/{{:CategoryName}}/{{:Name}}" title="">
+                                <i class="su su-download"></i>
+                                <span>[[[Download Report]]]</span>
+                            </span>
+                            {{else}}
+                            <span class="download-item option-click" href="@UrlHelper.GenerateUrl("ItemDownload", "Download", "FileRender", null, RouteTable.Routes, HttpContext.Current.Request.RequestContext, false)/{{:ItemTypeString}}/{{:Name}}" title="">
+                                <i class="su su-download"></i>
+                                <span>[[[Download]]]</span>
+                            </span>
+                            {{/if}}
+                        </li>
+                        {{/if}}
+
+                        {{if ItemType=="@((int)ItemType.Report)"}}
+                        <li class="dropdown report-views" data-load="true">
+                            <span href="javascript:void(0);" class="dropdown-toggle views" data-item-id="{{:Id}}" data-toggle="dropdown">
+                                <i class="su su-filter"></i>
+                                <span>[[[Views]]]</span>
+                            </span>
+                            <ul class="dropdown-menu item-views" role="menu">
+                                <li>
+                                    <span class="view-name" href="javascript:void(0);">
+                                        [[[Loading...]]]
+                                    </span>
+                                </li>
+                            </ul>                            
+                        </li>
+                        {{/if}}
+                        {{if ~checkMobile()}}
+                        {{if ItemType=="@((int)ItemType.Report)"}}
+                        <li role="separator" class="divider"></li>
+                        <li>
+                            <span title="" class="ProcessOption option-click" data-itemid="{{:Id}}" data-action="ProcessOption">
+                                <i class="su su-cache_3"></i>
+                                <span>[[[Processing Options]]]</span>
+                            </span>
+                        </li>
+                        {{/if}}
+                        {{/if}}
+                        {{if ~checkMobile()}}
+                            {{if (ItemType == "@((int)ItemType.Report)") && CanMove || CanCopy || CanClone) }}
+                                <li role="separator" class="divider"></li>
+
+                                {{if CanMove}}
+                                <li>
+                                    <span title="" class="moveItem option-click" data-itemid="{{:Id}}" data-action="Move">
+                                        <i class="su su-move"></i>
+                                        <span>[[[Move]]]</span>
+                                    </span>
+                                </li>
+                                {{/if}}
+                                {{if CanCopy}}
+                                <li>
+                                    <span title="" class="copyItem option-click" data-itemid="{{:Id}}" data-action="Copy">
+                                        <i class="su su-copy"></i>
+                                        <span>[[[Copy]]]</span>
+                                    </span>
+                                </li>
+                                {{/if}}
+                                {{if CanClone}}
+                                <li>
+                                    <span title="" class="copyItem option-click" data-itemid="{{:Id}}" data-action="Clone">
+                                        <i class="su su-clone"></i>
+                                        <span>[[[Clone]]]</span>
+                                    </span>
+                                </li>
+                                {{/if}}
+                            {{/if}}
+                        {{/if}}
+
+                        {{if ~checkTablet()}}
+                        
+                        <li role="separator" class="divider"></li>
+
+                        {{if (ItemType == "@((int)ItemType.Report)") && CanSchedule}}
+                        <li>
+                            <span href="javascript:void(0);" class="schedule-reports option-click" title="" data-category-name="{{:CategoryName}}" data-itemname="{{:Name}}" data-item-id="{{:Id}}">
+                                <i class="su su-nav-schedule"></i>
+                                <span>[[[Schedule]]]</span>
+                            </span>
+                        </li>
+
+                        {{/if}}
+                        {{/if}}
+
+                        {{if ~checkMobile()}}
+                        {{if (CreatedById==@((HttpContext.Current.User as ServerPrincipal).UserId)) || (@(Convert.ToBoolean(HttpContext.Current.Session["IsAdmin"]).ToString().ToLower()) == true)}}
+                        <li>
+                            <span class="item-permissions option-click" title="" data-itemname="{{:Name}}" data-itemid="{{:Id}}">
+                                <i class="su su-manage-permission"></i>
+                                <span>[[[Manage Permissions]]]</span>
+                            </span>
+                        </li>
+                        <li role="separator" class="divider"></li>
+                        {{/if}}
+                        {{/if}}
+
+                        {{if ~checkMobile()}}
+                        <li>
+                            <span class="version-button option-click" title="" data-itemname="{{:Name}}" data-itemid="{{:Id}}">
+                                <i class="su su-versions"></i>
+                                <span>[[[Version History]]]</span>
+                            </span>
+                        </li>
+                        {{/if}}
+
+                        {{if ~checkMobile()}}
+                        {{if CanWrite || CanDelete || ItemType=="@((int)ItemType.Report)"}}
+                        <li role="separator" class="divider"></li>
+                        {{/if}}
+                        {{/if}}
+
+                        {{if CanWrite}}
+                        {{if ~checkMobile()}}
+                        <li>
+                            <span title="" class="item-edit option-click" data-item-id="{{:Id}}">
+                                <i class="su su-edit"></i>
+                                <span>[[[Update]]]</span>
+                            </span>
+                        </li>
+                        {{/if}}
+                        {{/if}}
+                        
+                        {{if CanWrite && HasSharedDataSource}}
+                        {{if ~checkMobile()}}
+                        {{if ItemType=="@((int)ItemType.Report)"}}
+                        <li>
+                            <span href="javascript:void(0);" title="" class="update-datasource option-click" data-category-name="{{:CategoryName}}" data-itemname="{{:Name}}" data-item-id="{{:Id}}">
+                                <i class="su su-nav-datasource"></i>
+                                <span>[[[Update Data Source(s)]]]</span>
+                            </span>
+                        </li>
+                        {{/if}}
+                        {{/if}}
+                        {{/if}}
+
+                        {{if ~checkMobile()}}
+                        {{if CanDelete}}
+                        <li>
+                            <span title="" class="item-delete option-click" data-itemtype="{{:ItemType}}" data-item-id="{{:Id}}" data-name="{{:Name}}">
+                                <i class="su su-delete"></i>
+                                <span>[[[Delete]]]</span>
+                            </span>
+                        </li>
+                        {{/if}}
+                        {{/if}}
+                    </ul>
+                </span>
+            </span>
+            <span class="col-lg-12 col-md-12 col-sm-12 col-xs-12 no-margin item-info no-padding">
+                <span class="col-lg-1 col-md-1 col-sm-1 col-xs-1 no-margin no-padding"></span>
+                <span class="owner-name col-lg-5 col-md-5 col-sm-5 col-xs-5 no-margin no-padding">{{:CreatedByDisplayName}}</span>
+                <time class="modified-time pull-right col-lg-6 col-md-6 col-sm-6 col-xs-6 no-margin no-padding">{{:ModifiedDate}}</time>
+            </span>
+        </a>
+    {{else}}
+    <span><a href="@UrlHelper.GenerateUrl("ItemDownload", "Download", "FileRender", null, RouteTable.Routes, HttpContext.Current.Request.RequestContext, false)/{{:ItemTypeString}}/{{:Name}}" target="_blank">{{:Name}}</a></span>
+    {{/if}}
+</script>
+
+<div id="ItemAction" title="Item Actions" class="no-padding"><iframe></iframe></div>
+<div><iframe id="hiddeniframe" src="" style="width:0;margin:0;border:0;height:0; display:inherit"></iframe></div>
+<input type="hidden" id="applauncherinputhidden" style="width:0;margin:0;border:0;height:0; display:inherit" />
+
+
+<form action="@Url.Action("ReportDesigner", "Reports")" id="edit-report-form" method="POST" target="_blank">
+    <input id="report-name" name="reportName" type="hidden" value="">
+    <input id="category-name" name="categoryName" type="hidden" value="">   
+    <input id="edit-value" name="isEdit" type="hidden" value="">
+    <input id="edit-report-tested" name="isReportTested" type="hidden" value="">
+</form>
+
+<input type="hidden" value="@ViewContext.RouteData.Values["section"]" id="url-section" />
+<input type="hidden" value="@ViewContext.RouteData.Values["category"]" id="url-category" />
+<input type="hidden" value="@ViewContext.RouteData.Values["dashboard"]" id="url-name" />
+
+<script type="text/javascript" language="javascript">
+    var gridName = $("#item-grid-container").attr("data-grid-name");
+    var gridHeight = ($(window).height() - ($(".item-navigation").outerHeight() + $("#header-area").outerHeight() + $("#category-listing").outerHeight())) - 0;
+    var toolbarItems = [{ templateID: "#OpenTemplate" }, { templateID: "#OpenwithReportDesignerTemplate" }, { templateID: "#DownloadTemplate" }, { templateID: "#Separator1" }, { templateID: "#CanEditTemplate" }, { templateID: "#CanDeleteTemplate" }, { templateID: "#Separator2" }, { templateID: "#MoveTemplate" }, { templateID: "#CopyTemplate" }, { templateID: "#CloneTemplate" }, { templateID: "#Separator3" }, { templateID: "#ScheduleTemplate" }, { templateID: "#Separator4" }, { templateID: "#VersionTemplate" }];
+    var categoryName = "@categoryName";
+    var filters = { filterType: "menu" };
+    if ("@gridName" === "reports" && categoryName !== "") {
+        filters = { filterType: "menu", filteredColumns: [{ field: "CategoryName", operator: "equal", value: categoryName }] };
+    }
+
+    $(document).ready(function () {
+
+        $(document).on("click", "a.view-name", function () {
+            var url = $(this).attr("href");
+            window.open(url, '_blank');
+        });
+
+        $('[data-toggle="tooltip"]').tooltip();
+        ej.support.enableLocalizedSort = true;
+        $("#items").ejGrid({
+            dataSource: ej.DataManager({ url: "@Url.Action("GetItems",gridName)", adaptor: "UrlAdaptor" }),
+            allowScrolling: true,
+            scrollSettings: { height: gridHeight, allowVirtualScrolling: true, thumbMove: OnGridScroll, virtualScrollMode: ej.Grid.VirtualScrollMode.Normal, buttonSize: 0, autoHide: true },
+            gridLines: ej.Grid.GridLines.Horizontal,
+            pageSettings: { pageSize: 20 },
+            allowSorting: true,
+            allowSearching: true,
+            allowSelection: true,
+            enableAltRow: false,
+            allowFiltering: true,
+            filterSettings: filters,
+            actionBegin: "fnActionBegin",
+            actionComplete: "fnActionComplete",
+            rowSelecting: function (args) {
+                if (args.target.hasClass("favoriteItem")) {
+                    args.cancel = true;
+                }
+            },
+            dataBound: function () {
+                if (!navigator.userAgent.match(/Windows Phone/i)) // To avoid tooltips in windows phone.
+                {
+                    $("[data-toggle='tooltip']").tooltip();
+                }
+                refreshScrollerForCategory();
+                
+                if (("@itemName" != "")) {
+                    ReportRender("@absolutePath", "@category", "@itemName", "@currentSection");
+                }
+            },
+            rowDataBound: function () {
+                refreshScrollerForCategory();
+                $("#item-grid-container").ejWaitingPopup();
+                if ($('#server-items-container .category-collapse').css('display') == 'none') {
+                    $("#item-grid-container").ejWaitingPopup("show");
+                }
+            },
+            enableRowHover: true,
+            columns: [
+                {
+                    template: true,
+                    templateID: "#itemName",
+                    field: "Name",
+                    type: "string"
+                }
+            ]
+        });
+
+        $.views.helpers({
+            urlWithSection: function (category, item) {
+                if (window.innerWidth < 1041) {
+                    return encodeURI("@Url.Action("Index", "FileRender")/" + category + "/" + item);
+                }
+                else {
+                    return encodeURI("@Url.Action("Index", "FileRender")" + "?category=" + category + "&report=" + item + "&view=" + "@sectionName");
+                }
+            },
+            urlWithoutSection: function (category, item) {
+                return encodeURI("@Url.Action("Index", "FileRender")" + "/" + category + "/" + item);
+            },
+            checkMobile: function () {
+                return ("@DeviceDetection.IsMobile.ToString().ToLower()" == "false" && (window.innerWidth > 1040));
+            },
+            checkTablet: function() {
+                return window.innerWidth > 900;
+            },
+            renderDoubleQuotes: function(inputString) {
+                return inputString.replace(new RegExp("\"", 'g'), '&quot;');
+            }
+        });
+    });
+
+    function OnGridScroll(args) {
+        $(".item-link").parents("td").removeClass("active");
+        $(".tooltip").hide();
+    }
+</script>

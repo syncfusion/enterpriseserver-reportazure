@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+@{
+    var notificationCount = new NotificationManagement().GetUnreadNotificationCount();
+    var nativeNameTitleCase = Context.GetPrincipalAppLanguageForRequest().GetNativeNameTitleCase();
+    var gridName = string.Empty;
+    var requestUrl = HttpContext.Current.Request.Url.AbsolutePath.ToString().ToLower();
+    var homePageUrl = "/";
+    var reportsPageUrl = Url.Action("Reports", "Reports");
+    //To show or hide menu for mobile devices
+    var menuClass = DeviceDetection.IsMobile ? "collapse width" : "collapse in";
+
+    var includeMessageBox = ViewBag.MessageBox == null || ViewBag.MessageBox == true;
+}
+<html class="report-server">
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0">
+    <title id="site_Name">
+        @ViewBag.Title
+    </title>
+    <script type="text/javascript">
+        var rootUrl = "";
+        var baseurl = "";
+        var getUserNotificationsPartialViewResultUrl = "@Url.Action("GetUserNotificationsPartialViewResult", "notification")";
+    </script>
+    @Styles.Render("~/styles/layout")
+
+    @RenderSection("styles", false)
+    @if (!DeviceDetection.IsMobile)
+    {
+        @Scripts.Render("~/scripts/layout")
+    }
+    else
+    {
+        @Scripts.Render("~/scripts/layout-mobile")
+    }
+
+    <script src="~/signalr/hubs"></script>
+	@Scripts.Render("~/scripts/signalr-bundle")
+    <script>
+        $(function () {
+            // Reference the auto-generated proxy for the hub.
+            var userActivity = $.connection.signalrHub;
+
+            userActivity.client.connection = function () {
+            };
+
+            SJ.iwc.SignalR.start();
+
+            var browser = ej.browserInfo();
+        });
+
+        function IframeLoad() {
+            if (browser.name.toLowerCase() == "webkit") {
+                $("#datasource-edit-popup, #datasource-popup").find("iframe").contents().find(".e-spanicon").addClass("padding-top-adjust");
+            }
+            else {
+                $("#datasource-edit-popup, #datasource-popup").find("iframe").contents().find(".e-spanicon").removeClass("padding-top-adjust");
+            }
+        }
+    </script>
+
+    @if (DeviceDetection.IsMobile)
+    {
+        <script type="text/javascript">
+            $(document).ready(function () {
+                GetGridName();
+
+                function nextEvent() {
+                    $(this).on('touchend', function (e) {
+                        $("html").ejWaitingPopup();
+                        $("html").ejWaitingPopup("show");
+                        window.location.href = ($(this).attr("href"));
+                        $(this).off('touchend');
+                    });
+                    $(this).on('touchmove', function (e) {
+                        $(this).off('touchend');
+                    });
+                }
+
+                function checkBrowser() {
+                    // do nothing for mobile
+                }
+
+                $('#main-nav a, .items a, .notification-mobile-link, .menu-options a, .notification-text-content a, .admin-page-header a, #edit-profile-heading-div a, #change-password-btn a').on('click touchstart', this, nextEvent);
+
+                $(window).on('popstate', function (e) {
+                    $("html").ejWaitingPopup("hide");
+                });
+
+                $(document).on('touchend', function (e) {
+                    $(".tooltip").hide();
+                });
+
+                $(document).on("touchend", "#open-report, .item-list-panel li, .favorite-item, .options-area, .option-click", function (e) {
+                    if ((navigator.userAgent.match(/iPhone/i)) || (navigator.userAgent.match(/iPod/i)) || (navigator.userAgent.match(/iPad/i))) {
+                        $(this).click();
+                    }
+                });
+		    });
+
+		    function GetGridName() {
+		        gridName = $('#item-grid-container').attr("data-grid-name");
+
+		        var isScheduleGrid = $('#scheduleGrid').hasClass("schedule-grid");
+
+		        if (typeof gridName != "undefined") {
+		            if (gridName === "reports") {
+		                $(".header-org-name").text("[[[REPORTS]]]");
+		            }
+		            else if (gridName === "datasets") {
+		                $(".header-org-name").text("[[[DATASETS]]]");
+		            }
+		            else if (gridName === "datasources") {
+		                $(".header-org-name").text("[[[DATA SOURCES]]]");
+		            }
+		            else if (gridName === "files") {
+		                $(".header-org-name").text("[[[FILES]]]");
+		            }
+		        }
+		        else if (isScheduleGrid) {
+		            $(".header-org-name").text("[[[SCHEDULES]]]");
+		        }
+		        else {
+		            $(".header-org-name").text($(".page-name").attr("data-content"));
+		        }
+		    }
+        </script>
+    }
+    else
+    {
+        <script type="text/javascript">
+            function checkBrowser() {
+                if (browser.name.toLowerCase() == "msie" || browser.name.toLowerCase() == "edge")
+                {
+                    $("#addDataSetDom").find("iframe").contents().find("#rsd-label").removeClass("bottom-margin30").addClass("bottom-margin10");
+                }
+                else {
+                    $("#addDataSetDom").find("iframe").contents().find("#rsd-label").removeClass("bottom-margin10").addClass("bottom-margin30");
+                }
+            }
+        </script>
+    }
+
+    @RenderSection("scripts", false)
+    @if (GlobalAppSettings.SystemSettings.StorageType == (int)StorageType.AzureBlob)
+    {
+        <link rel="icon" href="@(GlobalAppSettings.AzureBlob != null ? GlobalAppSettings.AzureBlob.AzureBlobStorageUri : string.Empty)/@GlobalAppSettings.AzureBlob.AzureBlobStorageContainerName/@GlobalAppSettings.GetStorageMode()/Content/Images/Application/@GlobalAppSettings.SystemSettings.FavIcon" onerror="if (this.href !== null && this.href.toLowerCase() !== '~/content/images/application/favicon.png') this.href = '~/Content/Images/Application/Favicon.png';" />
+    }
+    else
+    {
+        <link rel="icon" href="~/Content/Images/Application/@GlobalAppSettings.SystemSettings.FavIcon" onerror="if (this.href !== null && this.href.toLowerCase() !== '~/content/images/application/favicon.png') this.href = '~/Content/Images/Application/Favicon.png';" />
+    }
+    @if (includeMessageBox)
+    {
+        <script>
+            $(document).ready(function() {
+                $("#messageBox").ejDialog({
+                    width: (window.innerWidth > 460) ? "450px" : (window.innerWidth - 10),
+                    showOnInit: false,
+                    allowDraggable: true,
+                    enableResize: false,
+                    height: "auto",
+                    showHeader: false,
+                    enableModal: true,
+                    close: "onMessageDialogClose"
+                });
+            });
+        </script>
+    }
+</head>
+
+<body ng-app="serverApp" class="clearfix" id="body" style="background-image: url('@Url.Content("~/Content/Images/waitingpopup.gif")');background-color: #fff; background-repeat: no-repeat; background-position: center center;">
+    <div id="server-app-container" style="opacity: 0">
+        <section id="header-area">
+            @Html.Partial("../Shared/_Header")
+        </section>
+        <section id="menu-area" class="collapse">
+            @Html.Partial("../Shared/_Menu")
+        </section>
+        <div id="content-area" class="clearfix">
+            @RenderSection("MainSection", true)
+            <div id="success-alert">
+                <div id="image-container">
+                    <div class="image-holder">
+                        <span class="su su-tick" alt="Success Icon"></span>
+                    </div>
+                </div>
+                <div id="message">
+                    <h1 id="message-header"></h1>
+                    <span id="message-content"></span>
+                </div>
+            </div>
+            <div id="warning-alert">
+                <div id="image-container">
+                    <span class="su su-warning-alt" alt="Warning Icon"></span>
+                </div>
+                <div id="message" class="div-close">
+                    <h1 id="message-header"></h1>
+                    <span id="message-content"></span>
+                </div>
+                <div class="close-div">
+                    <span id="close-content">Close</span>
+                </div>
+            </div>
+        </div>
+        @{
+            if (requestUrl != homePageUrl && (requestUrl.IndexOf(reportsPageUrl, StringComparison.OrdinalIgnoreCase) == -1))
+            {
+                @Html.Partial("../Shared/_Footer")
+            }
+        }
+        @if (includeMessageBox)
+        {
+            <div id="messageBox">
+                <div class="message-header"></div>
+                <div class="message-box-close"></div>
+                <div class="message-content text-center"></div>
+                <div class="message-box-btn-holder"></div>
+            </div>
+        }
+    </div>
+
+    <div class="page-additional-navigation">
+        <input id="userName" type="hidden" value="@((HttpContext.Current.User as ServerPrincipal).UserId)" />
+        <input id="BaseUrlHidden" type="hidden" value="/" />
+        <input id="baseurl" name="baseurl" type="hidden" value="" />
+        <input id="DateFormat" name="DateFormat" type="hidden" value="@GlobalAppSettings.SystemSettings.DateFormat" />
+        <input id="DesignerName" name="DesignerName" type="hidden" value="@(GlobalAppSettings.SystemSettings.InstallationFolder + "reportdesigner")" />
+    </div>
+    <div id="alert-notification">
+    </div>
+
+    <div id="mobile-menu" style="display: none">
+        <input type="hidden" class="page-name" id="page" data-content="" />
+
+        <div id="menu-list">
+        </div>
+
+        <div id="notification" class="pull-right">
+            <div id="notification_area_link">
+                <a href="@Url.Action("getusernotifications", "notification")">
+                    <span id="notification_area_icon" class="su su-notification-alert pull-left">
+                        @if (notificationCount != 0)
+                        {
+                            <span id="notification-indicator"></span>
+                        }
+                    </span>
+                </a>
+            </div>
+        </div>
+
+    </div>
+    <script type="text/javascript">
+    if (self != top) {
+        $("#header-area, #menu-area, #messageBox, #base-footer-div").css("display", "none");
+    } else {
+        $("#messageBox").css("display", "none");
+    }
+
+    if (window.parent.$("#item-viewer").data("ejWaitingPopup") != undefined) {
+        window.parent.$("#item-viewer").ejWaitingPopup("hide");
+    }
+    </script>
+
+</body>
+</html>

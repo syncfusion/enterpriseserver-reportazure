@@ -1,0 +1,33 @@
+﻿<div id="datasource-popup">
+    <iframe id="datasource-popup-iframe" class="datasource-popup-frame" onload="IframeLoad();"></iframe>
+</div>
+<div id="AddCategoryPopup">
+    <iframe id="AddCategoryPopup_iframe" class="categoryDialog"></iframe>
+</div>
+<div id="item-delete-confirmation" class="no-padding"></div>
+<div id="addDataSetDom">
+    <iframe id="dataset_popup" class="dataSetDialog EditIframe" onload="checkBrowser()"></iframe>
+</div>
+<div id="addFileDom">
+    <iframe id="addfile" class="fileDialog"></iframe>
+</div>
+<div id="report_popup" class="col-md-12">
+    <iframe id="report_iframe" class="EditIframe"></iframe>
+</div>
+<div id="select_datasource_popup" class="col-md-12">
+    <iframe id="datasource_iframe" class="EditIframe"></iframe>
+</div>
+<div id="permission-popup" class="no-padding">
+    <iframe id="permission_iframe" class="PermissionIframe"></iframe>
+</div>
+
+<div id="version-window-container" class="no-padding">
+    <iframe></iframe>
+</div>
+
+<div id="make_item_public" class="no-padding"></div>
+
+<div id="remove_item_public" class="no-padding"></div>
+
+@Html.Partial("../Items/_GetLink")
+@Html.Partial("../Items/_GetEmbedCode")

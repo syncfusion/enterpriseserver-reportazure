@@ -1,0 +1,91 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0">
+    @Styles.Render("~/Styles/Comments-page")
+    <script>
+        var getAllCommentsUrl = "@Url.Action("GetAllComments","comments")";
+        var addCommentUrl = "@Url.Action("AddComment", "comments")";
+        var fileUploadUrl = "@Url.Action("Upload", "fileupload")";
+        var commentImageUrl = "@Url.Action("CommentImages", "comments")";
+        var editCommentUrl = "@Url.Action("EditComment", "comments")";
+        var deleteCommentUrl = "@Url.Action("DeleteComment", "comments")";
+        var unWatchUrl = "@Url.Action("UnWatch", "items")";
+        var userMentionDataSourceUrl = "@Url.Action("GetUserMentionSuggestionList", "comments")";
+        var watchUrl = "@Url.Action("Watch", "items")";
+        var avatarUrl = '@Url.Action("Avatar","User")';
+        var getdefaultavatarUrl = "@Url.Action("getdefaultavatar", "User")";
+        var i_am_ie9 = false;
+    </script>
+
+    <!--[if LT IE  10]>
+        <script>
+            i_am_ie9 = true;
+        </script>
+    <![endif]-->
+    @Scripts.Render("~/Scripts/Comments-page")
+</head>
+<body class="displayNone">
+    <div class="hidden">
+        <textarea id="temp" class="hidden"></textarea>
+        <div id="toRemoveCulture"></div>
+    </div>
+    <div id="isadmin" class="displayNone">@ViewBag.isAdmin</div>
+    <div id="isWatch" class="displayNone">@ViewBag.IsWatched.ToString()</div>
+    <div id="itemType" class="displayNone" data-item-type="report"></div>
+    <div class="base-comment-container">
+        <input type="hidden" id="userName" value="@((HttpContext.Current.User as ServerPrincipal).UserId)" />
+        <div id="comment_action_area" class="col-xs-12">
+            <input id="comment_action_slider" class="form-control" placeholder="[[[Write a comment]]]" type="text">
+        </div>
+        <div id="comment_submit_container" class="comment-submit-container pull-left" style="display: none;">
+            <textarea id="rte-post" class="form-control comment-area" maxlength="4000"></textarea>
+            <span class='message'>*[[[4000 characters maximum]]]</span>
+            <span class="error-message"></span>
+            <div class="post-watch col-xs-12 no-right-padding no-left-padding">
+
+                <div class="col-xs-7 col-md-6 no-right-padding pull-right">
+                    <button class="btn secondary-button header-comment-close">[[[Cancel]]]</button>
+                    <input id="post-comment" class="btn primary-button" value="[[[Post]]]" type="submit">
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xs-12 count-sort">
+            <div class="comments-count col-xs-6 no-padding">
+                <div class="watch-txt-container">
+                    @if (ViewBag.IsWatched)
+                    {
+                        <span id="watchItem" class="su su-notification-settings watch-action unwatch" title="[[[Unwatch]]]" data-html='false' data-toggle='tooltip'></span>
+                    }
+                    else
+                    {
+                        <span id="watchItem" class="su su-notification-settings watch-action watch" title="[[[Watch]]]" data-html='false' data-toggle='tooltip'></span>
+                    }
+                </div>
+                <span id="comment_count">0</span>
+                <span class="">[[[Comment(s)]]]</span>
+            </div>
+            <div id="commentSorting" class="col-xs-6 no-padding">
+                <span class="col-xs-3 sort-new sort-active no-padding">[[[Newest]]]</span>
+                <span class="col-xs-3 sort-old sort-inactive no-padding">[[[Oldest]]]</span>
+            </div>
+        </div>
+        <div id="parent-scroll-element">
+            <div id="scroll-element">
+                <div>
+                    <div id="list_container" class="col-xs-12 no-padding">
+                        <ul id="commentList" class="comment-list"></ul>
+                    </div>
+                    <div class="additional-content col-xs-12">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div style="display:none">
+            <input type="text" id="autocomplete-input" />
+        </div>
+    </div>
+</body>
+</html>

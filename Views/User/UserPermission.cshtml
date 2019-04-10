@@ -1,0 +1,30 @@
+@{
+    ViewBag.Title = GlobalAppSettings.SystemSettings.OrganizationName + " - [[[My Permissions]]]";
+}
+    @section styles{
+        @Styles.Render("~/styles/user-permissions")
+}
+
+@section scripts{
+    @Scripts.Render("~/scripts/user-permissions")
+}
+
+@section MainSection{
+
+<div id="user-permissions-container" class="admin-page-container">
+    <div class="admin-page-header col-xs-12">
+        <hgroup class="col-xs-8 no-padding">
+            <h1 class="page-title">[[[MY PERMISSIONS]]]</h1>
+            <h5 class="no-padding page-description">[[[View the permissions for the resources you can access in the Report server.]]]</h5>
+        </hgroup>
+        <div class="col-xs-4 no-padding">
+            <a href="@Url.Action("ProfilePage", "User")" class="link-button pull-right">[[[My Profile]]]</a>
+        </div>
+    </div>
+
+    <div class="admin-page-body col-lg-12">
+        @(!DeviceDetection.IsMobile ? Html.Partial("../User/_UserPermissionGrid") : Html.Partial("../User/_UserPermissionGridForMobile"))
+    </div>
+</div>
+
+    }

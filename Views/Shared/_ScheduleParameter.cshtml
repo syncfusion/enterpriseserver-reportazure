@@ -1,0 +1,120 @@
+﻿﻿@{
+    Layout = null;
+    var hasdependent = "";
+}
+@using Syncfusion.Reports.EJ
+@model List<ReportParameterInfo>
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+</head>
+@Styles.Render("~/Styles/ScheduleParameter")
+<body>
+    <input type="hidden" value="@ViewBag.Username" id="userName" />
+    <div class="col-sm-12 col-xs-12 no-padding parameter-popup-body" id="parameters-panel">
+        @foreach (var parameter in @Model)
+        {
+            <div class="col-sm-12 col-xs-12 no-padding">
+                @if (parameter.Prompt == null)
+                {
+                    <div class="col-sm-2 col-xs-2 no-padding align-center"><label class="parameter-label">@parameter.Name</label></div>
+                }
+                else
+                {
+                    <div class="col-sm-2 col-xs-2 no-padding align-center"><label class="parameter-label">@parameter.Prompt</label></div>
+                }
+                @if (parameter.ReportParameterData != null && parameter.ReportParameterData.Count > 0)
+                {
+                    hasdependent = parameter.RelationInfo != null && parameter.RelationInfo.DependentDatasets.Count > 0 && parameter.RelationInfo.ReferencedDatasets.Count > 0 ? "hasdependent" : "";
+
+                    <div class="col-sm-4 col-xs-4">
+                        <select id="@parameter.Name" class="@hasdependent selectpicker form-control adjust parameter-name" data-size="5" title="[[[Select value]]]" @(parameter.MultiValue ? "multiple" : "") dataType="@parameter.DataType" @(parameter.Hidden ? "disabled" : "")></select>
+                    </div>
+                }
+                else if (parameter.DataType == ParamType.Boolean)
+                {
+                    <div class="col-sm-4 col-xs-4 boolean">
+                        <div class="col-sm-5 col-xs-5">
+                            <input id="true-@parameter.Name" type="radio" name="@parameter.Name" value="true" @(parameter.Hidden ? "disabled" : "")>
+                            <label for="true" class="pointer normal-font notransition">True</label>
+                        </div>
+                        <div class="col-sm-6 col-xs-6">
+                            <input id="false-@parameter.Name" type="radio" name="@parameter.Name" value="false" @(parameter.Hidden ? "disabled" : "")>
+                            <label for="false" class="pointer normal-font notransition">False</label>
+                        </div>
+                    </div>
+                }
+                else if (parameter.DataType == ParamType.DateTime)
+                {
+                    <div class="col-sm-4 col-xs-4" style="padding-left: 6px">
+                        <input type="text" class="form-control" name="@parameter.Name" id="@parameter.Name">
+                    </div>
+                }
+                else
+                {
+                    if (parameter.Values != null)
+                    {
+                        <div class="col-sm-4 col-xs-4">
+                            <input type="text" class="form-control" id="@parameter.Name" name="@parameter.Name" dataType="@parameter.DataType" value="@String.Join(",", parameter.Values.Count> 0? new List<string>() : parameter.Values.ToList())" @(parameter.Hidden ? "disabled" : "")>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="col-sm-4 col-xs-4">
+                            <input type="text" class="form-control" id="@parameter.Name" name="@parameter.Name" dataType="@parameter.DataType" value="@String.Join(",",  new List<string>() )" @(parameter.Hidden ? "disabled" : "")>
+                        </div>
+                    }
+                }
+                <div class="page-indent text">
+                    @if (parameter.Values == null || !parameter.Values.Any())
+                    {
+                        @Html.CheckBox(@parameter.Name + "-use-default", parameter.Hidden, new { @class = "material-checkbox use-default", @dataAttrId = @parameter.Name, @dataAttrType = @parameter.ElementType, @id = @parameter.Name + "-use-default", disabled = "true" })
+                        @Html.Label(@parameter.Name + "-use-default", "[[[Use Default]]]", new { @class = "normal-font" })
+                        <div class="parameter-tool-tip">
+                            <span class="dropdown-toggle" data-toggle="dropdown"><span class="su su-info" title=""></span></span>
+                            <div class="dropdown-menu" id="parameter" role="menu">[[[There is no default value configured for this parameter.]]]</div>
+                        </div>
+                    }
+                    else
+                    {
+                        @Html.CheckBox(@parameter.Name + "-use-default", parameter.Hidden, new { @class = "material-checkbox use-default", @dataAttrId = @parameter.Name, @dataAttrType = @parameter.ElementType, @id = @parameter.Name + "-use-default" })
+                        @Html.Label(@parameter.Name + "-use-default", "[[[Use Default]]]", new { @class = "normal-font" })
+                    }
+                </div>
+                <div class="col-sm-4 col-xs-4 no-padding validate-error" id="@parameter.Name-error-container">
+                    <div id="@parameter.Name-parameter-validator"></div>
+                </div>
+            </div>
+        }
+    </div>
+</body>
+</html>
+<script>
+    window.parameterObj = @Html.Raw(Json.Encode(Model));
+    window.reportparameterObj = @Html.Raw(Json.Encode(ViewBag.ReportParameter));
+    window.reportParamType = {
+        Boolean: @((int)ParamType.Boolean),
+        DateTime:  @((int)ParamType.DateTime),
+        Float:  @((int)ParamType.Float),
+        Integer: @((int)ParamType.Integer),
+        String:  @((int)ParamType.String),
+    };
+    window.reportElementType = {
+        MultiValue:  @((int)ElementType.MultiValue),
+        RadioButton: @((int)ElementType.RadioButton),
+        DateTime: @((int)ElementType.DateTime),
+        ComboBox: @((int)ElementType.ComboBox),
+        Textbox: @((int)ElementType.Textbox),
+        Checkbox: @((int)ElementType.Checkbox),
+    };
+    window.reportParameterType = {
+        String: @((int)Syncfusion.RDL.DOM.DataTypes.String),
+        Boolean:  @((int)Syncfusion.RDL.DOM.DataTypes.Boolean),
+        DateTime:  @((int)Syncfusion.RDL.DOM.DataTypes.DateTime),
+        Integer: @((int)Syncfusion.RDL.DOM.DataTypes.Integer),
+        Float:  @((int)Syncfusion.RDL.DOM.DataTypes.Float),
+        Decimal: @((int)Syncfusion.RDL.DOM.DataTypes.Decimal),
+    };
+</script>
+@Scripts.Render("~/Scripts/ScheduleParameter")

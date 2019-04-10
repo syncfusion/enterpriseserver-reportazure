@@ -1,0 +1,42 @@
+CREATE TABLE [SyncRS_DBCredential](
+    [Id] [int] IDENTITY(1,1) PRIMARY KEY NOT NULL,
+    [DatabaseType] [nvarchar](255) NOT NULL,
+    [ConnectionString] [nvarchar](4000) NOT NULL,
+    [UserNameSchema] [nvarchar](255) NOT NULL,
+    [UserNameTable] [nvarchar](255) NOT NULL,
+    [UserNameColumn] [nvarchar](255) NOT NULL,
+    [FirstNameSchema] [nvarchar](255) NOT NULL,
+    [FirstNameTable] [nvarchar](255) NOT NULL,
+    [FirstNameColumn] [nvarchar](255) NOT NULL,
+    [LastNameSchema] [nvarchar](255) NOT NULL,
+    [LastNameTable] [nvarchar](255) NOT NULL,
+    [LastNameColumn] [nvarchar](255) NOT NULL,
+    [EmailSchema] [nvarchar](255) NOT NULL,
+    [EmailTable] [nvarchar](255) NOT NULL,
+    [EmailColumn] [nvarchar](255) NOT NULL,
+    [IsActiveSchema] [nvarchar](255) NOT NULL,
+    [IsActiveTable] [nvarchar](255) NOT NULL,
+    [IsActiveColumn] [nvarchar](255) NOT NULL,
+    [Status]  [nvarchar](255) NOT NULL,
+    [ActiveStatusValue]  [nvarchar](255) NOT NULL,
+    [EmailRelationId] [int] NULL,
+    [FirstNameRelationId] [int] NULL,
+    [LastNameRelationId] [int] NULL,
+    [IsActiveRelationId] [int] NULL,
+    [IsActive] [bit] NOT NULL)
+;
+
+CREATE TABLE [SyncRS_TableRelation](
+    [Id] [int] IDENTITY(1,1) PRIMARY KEY NOT NULL,
+    [LeftTable] [nvarchar](255) NOT NULL,
+    [LeftTableColumnName] [nvarchar](255) NOT NULL,	
+    [LeftTableCondition]  [nvarchar](255) NOT NULL,
+    [LeftTableName]  [nvarchar](255) NOT NULL,
+    [LeftTableSchema] [nvarchar](255) NOT NULL,
+    [Relationship] [nvarchar](255) NOT NULL,
+    [RightTable] [nvarchar](255) NOT NULL,
+    [RightTableColumnName] [nvarchar](255) NOT NULL,	
+    [RightTableCondition]  [nvarchar](255) NOT NULL,
+    [RightTableName]  [nvarchar](255) NOT NULL,
+    [RightTableSchema] [nvarchar](255) NOT NULL)
+;

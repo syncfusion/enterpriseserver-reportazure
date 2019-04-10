@@ -1,0 +1,54 @@
+﻿@{
+    ViewBag.Title = GlobalAppSettings.SystemSettings.OrganizationName + " - [[[DataSets]]]";
+    var createPermissionsOfUser = ViewBag.ItemAddOptions as Dictionary<ItemType, bool>;
+}
+
+@model List<ItemDetail>
+
+@section styles{
+    @Styles.Render("~/styles/datasets-page")
+}
+
+@section scripts{
+@(!DeviceDetection.IsMobile ? Scripts.Render("~/scripts/datasets-page") : Scripts.Render("~/scripts/datasets-page-mobile"))
+}
+    <script>
+        var getDatasetDetailsUrl = "@Url.Action("EditDatasetView", "Datasets")";
+    </script>
+
+@section MainSection{
+<div id="item-grid-container" data-grid-name="datasets" class="row admin-page-container">
+    <input type="hidden" class="page-name" data-content="[[[DATASETS]]]">
+    @if (!DeviceDetection.IsMobile)
+    {
+        <div class="import-area admin-page-header">
+            <h2 class="page-title">[[[DATASETS]]]</h2>
+        </div>
+        <div class="admin-page-body">
+            <div id="search-area" class="pull-right">
+                <input type="text" id="search-items" class="pull-left no-margin" placeholder="[[[Search datasets]]]" />
+                <span class="su close-icon su-inner-close pull-left no-margin clear-search" id="clear-search" title="[[[Clear search]]]"></span>
+                <span class="su su-search search-item pull-left no-margin" title="[[[Search datasets]]]"></span>
+            </div>
+
+            <div class="grid-container grid">
+                @Html.Partial("../Items/_ItemsGrid", new ViewDataDictionary { { "gridName", "datasets" }, { "model", createPermissionsOfUser } })
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="grid-container grid">
+            @Html.Partial("../Items/_ItemsGridForMobile", new ViewDataDictionary { { "gridName", "datasets" } })
+        </div>
+    }
+</div>
+<div id="popup-container">
+    <iframe id="scheduler-popup-iframe"></iframe>
+</div>
+
+@if (!DeviceDetection.IsMobile)
+{
+    @Html.Partial("../Items/_AddItems")
+}
+}
