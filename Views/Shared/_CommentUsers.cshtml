@@ -1,0 +1,43 @@
+﻿<!DOCTYPE html>
+@{
+    Layout = null;
+    var usersList = ViewBag.usersList;
+    var userDetails = usersList[0];
+    string firstName;
+    string lastName;
+    var userId = 0;
+}
+<html class="report-server">
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0">
+    @Scripts.Render("~/scripts/Comments/Comment.js")
+</head>
+<body>
+    <div>
+        <div class="dropdown" id="commentusers-list">
+            <ul>
+                @for (var item = 0; item < Model.Count; item++)
+                {
+                    userDetails = usersList[item];
+                    firstName = userDetails.FirstName;
+                    lastName = userDetails.LastName;
+                    userId = userDetails.UserId;
+                    <li style="list-style: none;">
+                        <div>
+                            <a>
+                                <span style="width:32px; height:32px;">
+                                    <img src="@Url.Content("~/User/Avatar?Username=" + userId + "&ImageSize=32")" width="12" height="12" />
+                                </span>
+                                <span>
+                                    @Model[item].DisplayName -@Model[item].Email  @Model[item].FirstName @Model[item].LastName
+                                </span>
+                            </a>
+                        </div>
+                    </li>
+                }
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

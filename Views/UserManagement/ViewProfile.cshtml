@@ -1,0 +1,192 @@
+﻿@{
+    var userDetail = (User)ViewBag.UserDetail;
+    var isAduser = ViewBag.IsAdUser;
+    var showDropdown = (userDetail.Status.ToString() == "Active" && userDetail.UserName.ToLower() != ViewBag.LoggedUser.ToLower()) ? "show" : "hide";
+    var showActive = (userDetail.Status.ToString() == "Active" && userDetail.UserName.ToLower() == ViewBag.LoggedUser.ToLower()) ? "show" : "hide";
+    var showActiveUser = (userDetail.Status.ToString() == "Active") ? "show" : "hide";
+    var showInactive = (showDropdown == "hide" && showActive == "hide" && showActiveUser == "hide") ? "show" : "hide";
+    var groupList = ViewBag.GroupList;
+    ViewBag.Title = GlobalAppSettings.SystemSettings.OrganizationName + " - [[[User Profile]]]";
+    var umsUrl = GlobalAppSettings.SystemSettings.UmsUrl;
+}
+
+@section styles{
+    @Styles.Render("~/Styles/user-management-profile")
+}
+@section scripts{
+    @Scripts.Render("~/Scripts/user-management-profile")
+
+    <script type="text/javascript">
+        var checkMailSettingUrl = "@Url.Action("checkmailsettingsexist", "Administration")";
+        var activateUserUrl = "@Url.Action("ActivateUser", "UserManagement")";
+        var resendactivationcodeUrl = "@Url.Action("resendactivationcode", "UserManagement")";
+        var updateprofilepictureUrl = "@Url.Action("updateprofilepicture", "user")";
+        var fileUploadUrl = "@Url.Action("Upload", "fileupload")";
+        var UpdatePasswordUrl = "@Url.Action("UpdatePassword", "UserManagement")";
+        var updateUserProfileUrl = "@Url.Action("UpdateUserProfile", "UserManagement")";
+        var emailSettingsUrl = "@Url.Action("e-mail-settings", "administration")";
+        var deleteSingleFromUserListUrl = "@Url.Action("DeleteSingleFromUserList", "UserManagement")";
+        var userPageUrl = "@Url.Action("Index", "UserManagement")";
+        var rootBaseUrl = "@Url.Content("~/")";
+        if (rootBaseUrl.toLowerCase() == "/")
+            rootBaseUrl = "";
+        var avatarUrl = "@umsUrl" + "/user/avatar";
+        var deleteavatarUrl = "@Url.Action("deleteavatar", "User")";
+        var getdefaultavatarUrl = "@Url.Action("getdefaultavatar", "User")";
+        $(document).ready(function () {
+            $("#avatar-button-click, #avatar-delete-click").css("display","none");
+            $("#status-dom").hide();
+
+            window.dateFormat = "@GlobalAppSettings.SystemSettings.DateFormat";
+            var fulldata=@Html.Raw(Json.Encode(ViewBag.UserDetail));
+            editUser(fulldata,"@GlobalAppSettings.SystemSettings.DateFormat");
+            if (@ViewBag.EditUserProfile > 0) {
+                $("#edit").trigger("click");
+                if(showDropdown == "show"){
+                    $("#status-div").addClass("line-spacing");
+                }
+            }
+            $('[data-toggle="tooltip"]').tooltip();
+            $(document).on("click", ".popup-close", function (e) {
+                $(".edit-profile-field").attr("value","updateUserProfileUrl");
+                $("#profile-picture").attr("src", "@Url.Content("~/Content/Images/Preview.jpg")");
+                $('#upload-image').attr("disabled", "disabled");
+                if ($(".img-container").children().hasClass("jcrop-active")) {
+                    $('#profile-picture').data("Jcrop").destroy();
+                }
+                $(function () {
+                    $("#avatar-upload-box").ejDialog({
+                        showOnInit: false,
+                        allowDraggable: true,
+                        enableResize: false,
+                        width: "600px",
+                        enableModal: true,
+                        showHeader: false,
+                        close: "DialogBoxClose",
+                        closeOnEscape: true
+                    });
+                });
+                eDialog = $("#avatar-upload-box").data("ejDialog");
+                eDialog.close();
+            });
+        });
+    </script>
+}
+
+@section MainSection {
+    @Html.Partial("_UserMenu")
+    <div id="view-user-profile">
+        <div id="view-profile-info">
+            <span id="is-aduser">@ViewBag.IsAdUser</span>
+            <span id="logged-user">@ViewBag.LoggedUser</span>
+            <div id="edit-user-profile-master" role="tabpanel" class="admin-page-container user-permission">
+                <div class="col-lg-12 col-md-12 co-sm-12 col-xs-12 admin-page-header">
+                    <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12 no-padding header">
+                        <a class="back-button pull-left" href="@Url.Action("Index","UserManagement")" data-toggle="tooltip" data-placement="top" title="[[[Users]]]" data-container="body">
+                            <i class="su su-arrow-back back-navigaion img-size"> </i>
+                        </a>
+                        <hgroup>
+                            <h2 class="page-title no-margin" id="display-name">@ViewBag.UserDetail.DisplayName</h2>
+                        </hgroup>
+                    </div>
+                    <div class="col-md-6 col-xs-12 col-sm-6 col-xs-12 no-padding">
+                        <a href="@Url.Action("userpermission", "permission")?userId=@userDetail.UserId" title="">
+                            <input type="button" class="link-button pull-right" value="[[[Manage Permissions]]]">
+                        </a>
+                    </div>
+                </div>
+                <div class="user-profile-section col-lg-12 col-md-12 col-sm-12 col-xs-12 no-padding">
+                    <div class="img-view-holder col-lg-12 col-md-12 col-sm-10 col-xs-12">
+                        <img id="user-profile-picture" src="@umsUrl/User/Avatar?Username=@ViewBag.UserName&ImageSize=110" />
+                        <span class="su su-edit-inverse profile-picture-edit-button" id="avatar-button-click" data-toggle="tooltip" data-placement="bottom" title="[[[Edit profile picture]]]"></span>
+                        <span class="su su-delete profile-picture-edit-button" id="avatar-delete-click" data-toggle="tooltip" data-placement="bottom" title="[[[Delete profile picture]]]"></span>
+                    </div>
+                    <div id="edit-user-profile-form-div" class="col-xs-12 col-sm-7 col-md-7 col-lg-7 no-padding validation">
+                        <form class="form-horizontal edit-user-profile-form" autocomplete="off">
+                            <div class="form-group no-padding">
+                                <label class="label-panel text-right app-textbox-label">[[[User Name]]]</label>
+                                <div class="col-sm-5 col-xs-12 group-list">
+                                    @Html.TextBox("user-name", userDetail.UserName, new { id = "user-name", @class = "form-control content-size disable-content", disabled = "disabled" })
+                                </div>
+                            </div>
+                            <div class="form-group no-padding line-spacing">
+                                <label class="label-panel text-right app-textbox-label">[[[First Name]]]<span class="mandatory">*</span> </label>
+                                <div class="col-sm-5  col-xs-12 group-list">
+                                    @Html.TextBox("user-firstname", userDetail.FirstName, new { id = "user-firstname", placeholder = "[[[Please enter first name]]]", @class = "form-control content-size edit-user-profile-field disable-content", disabled = "disabled" })
+                                    <span id="first-name-validation" class="alert-messages validation-message"></span>
+                                </div>
+                            </div>
+                            <div class="form-group no-padding line-spacing">
+                                <label class="label-panel text-right app-textbox-label">
+                                    [[[Last Name]]]
+                                </label>
+                                <div class="col-sm-5 col-xs-12 group-list">
+                                    @Html.TextBox("user-lastname", userDetail.LastName, new { id = "user-lastname", placeholder = "[[[Please enter last name]]]", @class = "form-control content-size edit-user-profile-field disable-content", disabled = "disabled" })
+                                    <span id="last-name-validation" class="alert-messages validation-message"></span>
+                                </div>
+                            </div>
+                            <div class="form-group no-padding line-spacing">
+                                <label class="label-panel text-right app-textbox-label">[[[Email]]]<span class="mandatory"></span> </label>
+                                <div class="col-sm-5  col-xs-12 group-list">
+                                    @Html.TextBox("user-email", userDetail.Email, new { id = "user-email", placeholder = "[[[Please enter email address]]]", @class = "form-control content-size edit-user-profile-field disable-content", disabled = "disabled" })
+                                    <span id="email-duplicate-validation" class="alert-messages validation-message"></span>
+                                </div>
+                            </div>
+                            <div class="form-group no-padding line-spacing">
+                                <label class="label-panel text-right app-textbox-label">
+                                    [[[Phone]]]
+                                </label>
+                                <div class="col-sm-5  col-xs-12 group-list">
+                                    @Html.TextBox("user-phonenumber", userDetail.ContactNumber, new { id = "user-phonenumber", placeholder = "[[[Please enter phone number]]]", @class = "form-control content-size edit-user-profile-field disable-content", disabled = "disabled" })
+                                    <span id="contact-validation" class="alert-messages validation-message"></span>
+                                </div>
+                            </div>
+                            <div class="form-group no-padding margin-top20" id="group-div">
+                                <label class="label-panel text-right app-textbox-label" id="groups">
+                                    [[[Groups]]]
+                                </label>
+                                <div class="col-sm-5  col-xs-12 group-list">
+                                    @{
+                                        for (var group = 0; group < ViewBag.GroupList.Count; group++)
+                                        {
+                                            <div class="content-size" title="@ViewBag.GroupList[group].Name" data-html="false" data-container="body" data-toggle="tooltip" data-placement="right">
+                                                @ViewBag.GroupList[group].Name
+                                            </div>
+                                        }
+                                    }
+                                </div>
+                            </div>
+                            <div class="form-group no-padding margin-top10" id="status-div">
+                                <label class="label-panel text-right app-textbox-label">[[[Status]]]</label>
+                                <div id="status-show" class="col-sm-5 col-xs-12 group-list">
+                                    @Html.TextBox("status-user", "", new { id = "status-user", @class = "content-size status", @readonly = "readonly" })
+                                </div>
+                                <div class="col-sm-5 col-xs-12 group-list groups" id="status-dom">
+                                    <div class="@showActive" id="show-active">
+                                        <input type="hidden" id="user-status" value="true" />
+                                        <span id="active-user" class="content-size status">[[[Active]]]</span>
+                                    </div>
+                                    <div class="@showActiveUser" id="show-active-user">
+                                        <input type="hidden" id="user-status" value="true" />
+                                        <span id="active-user" class="content-size status">[[[Active]]]</span>
+                                    </div>
+                                    <div class="@showInactive" id="show-inactive">
+                                        <input type="hidden" id="user-status" value="false" />
+                                        <span id="inactive-user" class="content-size status">[[[Inactive]]]</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="col-xs-12 col-sm-4 col-md-4 col-lg-3 no-padding" id="message">
+                        <h5 id="updation-validation-message"></h5>
+                    </div>
+                </div>
+            </div>
+            <input type="hidden" id="image" value="" />
+            <input type="hidden" id="user-id" value="@ViewBag.UserDetail.UserId" />
+        </div>
+    </div>
+
+    <span id="baseurl" data-url="@Url.Content("~/")"></span>
+}

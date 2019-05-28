@@ -1,0 +1,29 @@
+﻿<style>
+    #layout-body-loader-icon {
+        position: absolute;
+        top: 50%;
+        left: 50% !important;
+        width: 80px;
+        margin-left: -40px;
+        margin-top: -40px;
+    }
+
+    #loading-popup {
+        background: url("/Content/Images/waitingpopup.gif");
+        background-position: center;
+        background-repeat: no-repeat;
+        height: 50px;
+        margin: 0 auto;
+        width: 50px;
+    }
+
+    #waiting-text {
+        font-family: 'Open Sans','Helvetica','Arial',sans-serif;
+        font-size: 13px;
+        font-weight: lighter;
+    }
+</style>
+<div id="layout-body-loader-icon">
+    <div id="loading-popup"></div>
+    <span id="waiting-text">[[[Please wait]]]...</span>
+</div>

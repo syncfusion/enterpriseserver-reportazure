@@ -1,0 +1,32 @@
+﻿<div class="col-md-12 system-settings-page-container" id="system-settings-ump-container">
+    <span class="details">
+        [[[Enter the details to configure User Management Server]]]
+    </span>
+    <span class="ump-validate" style="display: none">
+        [[[Connection to UMS failed]]]
+    </span>
+    <form id="ump-settings-fields-container" class="ump-settings-fields-container" autocomplete="off" ng-keypress="SaveUmsSettingsData($event)">
+        <div class="form-div form-group ump-url-div input-alignment">
+            <select id="protocol-type" class="selectpicker">
+                <option class="no-margin-dropdown-ul" value="http">[[[http]]]</option>
+                <option class="no-margin-dropdown-ul" value="https">[[[https]]]</option>
+            </select>
+            <input type="text" id="ump-url" name="umpurl" class="form-control site-url-fields" placeholder="[[[UMS URL]]]" tabindex="1003" />
+            <span id="validate-url" class="startup-validation txt-umpurl"></span>
+        </div>
+        <div class="form-div form-group client-id-div input-alignment">
+            <input type="text" tabindex="2" id="txt-clientId" name="clientid" class="form-control" placeholder="[[[Client Id]]]" maxlength="254" />
+            <span class="startup-validation txt-clientId"></span>
+        </div>
+        <div class="form-div form-group client-secret-div input-alignment">
+            <input type="text" tabindex="2" id="txt-clientSecret" name="clientsecret" class="form-control" placeholder="[[[Client Secret]]]" maxlength="254" />
+            <span class="startup-validation txt-clientSecret"></span>
+        </div>
+    </form>
+    <form id="ump-settings-submit-container">
+        <div class="btn-holder">
+            <input type="text" name="exUmpDetails" id="ex-ump-details" class="display-none">
+            <input type="button" tabindex="5" id="ump-proceed" class="proceed-button" ng-click="SaveUmsSettingsData($event)" value="[[[Proceed]]]"/>
+        </div>
+    </form>
+</div>

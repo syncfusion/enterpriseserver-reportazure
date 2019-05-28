@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Samples>
+  <Categories>
+	<Category>
+		<Name>Sample Reports</Name>
+		<Description>Check our sample reports in this category</Description>
+		<Reports>
+		  <Report>
+			<Name>Territory Sales</Name>
+			<Description>This sample showcases the Tablix with Row Grouping by sales region and drill down (expand/collapse) the group details.</Description>
+			<FileName>Territory Sales.rdl</FileName>
+			<SortOrder>2</SortOrder>
+		  </Report>
+		  <Report>
+			<Name>Sales Order Detail</Name>
+			<Description>This sample showcases the sales order information based on order id.</Description>
+			<FileName>Sales Order Detail.rdl</FileName>
+			<SortOrder>3</SortOrder>
+		  </Report>
+		  <Report>
+			<Name>Invoice</Name>
+			<Description>This report showcases the Report Parameters, Expressions, Textbox and Tablix Report Item capabilities of the ReportViewer.</Description>
+			<FileName>Invoice.rdl</FileName>
+			<SortOrder>4</SortOrder>
+		  </Report>
+		  <Report>
+			<Name>Grouping Aggregate</Name>
+			<Description>This sample showcases the sorting, group total support in Tablix report item.</Description>
+			<FileName>Grouping Aggregate.rdl</FileName>
+			<SortOrder>5</SortOrder>
+		  </Report>
+		  <Report>
+			<Name>Conditional Row Formatting</Name>
+			<Description>This sample showcases the support to view shared dataset and Tablix rows with conditional formatting.</Description>
+			<FileName>Conditional Row Formatting.rdl</FileName>
+			<SortOrder>6</SortOrder>
+		  </Report>
+		  <Report>
+			<Name>Company Sales</Name>
+			<Description>This sample showcases the Sales data by year with grouping.</Description>
+			<FileName>Company Sales.rdl</FileName>
+			<SortOrder>7</SortOrder>
+		  </Report>
+		  <Report>
+			<Name>Product Line Sales</Name>
+			<Description>This sample showcases the cascading parameters support by listing the sub category products based on product category.</Description>
+			<FileName>Product Line Sales.rdl</FileName>
+			<SortOrder>8</SortOrder>
+		  </Report>
+		  <Report>
+			<Name>Sales Report</Name>
+			<Description>This report showcases the complete details of sales orders in Adventure Works.</Description>
+			<FileName>Sales Report.rdl</FileName>
+			<SortOrder>1</SortOrder>
+		  </Report>
+		</Reports>		
+	</Category>
+	<Category>
+		<Name>Sample Reports (Web Designer)</Name>
+		<Description>Check our sample reports in this category</Description>
+		<Reports>
+		   <Report>
+			<Name>Website Visitor Analysis (Random data)</Name>
+			<Description>This sample analyze the user behavior for a fictitious e-commerce website.</Description>
+			<FileName>Website Visitor Analysis (Random data).rdl</FileName>
+			<SortOrder>1</SortOrder>
+		  </Report>
+		   <Report>
+			<Name>Personal Expense Analysis (Random data)</Name>
+			<Description>This sample showcases the spending patterns of an individual.</Description>
+			<FileName>Personal Expense Analysis (Random data).rdl</FileName>
+			<SortOrder>2</SortOrder>
+		  </Report>
+		   <Report>
+			<Name>Tickets Sales Analysis (Random data)</Name>
+			<Description>This sample analyze the tickets sold in theater.</Description>
+			<FileName>Tickets Sales Analysis (Random data).rdl</FileName>
+			<SortOrder>3</SortOrder>
+		  </Report>
+		   <Report>
+			<Name>Northwind Products and Suppliers Report</Name>
+			<Description>This sample showcases the sales performance of different products.</Description>
+			<FileName>Northwind Products and Suppliers Report.rdl</FileName>
+			<SortOrder>4</SortOrder>
+		  </Report>
+		   <Report>
+			<Name>Patient Experience Analysis (Random data)</Name>
+			<Description>This sample analyze the patient satisfaction trends during hospital visits.</Description>
+			<FileName>Patient Experience Analysis (Random data).rdl</FileName>
+			<SortOrder>5</SortOrder>
+		  </Report>
+		   <Report>
+			<Name>Customer Support representative analysis (Random data)</Name>
+			<Description>This sample analyze the efficiency of a customer support representative to use as a child report for Customer Support Analysis</Description>
+			<FileName>Customer Support representative analysis (Random data).rdl</FileName>
+			<SortOrder>6</SortOrder>
+		  </Report>
+		   <Report>
+			<Name>Customer Support Analysis (Random data)</Name>
+			<Description>This sample analyze the efficiency of customer support.</Description>
+			<FileName>Customer Support Analysis (Random data).rdl</FileName>
+			<SortOrder>7</SortOrder>
+		  </Report>	 
+		</Reports>
+	</Category>	  
+<!-- 	<Category>
+		<Name>Sample Reports - 1</Name>
+		<Description>Check our sample reports in this category - 1</Description>
+		<Reports>
+		  <Report>
+			<Name>Sales Order Detail</Name>
+			<Description>This is a sample Report 1.</Description>
+			<FileName>Sales Order Detail.rdl</FileName>
+		  </Report>
+		</Reports>
+	</Category> -->
+  </Categories>
+
+  <DataSources>
+      <Datasource>
+		<Name>Northwind</Name>
+		<Description>This datasource having the Northwind database connection information to use in Report and Dataset.</Description>
+		<FileName>Northwind.rds</FileName>
+	  </Datasource>
+	  <Datasource>
+		<Name>AdventureWorks</Name>
+		<Description>This datasource having the AdventureWorks database connection information to use in Report and Dataset.</Description>
+		<FileName>AdventureWorks.rds</FileName>
+	  </Datasource>
+	  <Datasource>
+		<Name>ReportSampleDatabase</Name>
+		<Description>This datasource having the ReportSampleDatabase database connection information to use in Report and Dataset.</Description>
+		<FileName>ReportSampleDatabase.rds</FileName>
+	  </Datasource>
+	  <Datasource>
+		<Name>FoodOrderingDatabase</Name>
+		<Description>This datasource having the FoodOrderingDatabase database connection information to use in Report and Dataset.</Description>
+		<FileName>FoodOrderingDatabase.rds</FileName>
+	  </Datasource>
+  </DataSources>
+
+  <DataSets>
+	  <Dataset>
+		<Name>Sales</Name>
+		<Description>This dataset having the query to get sales details from AdventureWorks DataSource.</Description>
+		<FileName>Sales.rsd</FileName>
+	  </Dataset>
+	  <Dataset>
+		<Name>InvoiceDetails</Name>
+		<Description>This dataset having the query to get invoice details from Northwind DataSource.</Description>
+		<FileName>InvoiceDetails.rsd</FileName>
+	  </Dataset>
+	  <Dataset>
+		<Name>CustomerDetail</Name>
+		<Description>This dataset having the query to get customers information from AdventureWorks DataSource.</Description>
+		<FileName>CustomerDetail.rsd</FileName>
+	  </Dataset>
+  </DataSets>
+
+<!--   <Files>
+	<File>
+		<Name>Sample File - Company Sales</Name>
+		<Description>This is a sample File.</Description>
+		<FileName>Company Sales.rdl</FileName>
+	</File>
+	<File>
+		<Name>Sample File - Sales Order Detail</Name>
+		<Description>This is a sample File.</Description>
+		<FileName>Sales Order Detail.rdl</FileName>
+	</File>
+  </Files> -->
+ </Samples>

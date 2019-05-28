@@ -1,0 +1,141 @@
+﻿@model List<ItemDetail>
+<!DOCTYPE html>
+@{
+    Layout = null;
+}
+<html class="report-server">
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0">
+    <title>
+        Select Dataset
+    </title>
+    <script>
+        var addDatasetUrl = "@Url.Action("AddSharedDataset", "Datasets")";
+        var datasetselectdatasourceUrl = "@Url.Action("DatasetSelectDataSource", "Datasets")";
+        var isDatasetExistUrl = "@Url.Action("IsDatasetExist", "Datasets")";
+        var deletetemporarydatasetUrl = "@Url.Action("DeleteTemporaryDataset", "Datasets")";
+
+        function load() {
+            $('[data-toggle="tooltip"]').tooltip();
+            if (($(parent.window).width()) > 1400) {
+                $(".dialog").addClass("iframe");
+            }
+
+            if (($(parent.window).width()) < 1400) {
+                $(".dialog").removeClass("iframe");
+            }
+        }
+    </script>
+    @Styles.Render("~/styles/select-dataset")
+    @Scripts.Render("~/scripts/select-dataset")
+</head>
+<body style="background-color:white" onload="load();">
+    <div id="PopupContainer" class="col-lg-12 no-padding dialog">
+        <div class="col-xs-12 dialog-header">
+            <span class="su su-dataset Head-icon"></span>
+            <span class="PopupTitle">[[[Select Dataset -]]]</span>
+            <span class="rdl-dataset-name">@ViewData["sourceName"]</span>
+                <a href="javascript:void(0);" title="[[[Close]]]" data-toggle="tooltip" data-placement="bottom" class="PopupClose" onclick="closeNewDatasetPopup()"><span class="su su-close"></span></a>
+</div>
+        <div id="dataset_popup_module" class="dialog-body col-xs-12 no-padding">
+            <div class='col-md-12 no-padding no-top-margin' id='new_datasetrsd_tab_content'>
+                <div class='new-dataset-popup-btns dataset-btns'>
+                    <div id="dataset_validation" style="color: #A94442; display: none; height: 0;"></div>
+                    <div class='create-dataset-btns pull-right'>
+                        <input type='button' value='[[[Select]]]' id='publish_dataset' onclick="onSubmitDataset()" class='btn primary-button right-margin10' data-mapid="@ViewData["sourceName"]" tabindex="15">
+                        <input type='button' value='[[[Cancel]]]' class='btn secondary-button NoStyleCloseClick' onclick="closeNewDatasetPopup()" tabindex="16">
+                    </div>
+                </div>
+            </div>
+
+            @if (Convert.ToBoolean(ViewData["createPermission"]) == true)
+            {
+                <div class='col-md-12 share-popup-header no-top-margin'>
+                    <div id="dataset_tabs" class="col-md-12">
+                        <span class="dataset-tab-active heading" id="avl_dataset_tab" onclick="onAvailableDatasetTabSelect()">[[[Available]]]</span>
+                        <span id="new_dataset_select_tab" class="heading" onclick="onNewDatasetTabSelect()">[[[New Dataset]]]</span>
+                        <div id="rdl_new_tab_arrow" class="downArrow"></div>
+                    </div>
+                </div>
+            }
+
+            <div id='dataset_header_line' class='horizontal-splitline'></div>
+            <div id='avl_dataset_tab_content' class='col-md-12 no-top-margin rdl-dataset-tab-contents'>
+                <div class='col-md-12 no-top-margin new-dataset-content-holder'>
+                    <div id='available_dataset_table_header' class='col-md-12'>
+                        <div class='col-md-10 no-padding no-margin heading'>[[[Dataset]]]</div>
+                        <div class='col-md-2 no-padding no-margin heading'>[[[Created By]]]</div>
+                    </div>
+                    <div class='col-md-12 no-padding no-margin' id='available_dataset_table_holder'>
+                        <table id='available_dataset_table'>
+                            @for (var dataset = 0; dataset < Model.Count; dataset++)
+                            {
+                                if (@ViewData["selectedDataset"].ToString() == @Model[dataset].Id.ToString())
+                                {
+                                    <tr class="available-dataset-select" data-setid="@Model[dataset].Id"><td><span>@Model[dataset].Name</span></td><td>@Model[dataset].CreatedByDisplayName</td></tr>
+                                }
+                                else
+                                {
+                                    <tr data-setid="@Model[dataset].Id"><td><span>@Model[dataset].Name</span></td><td>@Model[dataset].CreatedByDisplayName</td></tr>
+                                }
+                            }
+                        </table>
+                    </div>
+                </div>
+                <div class='horizontal-splitline no-top-margin'></div>
+            </div>
+            <input type="hidden" id="publishedFileName" value="none">
+            <input type="hidden" id="rsd_filename" value="Browse file path">
+            <form id='new_dataset_tab_content' class='rdl-dataset-tab-contents DisplayNone'>
+                <div id="PopupContainer" class="col-lg-12 no-padding dialog">
+                    <div class="dialog-body col-xs-12 no-padding file-content-height" style="height: 269px;">
+                        <div id="general-file-container">
+                            <table width="100%" cellspacing="10px" cellpadding="0" border="0">
+                                <tbody>
+                                    <tr>
+                                        <td class="col-xs-2 text-right"><div class="bottom-margin30">[[[Name]]]<span class="mandatory">*</span></div></td>
+                                        <td class="col-xs-10">
+                                            <span>
+                                                <input type="text" id="file_name" autofocus name="dataSetName" maxlength="255" class="form-control bottom-margin30 text" tabindex="1">
+                                                <span id="validate-name" class="validation-message text"></span>
+                                                <div id="plugin_validation" class="validation-message text"></div>
+                                            </span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="col-xs-2 text-right"><div class="bottom-margin30">[[[Description]]]</div></td>
+                                        <td class="col-xs-10">
+                                            <textarea style="resize: none;" name="description" class="form-control bottom-margin30 text" id="file-description" maxlength="1024" tabindex="2"></textarea>
+                                            <span class="notification help-text">
+                                                <span class="help-text-mandatory">*</span>[[[1024 characters maximum]]]
+                                            </span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="col-xs-2 text-right"><div class="bottom-margin30 text">[[[RSD File]]]<span class="mandatory">*</span></div></td>
+                                        <td class="col-xs-10">
+                                            <iframe id="dataset_upload_iframe" style="height: 35px; border: none;" src="@Url.Action("UploadDatasetView", "Datasets")" scrolling="no" tabindex="-1"></iframe>
+                                            <span id="validate-file" class="validation-message text"></span>
+                                            <span id="uploadValidation" class="ErrorMessage text"></span>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <div class="col-xs-12 DisplayNone" id="datasource_list">
+                                <h4 class="heading">[[[Select Data Source]]]</h4>
+                                <table id="datasource_list_table"></table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+</html>
+<script>
+    $(function () {
+        parent.$("#addDataSetDom_wrapper").ejWaitingPopup("hide");
+    });
+</script>

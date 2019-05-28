@@ -1,0 +1,42 @@
+﻿@{
+    Layout = null;
+    ViewBag.MessageBox = false;
+    var umsUrl = GlobalAppSettings.SystemSettings.UmsUrl;
+}
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0">
+    @Styles.Render("~/styles/connection-error")
+    <title>[[[Ums Connection Error]]]</title>
+    <style>
+        #message {
+            font-family: RobotoRegular;
+            margin-left: 30px;
+            margin-right: 30px;
+            margin-top: 50px;
+        }
+
+        h2 {
+            border-bottom: 1px solid #e2e2e2;
+            font-size: 30px;
+            font-weight: 500;
+            padding-bottom: 15px;
+        }
+
+        ul li {
+            margin: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div id="message">
+        <h2>[[[Error establishing a UMS connection.]]]</h2>
+        <h3>[[[Causes:]]]</h3>
+        <ul>
+            <li>[[[Server might be down.]]]</li>
+            <li>[[[Please contact administrator to resolve this issue.]]]</li>
+            <li>[[[If you are an administrator configure the <a href="@umsUrl" target="_blank"> UMS settings</a> properly.]]]</li>
+        </ul>
+    </div>
+</body>
+</html>

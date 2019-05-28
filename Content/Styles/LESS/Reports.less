@@ -1,0 +1,414 @@
+﻿@import (reference) "Themes/Default.less";
+@import (reference) "Variables/FontSize.less";
+@import (reference) "Variables/ElementSize.less";
+@import (reference) "../Fonts/variables.less";
+body{
+    background-color:white;
+}
+.fileUpload {
+    border-radius: 0;
+    margin: -4px 10px 0 -5px;
+    overflow: hidden;
+    padding: 0 11px;
+    position: relative;
+    height: 28px;
+}
+.hide-option {
+    cursor: default;
+    display: none;
+    font-size: 0;
+    height: 0;
+} 
+ul .disabled {
+    display: none;
+    font-size: 0;
+    height: 0;
+}
+#selected-dataset{
+    width:100%;
+    margin-bottom:15px;
+}
+#rdl_file_upload_btn {
+    margin-top: 0px;
+    background: @primary-btn-bg;
+    border-radius: 2px;
+    color: @primary-btn-text-color;
+    display: inline-block;
+    font-size: 12px;
+    font-weight: 600;
+    font-family: RobotoRegular;
+    height: @btn-height-normal + 4;
+}
+
+#rdl_file_upload_btn[disabled] {
+    cursor: default;
+}
+
+.categoryColumn
+{
+    padding:16px;
+}
+.TopOption > label {
+    padding-top: 4px;
+}
+.TopOption > span.RadioElement {
+    padding-top: 4px;
+}
+.col-xs-12.column > label {
+    padding-right: 10px;
+    padding-top: 3px;
+}
+.TopOption1Tab2 .col-xs-12.column > label {
+    padding-top: 5px;
+    padding-right:10px;
+}
+.TopOption1Tab2 .col-xs-12.column > span.RadioElement {
+    padding-top: 7px;
+}
+.col-xs-12.column > span.RadioElement {
+    padding-top: 5px;
+}
+.error-messages
+{
+    color: @validation-text-color;
+    float: left;
+    font-size: 14px;
+    display:none;
+    padding-top: 4px;
+}
+.property-error-messages
+{
+    padding-left: 10px;
+}
+
+.configure
+{
+    float:left;
+}
+
+.add-report-processing-module {
+    .selectpicker {
+        width: 284px;
+         .filter-option{
+                text-overflow: ellipsis;
+        }
+    }
+    .bootstrap-select    {
+        width: 284px !important;
+    }
+    #Report_process_Option_holder .bs-deselect-all, #Report_process_Option_holder .bs-select-all {
+        display: none;
+    }
+    .bs-actionsbox
+    {
+        cursor:pointer;
+    }
+}
+
+
+
+input.upload-btn {
+    position: absolute;
+    top: 0;
+    right: 0;
+    margin: 0;
+    padding: 0;
+    font-size: 20px;
+    cursor: pointer;
+    opacity: 0;
+    filter: alpha(opacity=0);
+}
+.messageContainer
+{
+    min-height:410px;   
+}
+textarea {
+    resize: none;
+}
+
+#uploadValidation{
+    color: @validation-text-color;
+    float: left;
+    height: 15px;
+    margin-bottom: 10px;
+    margin-top: -30px;
+
+    .ReportUploadSuccessMessage {
+        color: @success-text-color;
+    }
+}
+
+#fileuploadMessage{
+	margin-top: -5px;
+    position: absolute;
+}
+.TopOption1Tab1
+{
+    float:left;
+    padding-left:20px;
+}
+.TopOption1Tab1 .column span.RadioElement,.TopOption1Tab2 .column span.RadioElement,.TopOption span.RadioElement
+{
+    display: inline-block; 
+    float:left;
+}
+.TopOption label,.TopOption1Tab1 .column label,.TopOption1Tab2 .column label{
+    cursor: pointer;
+    padding-left: 6px;
+    font-weight:normal;
+}
+.TopOption1Tab1 .column,.TopOption1Tab2 .column
+{
+    padding:5px;  
+}
+.TopOption1Tab2 label,.TopOption1Tab1 label{
+    float:left;
+}
+.TopOption1Tab2
+{
+    float:left;
+    padding-left:50px;
+}
+.TopOption1Tab1 .column input.minutesInput
+{
+    text-align: center;
+    width:40px;
+}
+#new_rdl_content_holder {
+    height: 407px;
+    overflow: auto;
+	margin-top:20px;
+    #datasource_list{
+        margin-top: 30px;
+    }
+}
+#Report_process_Option_holder{
+    overflow-y: auto;
+    overflow-x: hidden;
+    height: 410px;
+
+    .top-margin15 {
+        margin-top: 15px;
+    }
+
+    .material-checkbox:checked+input+label::before {
+        bottom: 11px;
+    }
+}
+.create-rdl-btns {
+    float: right;
+}
+
+.horizontal-splitline {
+    width: 100%;
+    border-bottom: 1px solid #d6d6d6;
+    height: 2px;
+    float: left;
+    margin-top: 3px;
+}
+
+.select-datasource-btns, .select-dataset-btns {
+    margin-bottom: 5px !important;
+    margin-right: 10px;
+    margin-top: 5px;
+}
+
+#new_rdl_tab_content {
+    float: left;
+    padding: 0;
+    width: 100%;
+}
+
+#Report_process_Option_form
+{
+    float: left;
+    padding: 0;
+    width: 100%;
+}
+
+.add-report-module {
+    .selectpicker {
+        width: 613px;
+         .filter-option{
+                text-overflow: ellipsis;
+        }
+    }
+}
+
+.edit-report-module {
+    .selectpicker {
+        width: 613px;
+         .filter-option{
+                text-overflow: ellipsis;
+        }
+    }
+}
+
+.edit-field {
+    width: 613px;
+}
+
+#file-description {
+    width: 613px;
+}
+
+#nextProcessButton{
+    margin-top:12px;
+}
+
+#selectedUsersValidation
+{
+    padding-top: 8px;
+}
+
+.new-report-button-holder {
+    background: #e5e5e5 none repeat scroll 0 0;
+    border-top: 1px solid #bbbbbb;
+    float: left;
+    padding: 0;
+    width: 100%;
+    .MultipleConfigure
+    {
+        float:left;
+    }
+    .selectedReportsInfo
+    {
+        float:left;
+    }
+}
+
+#report_upload_iframe {
+    border: 0 none;
+    height: 50px;
+    width: 100%;
+    display: block;
+
+    #browse_file {
+        font-size: 12px;
+        height: 28px;
+    }
+}
+
+#upload_browse_file {
+    border-bottom-right-radius: 0;
+    border-top-right-radius: 0;
+    border-right: 0 none;
+    border-radius: 0;
+    float: left;
+    font-family: RobotoRegular !important;
+    font-size: 12px;
+    height: 28px;
+    width: 450px;
+}
+
+#upload-form.iframe {
+    #upload_browse_file {
+        font-size: 14px;
+        height: 32px;
+    }
+
+    #browse_file {
+        font-size: 14px;
+        height: 32px;
+    }
+
+    #rdl_file_upload_btn {
+        height: 32px;
+    }
+
+    .fileUpload {
+        height: 32px;
+        margin-top: 0;
+    }
+}
+
+.top-margin30 {
+    margin-top: 30px;
+}
+
+.header-menu {
+    padding-bottom: 15px;
+    padding-top: 15px;
+    position: relative;
+
+    .PopupTitle {
+        font-size: 20px;
+    }
+}
+
+.PopupClose {
+    right: 7px;
+    top: 10px;
+}
+.top-margin30{
+    margin-top:25px;
+}
+.bottom-margin30{
+    margin-bottom:25px;
+}
+.validation-messages {
+    color: @validation-text-color;
+    float: left;
+    font-size: 14px;
+    margin-top: -25px !important;
+}
+.notification{
+    float:left;
+    margin-top:-25px;
+}
+.DisplayNone{
+    display:none;
+}
+.error-file-upload{
+    border:1px solid #C94442;
+    &:focus{
+        border:1px solid #C94442;
+    }
+    &:hover{
+        border:1px solid #C94442;
+    }
+}
+
+.no-left-border{
+    border-left:none;
+}
+
+.dialog-header {
+    .PopupClose {
+        padding-right: 2px;
+    }
+}
+
+#SchedulePanel {
+    .e-in-wrap {
+        .e-input {
+            padding: 0;
+            text-align: center;
+        }
+    }
+
+    .clspadleft {
+        padding-left: 10px;
+    }
+}
+
+.bs-deselect-all-custom, .bs-select-all-custom {
+    font-size: @app-text-size;
+    color: @primary-btn-bg;
+
+    &:hover {
+        text-decoration: underline;
+    }
+    }
+    .bs-select-all-custom .bs-select-custom-tick {
+        display: none;
+        }
+    .bs-deselect-all-custom .bs-select-custom-tick {
+        display: inline;
+        float: right;
+        margin-right: 30px;
+    }
+                    
+.bs-actionsbox:hover, .bs-select-all-custom :hover {
+    cursor: pointer;
+}
