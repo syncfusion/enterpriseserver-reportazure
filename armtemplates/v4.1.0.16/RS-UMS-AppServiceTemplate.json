@@ -62,7 +62,7 @@
     "rsGithubUrl": "https://github.com/syncfusion/enterpriseserver-reportazure.git",
     "umsGithubUrl": "https://github.com/SyncfusionInstall/enterpriseserver-umsazure.git",
     "rsReleaseVersion": "v4.1.0.16",
-    "umsReleaseVersion": "v3.1.0.16",
+    "umsReleaseVersion": "v3.1.0.18",
     "appSvcPlanSkuName": "B1",
     "appSvcPlanName": "SyncfusionAppSvcPlan",
     "RS": {
