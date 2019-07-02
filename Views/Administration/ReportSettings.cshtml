@@ -1,0 +1,140 @@
+﻿@{
+    ViewBag.Title = GlobalAppSettings.SystemSettings.OrganizationName + " - [[[ReportSettings]]]";
+    ViewBag.MessageBox = false;
+
+    var makepublic = GlobalAppSettings.SystemSettings.IsMarkItemsPublic;
+    var userbasedFilter = GlobalAppSettings.SystemSettings.UserbasedFilter;
+}
+
+@section styles{
+    @Styles.Render("~/styles/report-settings")
+}
+
+@section scripts{
+
+    @Scripts.Render("~/scripts/report-settings")
+    <script type="text/javascript">
+        var getExportFileSettingInfoUrl = "@Url.Action("GetExportFileSettingInfo", "Scheduler")";
+        var getScheduleFileSettingTypeUrl = "@Url.Action("GetScheduleFileSettingType", "Scheduler")";
+    </script>
+}
+
+@section MainSection{
+
+    @Html.Partial("_AdminMenu")
+
+    <div id="report-settings-container" class="col-xs-12 admin-page-container">
+        <div class="col-xs-12 admin-page-header">
+            <hgroup>
+                <h1 class="h2 page-title">
+                    [[[REPORT SETTINGS]]]
+                </h1>
+                <h5 class="page-description">
+                    [[[Configuration for the Reports]]]
+                </h5>
+            </hgroup>
+        </div>
+        <div>
+            <ul id="report-settings-tab-nav" class="nav nav-tabs" role="tablist">
+                <li role="presentation" class="active">
+                    <a href="#make-public-setting-tab" id="make-public-setting" aria-controls="make-public-setting-tab" role="tab" data-toggle="tab">[[[Report]]]</a>
+                </li>
+                <li role="presentation">
+                    <a href="#schedule-setting-tab" id="schedule-setting" aria-controls="schedule-setting-tab" role="tab" data-toggle="tab">[[[Schedule]]]</a>
+                </li>
+                <li role="presentation">
+                    <a href="#userbasedfilter-setting-tab" id="userbasedfilter-setting" aria-controls="userbasedfilter-setting-tab" role="tab" data-toggle="tab">[[[User Based filter]]]</a>
+                </li>
+            </ul>
+            <div class="tab-content">
+                <div role="tabpanel" class="tab-pane active" id="make-public-setting-tab">
+                    <div id="report-settings-body" class="admin-page-body">
+                        <div class="row input-field-wrapper">
+                            <div class="col-xs-8 field-container-dashboard bottom-width ">
+                                <div class="col-md-4">
+                                </div>
+
+                                <div class="col-md-2 text-center notification-header">
+                                    <strong>[[[Allow]]]</strong>
+
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-xs-8 field-container-dashboard">
+                                    <label class="col-md-4 app-textbox-label activation">
+                                        [[[Mark reports as public]]]
+
+                                    </label>
+
+                                    <div class="col-md-2 text-center switch-align">
+                                        <span class="material-switch text-left">
+                                            <input type="checkbox" id="restrict-makepublic-dashboard" @(makepublic ? "checked" : string.Empty) />
+
+                                            <label for="restrict-makepublic-dashboard" class="label-primary"></label>
+                                        </span>
+                                        <div class="tool-tip col-xs-1">
+                                            <span class="dropdown-toggle" data-toggle="dropdown"><span class="su su-info" title=""></span></span>
+                                            <div class="dropdown-menu" role="menu">
+                                                [[[Disabling this will not allow the current public reports to be opened by anonymous users. Click on public ]]] <a href="~/reports/public">[[[reports]]] </a> [[[to view them.]]]
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+                <div role="tabpanel" class="tab-pane" id="schedule-setting-tab">
+                    @Html.Partial("../Shared/_ScheduleExportFileSettings")
+                </div>
+                <div role="tabpanel" class="tab-pane" id="userbasedfilter-setting-tab">
+                    <div id="userbasedfilter-settings-body">
+                        <div class="col-lg-12 admin-page-body">
+                            <div class="col-md-12">
+                                <div class="col-md-6 no-padding no-margin">
+                                    <label class="col-xs-4 no-margin app-textbox-label">
+                                        [[[User Based Filter]]]
+                                    </label>
+                                    <div class="col-xs-8">
+                                        <select id="userbasedfilter-type" class="selectpicker">
+                                            @if (userbasedFilter == "Username")
+                                            {
+                                                <option value="Username" selected="selected">[[[Username]]]</option>
+                                            }
+                                            else
+                                            {
+                                                <option value="Username">[[[Username]]]</option>
+                                            }
+                                            @if (userbasedFilter == "Email")
+                                            {
+                                                <option value="Email" selected="selected">[[[Email]]]</option>
+                                            }
+                                            else
+                                            {
+                                                <option value="Email">[[[Email]]]</option>
+                                            }
+                                        </select>
+                                    </div>
+                                    <div class="userbased-tool-tip col-xs-1">
+                                        <span class="dropdown-toggle" data-toggle="dropdown" id="info-dropdown-toggle"><span class="su su-info" title=""></span></span>
+                                        <div class="dropdown-menu" id="info-dropdown" role="menu">
+                                            [[[For the reports designed with user based filter expression, the data will be restricted based on the current logged-in user. We can configure which value(username/email) should be applied for the expression using this setting. By default, it will be username.]]]
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="admin-page-actions col-xs-12 col-md-12">
+            <a href="@Url.Action("reports", "reports")" class="secondary-button pull-right" id="cancel-report-settings" title="">[[[Cancel]]]</a>
+            <input type="button" title="" data-url="@Url.Action("updatereportsettings", "administration")" id="update-report-settings" class="primary-button pull-right" value="[[[Save]]]" />
+            <input type="button" title="" data-url="@Url.Action("UpdateScheduleExportFileSetting", "administration")" id="update-schedule-settings" class="primary-button pull-right" value="[[[Save]]]" />
+            <input type="button" title="" data-url="@Url.Action("updateuserbasedfiltersettings", "administration")" id="update-userbasedfilter-settings" class="primary-button pull-right" value="[[[Save]]]" />
+        </div>
+    </div>
+}

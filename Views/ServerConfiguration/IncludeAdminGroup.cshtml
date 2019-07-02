@@ -1,0 +1,101 @@
+﻿@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0">
+    <title>[[[Welcome to ]]]@GlobalAppSettings.SystemSettings.OrganizationName</title>
+    @{var nativeNameTitleCase = Context.GetPrincipalAppLanguageForRequest().GetNativeNameTitleCase();}
+    <link rel="icon" href="@Url.Content("~/Content/Images/Application/Startup/Favicon.png")" />
+    @Styles.Render("~/styles/system-configuration")
+    @Scripts.Render("~/bundles/scripts/include-samples")
+    <script src="~/signalr/hubs"></script>
+    <script>
+        $("body").ejWaitingPopup();
+        $("body").ejWaitingPopup("show");
+        var includeAdmingroupUrl = "@Url.Action("IncludeAdminGroup", "ServerConfiguration")";
+        var isNewUms = ("@TempData["isNewUms"]".toLowerCase() === "true");
+        var groupid = @TempData["groupId"];
+        var isIncludeSampleResource = ("@TempData["isIncludeSampleResoures"]".toLowerCase() === "true");
+        $(function () {
+            // Declare a proxy to reference the hub.
+            var statusTracker = $.connection.signalrHub;
+            // Create a function that the hub can call to broadcast messages.
+            statusTracker.client.statusMessage = function (message) {
+                // Html encode display name and message.
+                $(".configuration-status").html(message);
+            };
+            $.connection.hub.start().done();
+        });
+        $(document).ready(function () {
+            $(document).on("click", "#include-existing-admin-group", function () {
+                var elem = $(".startup-page-conatiner");
+                elem.ejWaitingPopup({ text: " " });
+                $(".e-text").find(".configuration-status").remove();
+                $(".e-text").append('<span class="configuration-status"></span>');
+                elem.ejWaitingPopup("show");
+                var includeExistingAdminGroup = $('input[name=include-admin-group]:checked').val() == "1" ? true : false;
+                $.ajax({
+                    type: "POST",
+                    data: { isNewUms: isNewUms, includeSampleResources: isIncludeSampleResource, useExistingAdminGroup: includeExistingAdminGroup, groupId: groupid },
+                    url: includeAdmingroupUrl,
+                    success: function (result) {
+                        window.location = result.redirectUrl;
+                    }
+                });
+            });
+        });
+    </script>
+</head>
+<body>
+    <div class="system-startUp-settings-bg">
+        <div class="startup-page-conatiner" id="startup-page-conatiner">
+            <div id="system-settings-general">
+                <div class="system-settings-startup-logo">
+                    <img src="@Url.Content("~/Content/Images/Application/Login_Logo.png")" />
+                </div>
+                <div class="title">[[[Welcome to ]]]@GlobalAppSettings.SystemSettings.OrganizationName</div>
+                <div class="col-md-12 system-settings-page-container" id="system-settings-admins-container">
+                    <div id="include-existing-admin-container">
+                        <div id="include-admin-group">
+                            <span class="content content-value">
+                                [[[Do you want to use the existing Admin group which is already created?]]]
+                            </span>
+                            <div class="col-lg-12 col-md-12 col-sm-12 include-admin-group">
+                                <div class="col-lg-12 col-md-12 col-sm-12 center-include-admin-group">
+                                    <div class="col-lg-4 col-md-4 col-sm-4 ">
+                                        <div>
+                                            <input type="radio" id="include-yes" class="css-radio" name="include-admin-group" value="1" checked='checked' />
+                                            <label for="include-yes" class="pointer"><span class="text">[[[Yes]]]</span></label>
+                                        </div>
+                                    </div>
+                                    <div class="tool-tip col-xs-2 use-admin">
+                                        <span class="dropdown-toggle" data-toggle="dropdown"><span class="su su-info" title=""></span></span>
+                                        <div class="dropdown-menu" role="menu">[[[The existing group "Syncfusion Report Server System Administrator" in the User Management Server will be used as the Admin group for Report Server.]]]</div>
+                                    </div>
+                                    <div class="col-lg-4 col-md-4 col-sm-4 ">
+                                        <div>
+                                            <input type="radio" id="include-no" class="css-radio" name="include-admin-group" value="0" />
+                                            <label for="include-no" class="pointer"><span class="text">[[[No]]]</span></label>
+                                        </div>
+                                    </div>
+                                    <div class="tool-tip col-xs-2">
+                                        <span class="dropdown-toggle" data-toggle="dropdown"><span class="su su-info" title=""></span></span>
+                                        <div class="dropdown-menu" role="menu">[[[The existing group "Syncfusion Report Server System Administrator" in the User Management Server will be removed and a new group with the same name will be added. It is the Admin group for Report Server.]]]</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="txt-holder btn-holder center-align">
+                            <input type="button" tabindex="5" id="include-existing-admin-group" class="proceed-button" value="[[[Proceed]]]" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @Html.Partial("../Shared/_StartupFooter")
+        </div>
+    </div>
+</body>
+</html>

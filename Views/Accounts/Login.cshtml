@@ -1,0 +1,28 @@
+﻿@{
+    Layout = null;
+    var loginImage = string.Empty;
+    if (GlobalAppSettings.SystemSettings.StorageType == (int)StorageType.AzureBlob)
+    {
+        loginImage = GlobalAppSettings.AzureBlob.AzureBlobStorageUri + "/" + GlobalAppSettings.AzureBlob.AzureBlobStorageContainerName + "/" + GlobalAppSettings.GetStorageMode() + "/Content/Images/Application/" + GlobalAppSettings.SystemSettings.LoginLogo;
+    }
+    else
+    {
+        loginImage = GlobalAppSettings.SystemSettings.BaseUrl + "/Content/Images/Application/" + GlobalAppSettings.SystemSettings.LoginLogo;
+    }
+}
+<!DOCTYPE html>
+<html>
+<head>
+    
+    <script type="text/javascript">
+        window.onload = function () {
+            document.getElementById('login-form').submit();
+        }
+    </script>
+</head>
+<body>
+    <form method="post" id="login-form" name="loginForm" class="login-form" @Url.Action("login", "Accounts")>
+        @Html.Partial("../Shared/_ApplicationLoader")
+    </form>
+</body>
+</html>

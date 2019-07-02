@@ -1,0 +1,109 @@
+﻿@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0">
+    <title>[[[Welcome to ]]]@GlobalAppSettings.SystemSettings.OrganizationName</title>
+    @{var nativeNameTitleCase = Context.GetPrincipalAppLanguageForRequest().GetNativeNameTitleCase();}
+    <link rel="icon" href="@Url.Content("~/Content/Images/Application/Startup/Favicon.png")" />
+    @Styles.Render("~/styles/system-configuration")
+    @Scripts.Render("~/scripts/admin-selection")
+    <script src="~/signalr/hubs"></script>
+    <script type="text/x-jsrender" id="admin-header">
+        <div class="item-header">[[[Users]]]</div>
+    </script>
+    <script type="text/x-jsrender" id="admin-template">
+        <span class="item-name grid-content" title="{{:DisplayName}}" data-toggle="tooltip" target="_blank">{{:DisplayName}}<br />{{:Email}}</span>
+    </script>
+    <script type="text/x-jsrender" id="admin-checkbox-row-template">
+        <input type="checkbox" class="checkbox-row material-checkbox" data-checked-id="{{:UserId}}" id="admin-row-check{{:UserId}}" />
+        <input name="admin-row-check{{:UserId}}" type="hidden" value="false">
+        <label for="admin-row-check{{:UserId}}"> </label>
+    </script>
+
+    <script type="text/x-jsrender" id="admin-checkbox-header-template">
+        @Html.CheckBox("admin-checkbox-header", new { @class = "material-checkbox" })
+        @Html.Label("admin-checkbox-header", " ", new { @class = "admin-checkbox-header-label" })
+    </script>
+
+    <script>
+        $("body").ejWaitingPopup();
+        $("body").ejWaitingPopup("show");
+        var setSystemSettingsUrl = "@Url.Action("SetSystemSettings", "ServerConfiguration")";
+        var getAllUsersUrl = "@Url.Action("GetAllUserList", "ServerConfiguration")";
+        var addSystemAdminsUrl = "@Url.Action("AddSystemAdministartors", "ServerConfiguration")";
+        var loginPageUrl = "@Url.Action("login", "Accounts")";
+        var retryFetchingUserUrl = "@Url.Action("RetryFetchingUsersFromUms", "ServerConfiguration")";
+        var connectionType = "@ViewBag.ConnectionType";
+        var storageType = "@ViewBag.StorageType";
+        var isAzureApplication = ("@ViewBag.IsAzureApplication".toLowerCase() === "true");
+        var includeSampleResources = ("@TempData["IsToIncludeSampleResource"]".toLowerCase() === "true");
+        $(function () {
+            // Declare a proxy to reference the hub.
+            var statusTracker = $.connection.signalrHub;
+            // Create a function that the hub can call to broadcast messages.
+            statusTracker.client.statusMessage = function (message) {
+                // Html encode display name and message.
+                $(".configuration-status").html(message);
+            };
+            $.connection.hub.start().done();
+        });
+    </script>
+</head>
+<body>
+    <div class="system-startUp-settings-bg">
+        <div class="startup-page-conatiner" id="startup-page-conatiner">
+            <div id="system-settings-general">
+                <div class="system-settings-startup-logo">
+                    <img src="@Url.Content("~/Content/Images/Application/Login_Logo.png")" />
+                </div>
+                <div class="title">[[[Welcome to ]]]@GlobalAppSettings.SystemSettings.OrganizationName</div>
+                <div class="col-md-12 system-settings-page-container" id="system-settings-admins-container">
+                    <div class="modal no-padding" id="add-admins-dialog" tabindex="-1" role="dialog">
+                        <div class="col-lg-12 modal-dialog no-padding" role="document">
+                            <div class="col-lg-12 modal-content no-padding" autocomplete="off">
+                                <div class="col-md-12 modal-header">
+                                    <div class="description bg-info pull-left">
+                                        <span>
+                                            [[[Select the users who would be granted system administrative access]]]
+                                        </span>
+                                    </div>
+                                    <div class="admin-error-msg">
+                                    </div>
+                                </div>
+                                <div class="modal-body col-xs-12">
+                                    <div class="col-xs-12 no-padding">
+                                        <p class="bg-warning col-xs-12 no-user-warning">
+                                            [[[Grant access to users in ]]]<a href="@ViewBag.UserAccessLink" target="_blank">[[[UMS]]]</a> [[[and refresh the grid.]]]
+                                        </p>
+                                        <div id="search-area" class="no-padding pull-right">
+                                            <span id="refresh-admin-grid" class="su su-refresh refresh-admin-grid pull-left" title="" target="_blank"></span>
+                                            <input type="text" class="pull-left" id="search-ump-users" placeholder="[[[Search Users]]]"/>
+                                            <span class="su su-inner-close close-icon pull-right" id="clear-search" title="[[[Clear search]]]"></span>
+                                            <span class="su su-search search-icon pull-right" title="[[[Search]]]"></span>
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-12 no-padding">
+                                        <div id="add_admins_grid">
+                                        </div>
+                                        
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="admin-account-submit-container">
+                        <div class="btn-holder">
+                            <input type="button" tabindex="5" id="provide-admin-access-button" class="proceed-button" onclick="setSystemAdmins()" value="[[[Proceed]]]" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @Html.Partial("../Shared/_StartupFooter")
+        </div>
+    </div>
+</body>
+</html>

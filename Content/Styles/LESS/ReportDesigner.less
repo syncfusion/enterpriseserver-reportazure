@@ -1,0 +1,350 @@
+﻿@import (reference) "Themes/Default.less";
+@import (reference) "Variables/FontSize.less";
+@import (reference) "Variables/ElementSize.less";
+@import (reference) "../Fonts/variables.less";
+
+#designer-header{
+        width: 100%;
+        height: @header-height;
+        background-color: #333842;
+
+      .user-account {
+            float: right;
+
+            .profile-picture {
+                img {
+                    cursor: pointer;
+                    height: @header-height;
+                    width: @header-height;
+                }
+            }
+
+            #profile-info-section {
+                left: auto;
+                right: 0;
+                padding: 0;
+                white-space: nowrap;
+
+                .profile-info {
+                    border-bottom: 1px solid @profile-border-color;
+                    padding: 0;
+
+                    .profile-picture-area {
+                        padding: 10px;
+
+                        img {
+                            border-radius: 50%;
+                            height: 48px;
+                            width: 48px;
+                        }
+                    }
+
+                    .profile-info-area {
+                        overflow: auto;
+                        padding-right: 10px;
+
+                        ul {
+                            list-style: none;
+
+                            #profile-name {
+                                color: @primary-text-color;
+                                font-size: @app-large-text-size;
+                                font-weight: 500;
+                                height: auto;
+                                margin-top: 10px;
+                            }
+
+                            #profile-email {
+                                color: @grid-link-color;
+                                font-size: @app-text-size;
+                                font-weight: 400;
+                            }
+                        }
+                    }
+                }
+
+                .profile-buttons {
+                    a {
+                        color: @profile-btn-text-color;
+                        padding: 10px 0;
+                        text-align: center;
+
+                        &:first-child {
+                            border-right: 1px solid @profile-border-color;
+                        }
+                    }
+                }
+            }
+        }
+
+      #notification-section {
+            cursor: pointer;
+            display: table;
+            height: @header-height;
+            width: @header-height;
+
+            &:hover{
+                background-color: lighten(@item-panel-bg, 10%);
+                
+                #notification-link {
+                    #notification-indicator {
+                        border-color: lighten(@item-panel-bg, 10%);
+                    }
+                }
+            }
+
+            #notification-link {
+                display: table-cell;
+                height: inherit;
+                margin: 0 auto;
+                position: relative;
+                text-align: center;
+                vertical-align: middle;
+                width: inherit;
+
+                #notification-icon{
+                    color:@primary-btn-text-color;
+                    display: inline-block;
+                    height: @header-height;
+                    width: @header-height;
+                    line-height: @header-height;
+                }
+
+                #notification-indicator {
+                    background: @unread-notification-color;
+                    border: 1px solid @header-bg;
+                    border-radius: 10px;
+                    display: block;
+                    left: 21px;
+                    height: 8px;
+                    position: absolute;
+                    top: 9px;
+                    width: 8px;  
+                }
+
+                #notification-content-area {
+                    border-radius: 10px;
+                    height: 400px;
+                    left: auto;
+                    padding: 0 !important;
+                    right: 0;
+                    width: 375px;
+                    z-index: 1001;
+
+                    #notification-header {
+                        background-color: @header-bg-color;
+                        color: @header-bg;
+                        cursor: default;
+                        float: left;
+                        font-size: 18px;
+                        height: 40px;
+                        padding: 8px;
+                        width: 100%;
+
+                        span, a{
+                            margin-top: 4px;
+                        }
+
+                        span {
+                            float: left;
+                            font-size: @app-large-text-size; 
+                        }
+
+                        a {
+                            float: right;
+                            color: @primary-btn-bg;
+                            font-size: @app-large-text-size;
+                        }
+                    }
+
+                    #notification-list {
+                        border: 0 none;
+                        height: 360px;
+                        width: 100%;
+                    }
+                }
+            }   
+        }
+
+      @media screen and (min-width: 1400px){     
+           height: @header-lg-height !important;
+          .user-account{
+                    .profile-picture{
+                        img{
+                            height: @header-lg-height;
+                            width: @header-lg-height;
+                        }
+                    }
+
+                    #profile-info-section{
+                        .profile-info{
+                        .profile-info-area{
+                            ul{
+                                #profile-name{
+                                    font-size: @app-large-text-size + 1;
+                                }
+
+                                #profile-email{
+                                    font-size: @app-large-text-size;
+                                }
+                            }
+                        }
+                        }
+                    }
+                }  
+          #btn-item-share, .preview-rep{
+              margin-top: 12px !important;
+              }
+          .report-name{
+              margin-top: 14px !important;
+          }
+          .save-report{
+              margin-right: 66% !important;
+              margin-top: 13px !important;
+          }
+
+          #notification-section{
+                    height: @header-lg-height;
+                    width: @header-lg-height;
+
+                    #notification-link{
+                        #notification-icon{
+                            height: @header-lg-height;
+                            width:@header-lg-height;
+                            line-height: @header-lg-height;
+                        }
+                        #notification-indicator{
+                            left: 26px;
+                            top: 15px;
+                        }
+                    }
+                }
+          .main-screen-logo{
+               img{
+                  height: 40px !important;
+                  padding-left: 8px !important;
+                  margin-top: -3px !important;
+               }
+          }
+          .report-name{  
+                 padding-left: 22px !important;
+                  .edit-report {
+                      font-size: 16px !important;
+                     }
+                  .report-status, .report-unsave{
+                      font-size: 13px !important;
+                    }
+                 }
+            }
+
+      @media screen and (max-width:1200px){
+                .user-account {
+                     #profile-info-section {
+                         width: auto !important;
+                      .profile-buttons {
+                          margin-top: 10px !important;
+                          margin-bottom: 10px !important;
+                          text-align: center;
+                     a {
+                        padding: 10px !important;
+                    }
+                }
+              }
+            }
+          }
+
+.share-item, .preview-item, .design-item{
+    width: 100px;
+    height: 40px;
+    float: right;
+    display: inline-block;
+  
+#btn-item-share, .preview-rep{
+    width: 80px;
+    margin-top: 7px;
+    height: 25px;
+    margin-left: 0px;
+    border: 0;
+    border-radius: 2px; 
+    font-weight: 600;
+    font-size: 12px;
+    }
+   .preview-rep{
+      background-color: #009aef;
+      color: #fff;
+  }
+    #btn-item-design{
+         /*background-color: #009aef;
+         color: #fff;*/
+         display: none;
+    }
+}
+
+#btn-item-preview, #btn-item-design{
+     &:hover {
+                background-color: #0079bc;                            
+            }
+}
+
+.share-item{
+    display: none;
+}
+
+.report-name{
+    margin-top: 10px;
+    display: inline-block;
+    padding-left: 6px;
+    .edit-report {
+        color: #fff;
+    }
+    .report-status{
+        color: darkgray;
+        font-size: 12px;
+        font-family: Segoe UI;
+        padding-left: 15px;
+        font-style: italic;
+    }
+    .report-unsave{
+         color: red;
+         font-size: 12px;
+         font-family: Segoe UI;
+         padding-left: 10px;
+         display: none;
+    }
+}
+
+.main-screen-logo{
+    width: 40px;
+    height: 30px;
+    display: inline-block;
+    margin-top: 5px;
+    img{
+        height: 30px;
+        padding-left: 5px;
+        margin-top: -1px;
+    }
+  }
+}
+
+#notification-content-area_WaitingPopup .e-image {
+        background-color: #fff;
+        background-image: url(../../images/waitingpopup.gif);
+    }
+
+#base-footer-div{
+    padding: 5px 30px 0px 30px;
+    background-color: #f2f2f2;
+    color: #1b1e24;
+    #dropdown-lang{
+        display: none;
+    }
+    .language-area {
+        #lang_menu {
+        #footer-separator {
+                    display: none !important;
+        }
+      }
+    }
+}
+
+
