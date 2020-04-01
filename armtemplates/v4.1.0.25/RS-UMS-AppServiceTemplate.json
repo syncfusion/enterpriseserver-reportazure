@@ -69,7 +69,6 @@
       "alwaysOn": true,
       "netFrameworkVersion": "v4.6",
       "remoteDebuggingEnabled": false,
-      "remoteDebuggingVersion": "VS2015",
       "use32BitWorkerProcess": true,
       "virtualApplications": [
               {
@@ -91,7 +90,6 @@
       "alwaysOn": true,
       "netFrameworkVersion": "v4.6",
       "remoteDebuggingEnabled": false,
-      "remoteDebuggingVersion": "VS2015",
       "use32BitWorkerProcess": true,
       "virtualApplications": [
         {
